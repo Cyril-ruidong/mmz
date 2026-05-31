@@ -34,10 +34,10 @@ class Game {
     }
     
     initGame() {
-        // ==================== 游戏状态 ====================
-        this.gameState = 'TITLE'; // TITLE, INTRO, WORLD, BATTLE, DIALOG, MENU
+        // 游戏状态
+        this.gameState = 'TITLE';
         
-        // ==================== 玩家数据 ====================
+        // 玩家数据
         this.player = {
             name: 'HHH',
             x: 4,
@@ -57,29 +57,26 @@ class Game {
             defense: 5
         };
         
-        // ==================== 队伍成员 ====================
+        // 队伍
         this.party = [this.player];
         this.partyNames = ['主角'];
         
-        // ==================== 战车系统 ====================
+        // 战车
         this.tanks = [];
-        this.activeTank = -1; // -1表示没有战车
+        this.activeTank = -1;
         
-        // ==================== 剧情进度 ====================
+        // 剧情进度
         this.storyProgress = {
             metFather: false,
-            gotFirstTank: false,
-            metMechanic: false,
-            metSoldier: false,
-            defeatedWaterMonster: false
+            gotFirstTank: false
         };
         
-        // ==================== 地图系统 ====================
+        // 地图
         this.currentMap = 'LADO_HOME';
         this.mapData = this.createMapData(this.currentMap);
         this.camera = { x: 0, y: 0 };
         
-        // ==================== 对话系统 ====================
+        // 对话
         this.dialogState = {
             active: false,
             npc: null,
@@ -88,7 +85,7 @@ class Game {
             callback: null
         };
         
-        // ==================== 输入系统 ====================
+        // 输入
         this.input = {
             up: false,
             down: false,
@@ -107,90 +104,13 @@ class Game {
             cancel: false
         };
         
-        // ==================== 动画定时器 ====================
+        // 性能
         this.lastTime = 0;
         this.frameCount = 0;
         this.fps = 0;
     }
     
-    // ==========================================
-    // 地图数据创建
-    // ==========================================
-    createMapData(mapName) {
-        const maps = {
-            'LADO_HOME': {
-                name: '拉多 - 家',
-                width: 10,
-                height: 8,
-                tiles: [
-                    ['wall','wall','wall','wall','wall','wall','wall','wall','wall','wall'],
-                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
-                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
-                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
-                    ['wall','floor','floor','wall','wall','wall','floor','floor','floor','wall'],
-                    ['wall','floor','floor','wall','stair','wall','floor','floor','floor','wall'],
-                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
-                    ['wall','wall','wall','wall','door','wall','wall','wall','wall','wall']
-                ],
-                npcs: [
-                    { x: 7, y: 2, name: '姐姐', type: 'lady', dialog: [
-                        '弟弟，你又想出去冒险？',
-                        '爸爸会生气的！',
-                        '还是先和爸爸谈谈吧。'
-                    ]},
-                    { x: 2, y: 5, name: '爸爸', type: 'uncle', dialog: [
-                        '你小子又来了！',
-                        '我说过多少遍！',
-                        '不许去当什么赏金猎人！',
-                        '给我滚出去！！'
-                    ], event: 'KICK_OUT'}
-                ],
-                exits: [
-                    { x: 4, y: 7, target: 'LADO_TOWN', tx: 12, ty: 10 }
-                ]
-            },
-            'LADO_TOWN': {
-                name: '拉多镇',
-                width: 24,
-                height: 15,
-                tiles: this.createTownTiles(),
-                npcs: [
-                    { x: 14, y: 10, name: '守卫', type: 'guard', dialog: [
-                        '这里是拉多镇。',
-                        '南边的山洞里有怪物出没。',
-                        '小心点！'
-                    ]},
-                    { x: 11, y: 5, name: '年轻人', type: 'young', dialog: [
-                        '听说南边的山洞里有一辆战车！',
-                        '不过有战狗守着...'
-                    ]},
-                    { x: 19, y: 6, name: '红狼', type: 'redwolf', dialog: [
-                        '...',
-                        '我是红狼。',
-                        '你也想成为赏金猎人吗？',
-                        '那就变强给我看看吧！'
-                    ]}
-                ],
-                exits: [
-                    { x: 12, y: 14, target: 'WORLD_MAP', tx: 50, ty: 60 },
-                    { x: 5, y: 8, target: 'LADO_HOME', tx: 4, ty: 6 }
-                ]
-            },
-            'WORLD_MAP': {
-                name: '世界地图',
-                width: 100,
-                height: 80,
-                tiles: this.createWorldTiles(),
-                npcs: [],
-                exits: [
-                    { x: 50, y: 60, target: 'LADO_TOWN', tx: 12, ty: 13 }
-                ]
-            }
-        };
-        
-        return maps[mapName] || maps['LADO_HOME'];
-    }
-    
+    // 创建镇子瓦片
     createTownTiles() {
         const tiles = [];
         for (let y = 0; y < 15; y++) {
@@ -208,6 +128,7 @@ class Game {
         return tiles;
     }
     
+    // 创建世界地图瓦片
     createWorldTiles() {
         const tiles = [];
         for (let y = 0; y < 80; y++) {
@@ -223,27 +144,78 @@ class Game {
         return tiles;
     }
     
-    // ==========================================
+    // 创建地图数据
+    createMapData(mapName) {
+        const maps = {
+            'LADO_HOME': {
+                name: '拉多 - 家',
+                width: 10,
+                height: 8,
+                tiles: [
+                    ['wall','wall','wall','wall','wall','wall','wall','wall','wall','wall'],
+                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
+                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
+                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
+                    ['wall','floor','floor','wall','wall','wall','floor','floor','floor','wall'],
+                    ['wall','floor','floor','wall','stair','wall','floor','floor','floor','wall'],
+                    ['wall','floor','floor','floor','floor','floor','floor','floor','floor','wall'],
+                    ['wall','wall','wall','wall','door','wall','wall','wall','wall','wall']
+                ],
+                npcs: [
+                    { x: 7, y: 2, name: '姐姐', type: 'lady', dialog: ['弟弟，你又想出去冒险？','爸爸会生气的！','还是先和爸爸谈谈吧。']},
+                    { x: 2, y: 5, name: '爸爸', type: 'uncle', dialog: ['你小子又来了！','我说过多少遍！','不许去当什么赏金猎人！','给我滚出去！！'], event: 'KICK_OUT'}
+                ],
+                exits: [
+                    { x: 4, y: 7, target: 'LADO_TOWN', tx: 12, ty: 10 }
+                ]
+            },
+            'LADO_TOWN': {
+                name: '拉多镇',
+                width: 24,
+                height: 15,
+                tiles: null, // 延迟创建
+                npcs: [
+                    { x: 14, y: 10, name: '守卫', type: 'guard', dialog: ['这里是拉多镇。','南边的山洞里有怪物出没。','小心点！']},
+                    { x: 11, y: 5, name: '年轻人', type: 'young', dialog: ['听说南边的山洞里有一辆战车！','不过有战狗守着...']},
+                    { x: 19, y: 6, name: '红狼', type: 'redwolf', dialog: ['...','我是红狼。','你也想成为赏金猎人吗？','那就变强给我看看吧！']}
+                ],
+                exits: [
+                    { x: 12, y: 14, target: 'WORLD_MAP', tx: 50, ty: 60 },
+                    { x: 5, y: 8, target: 'LADO_HOME', tx: 4, ty: 6 }
+                ]
+            },
+            'WORLD_MAP': {
+                name: '世界地图',
+                width: 100,
+                height: 80,
+                tiles: null, // 延迟创建
+                npcs: [],
+                exits: [
+                    { x: 50, y: 60, target: 'LADO_TOWN', tx: 12, ty: 13 }
+                ]
+            }
+        };
+        
+        const map = maps[mapName] || maps['LADO_HOME'];
+        
+        // 延迟创建需要方法的瓦片
+        if (mapName === 'LADO_TOWN' && !map.tiles) {
+            map.tiles = this.createTownTiles();
+        } else if (mapName === 'WORLD_MAP' && !map.tiles) {
+            map.tiles = this.createWorldTiles();
+        }
+        
+        return map;
+    }
+    
     // 输入系统
-    // ==========================================
     setupInput() {
-        // 键盘事件
-        window.addEventListener('keydown', (e) => {
-            this.handleKeyDown(e);
-        });
+        window.addEventListener('keydown', (e) => this.handleKeyDown(e));
+        window.addEventListener('keyup', (e) => this.handleKeyUp(e));
         
-        window.addEventListener('keyup', (e) => {
-            this.handleKeyUp(e);
-        });
-        
-        // 触摸/鼠标控制
         const buttonMap = {
-            'btn-up': 'up',
-            'btn-down': 'down',
-            'btn-left': 'left',
-            'btn-right': 'right',
-            'btn-confirm': 'confirm',
-            'btn-cancel': 'cancel'
+            'btn-up': 'up', 'btn-down': 'down', 'btn-left': 'left',
+            'btn-right': 'right', 'btn-confirm': 'confirm', 'btn-cancel': 'cancel'
         };
         
         Object.keys(buttonMap).forEach(btnId => {
@@ -251,30 +223,24 @@ class Game {
             if (btn) {
                 btn.addEventListener('touchstart', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
                     this.input[buttonMap[btnId]] = true;
                     btn.classList.add('active');
                 });
-                
                 btn.addEventListener('touchend', (e) => {
                     e.preventDefault();
-                    e.stopPropagation();
                     this.input[buttonMap[btnId]] = false;
                     btn.classList.remove('active');
                 });
-                
                 btn.addEventListener('mousedown', (e) => {
                     e.preventDefault();
                     this.input[buttonMap[btnId]] = true;
                     btn.classList.add('active');
                 });
-                
                 btn.addEventListener('mouseup', (e) => {
                     e.preventDefault();
                     this.input[buttonMap[btnId]] = false;
                     btn.classList.remove('active');
                 });
-                
                 btn.addEventListener('mouseleave', () => {
                     this.input[buttonMap[btnId]] = false;
                     btn.classList.remove('active');
@@ -285,80 +251,37 @@ class Game {
     
     handleKeyDown(e) {
         switch(e.code) {
-            case 'ArrowUp':
-            case 'KeyW':
-                this.input.up = true;
-                break;
-            case 'ArrowDown':
-            case 'KeyS':
-                this.input.down = true;
-                break;
-            case 'ArrowLeft':
-            case 'KeyA':
-                this.input.left = true;
-                break;
-            case 'ArrowRight':
-            case 'KeyD':
-                this.input.right = true;
-                break;
-            case 'KeyZ':
-            case 'Enter':
-            case 'Space':
-                this.input.confirm = true;
-                break;
-            case 'KeyX':
-            case 'Escape':
-                this.input.cancel = true;
-                break;
+            case 'ArrowUp': case 'KeyW': this.input.up = true; break;
+            case 'ArrowDown': case 'KeyS': this.input.down = true; break;
+            case 'ArrowLeft': case 'KeyA': this.input.left = true; break;
+            case 'ArrowRight': case 'KeyD': this.input.right = true; break;
+            case 'KeyZ': case 'Enter': case 'Space': this.input.confirm = true; break;
+            case 'KeyX': case 'Escape': this.input.cancel = true; break;
         }
     }
     
     handleKeyUp(e) {
         switch(e.code) {
-            case 'ArrowUp':
-            case 'KeyW':
-                this.input.up = false;
-                break;
-            case 'ArrowDown':
-            case 'KeyS':
-                this.input.down = false;
-                break;
-            case 'ArrowLeft':
-            case 'KeyA':
-                this.input.left = false;
-                break;
-            case 'ArrowRight':
-            case 'KeyD':
-                this.input.right = false;
-                break;
-            case 'KeyZ':
-            case 'Enter':
-            case 'Space':
-                this.input.confirm = false;
-                break;
-            case 'KeyX':
-            case 'Escape':
-                this.input.cancel = false;
-                break;
+            case 'ArrowUp': case 'KeyW': this.input.up = false; break;
+            case 'ArrowDown': case 'KeyS': this.input.down = false; break;
+            case 'ArrowLeft': case 'KeyA': this.input.left = false; break;
+            case 'ArrowRight': case 'KeyD': this.input.right = false; break;
+            case 'KeyZ': case 'Enter': case 'Space': this.input.confirm = false; break;
+            case 'KeyX': case 'Escape': this.input.cancel = false; break;
         }
     }
     
     showMobileControls() {
         const mobileControls = document.getElementById('mobile-controls');
-        if (mobileControls) {
-            mobileControls.classList.remove('hidden');
-        }
+        if (mobileControls) mobileControls.classList.remove('hidden');
     }
     
-    // ==========================================
     // 游戏循环
-    // ==========================================
     gameLoop(timestamp = 0) {
         try {
             const delta = timestamp - this.lastTime;
             this.lastTime = timestamp;
             
-            // 更新帧率
             this.frameCount++;
             if (this.frameCount >= 60) {
                 this.fps = Math.round(1000 / delta) || 60;
@@ -377,79 +300,54 @@ class Game {
     
     update(delta) {
         switch(this.gameState) {
-            case 'TITLE':
-                this.updateTitle(delta);
-                break;
-            case 'INTRO':
-                this.updateIntro(delta);
-                break;
-            case 'WORLD':
-                this.updateWorld(delta);
-                break;
-            case 'DIALOG':
-                this.updateDialog(delta);
-                break;
-            case 'MENU':
-                this.updateMenu(delta);
-                break;
+            case 'TITLE': this.updateTitle(delta); break;
+            case 'INTRO': this.updateIntro(delta); break;
+            case 'WORLD': this.updateWorld(delta); break;
+            case 'DIALOG': this.updateDialog(delta); break;
         }
         
-        // 保存输入状态
         Object.keys(this.input).forEach(key => {
             this.inputPressed[key] = this.input[key];
         });
     }
     
-    // ==========================================
     // 标题画面
-    // ==========================================
     updateTitle(delta) {
         if (this.input.confirm && !this.inputPressed.confirm) {
             this.gameState = 'INTRO';
             this.introStep = 0;
-            this.introTimer = 0;
         }
     }
     
     renderTitle() {
-        // 黑底
         this.ctx.fillStyle = '#000000';
         this.ctx.fillRect(0, 0, this.width, this.height);
         
-        // 标题
         this.ctx.fillStyle = '#E04040';
-        this.ctx.font = 'bold 24px "Courier New", monospace';
+        this.ctx.font = 'bold 24px "Courier New"';
         this.ctx.textAlign = 'center';
         this.ctx.fillText('重装机兵', this.width / 2, 80);
         
-        // 副标题
         this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.font = '14px "Courier New", monospace';
+        this.ctx.font = '14px "Courier New"';
         this.ctx.fillText('METAL MAX', this.width / 2, 105);
         
-        // 绿色地面
         this.ctx.fillStyle = '#3A7A3A';
         this.ctx.fillRect(0, 130, this.width, 110);
         
-        // 闪烁提示
         const blink = Math.floor(Date.now() / 500) % 2 === 0;
         if (blink) {
             this.ctx.fillStyle = '#FFFFFF';
-            this.ctx.font = '12px "Courier New", monospace';
+            this.ctx.font = '12px "Courier New"';
             this.ctx.fillText('PUSH START', this.width / 2, 190);
         }
     }
     
-    // ==========================================
     // 开场剧情
-    // ==========================================
     updateIntro(delta) {
-        this.introTimer += delta;
-        
         if (this.input.confirm && !this.inputPressed.confirm) {
             if (this.introStep < 4) {
                 this.introStep++;
-                this.introTimer = 0;
             } else {
                 this.gameState = 'WORLD';
             }
@@ -457,35 +355,31 @@ class Game {
     }
     
     renderIntro() {
-        // 背景
         this.ctx.fillStyle = '#000000';
         this.ctx.fillRect(0, 0, this.width, this.height);
         
         const introTexts = [
-            { text: '传说中的大破坏...', y: 80 },
-            { text: '文明毁灭之后...', y: 100 },
-            { text: '怪物横行的世界...', y: 120 },
-            { text: '赏金猎人的时代开始了！', y: 140 }
+            '传说中的大破坏...',
+            '文明毁灭之后...',
+            '怪物横行的世界...',
+            '赏金猎人的时代开始了！'
         ];
         
         this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.font = '12px "Courier New", monospace';
+        this.ctx.font = '12px "Courier New"';
         this.ctx.textAlign = 'center';
         
         for (let i = 0; i <= this.introStep && i < introTexts.length; i++) {
-            this.ctx.fillText(introTexts[i].text, this.width / 2, introTexts[i].y);
+            this.ctx.fillText(introTexts[i], this.width / 2, 80 + i * 25);
         }
         
-        // 提示
         const blink = Math.floor(Date.now() / 300) % 2 === 0;
         if (blink) {
             this.ctx.fillText('按 A 键继续', this.width / 2, 200);
         }
     }
     
-    // ==========================================
     // 世界地图
-    // ==========================================
     updateWorld(delta) {
         this.updatePlayer(delta);
         this.updateCamera();
@@ -501,11 +395,9 @@ class Game {
         if (this.input.left) dx = -1;
         if (this.input.right) dx = 1;
         
-        // 限制只能向一个方向移动
         if (dx !== 0) dy = 0;
         
         if (dx !== 0 || dy !== 0) {
-            // 设置方向
             if (dx < 0) this.player.direction = 'left';
             if (dx > 0) this.player.direction = 'right';
             if (dy < 0) this.player.direction = 'up';
@@ -533,13 +425,12 @@ class Game {
     }
     
     canMoveTo(x, y) {
-        if (x < 0 || x >= this.mapData.width || 
-            y < 0 || y >= this.mapData.height) {
+        if (x < 0 || x >= this.mapData.width || y < 0 || y >= this.mapData.height) {
             return false;
         }
         
         const tile = this.mapData.tiles[Math.floor(y)][Math.floor(x)];
-        return tile !== 'wall' && tile !== 'water' && tile !== 'tree';
+        return tile !== 'wall' && tile !== 'tree';
     }
     
     updateCamera() {
@@ -562,7 +453,6 @@ class Game {
                 case 'right': checkX += 1; break;
             }
             
-            // 检查NPC
             for (const npc of this.mapData.npcs) {
                 if (Math.abs(checkX - npc.x) < 1 && Math.abs(checkY - npc.y) < 1) {
                     this.startDialog(npc);
@@ -588,9 +478,7 @@ class Game {
         this.player.y = startY;
     }
     
-    // ==========================================
     // 对话系统
-    // ==========================================
     startDialog(npc) {
         this.gameState = 'DIALOG';
         this.dialogState.active = true;
@@ -601,7 +489,6 @@ class Game {
         if (npc.event === 'KICK_OUT' && !this.storyProgress.metFather) {
             this.dialogState.callback = () => {
                 this.storyProgress.metFather = true;
-                // 被爸爸赶出家后，切换到镇子地图
                 this.changeMap('LADO_TOWN', 12, 10);
             };
         }
@@ -623,38 +510,29 @@ class Game {
     }
     
     renderDialog() {
-        // 对话框背景
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
         this.ctx.fillRect(4, this.height - 64, this.width - 8, 60);
         
-        // 边框
         this.ctx.strokeStyle = '#FFFFFF';
         this.ctx.lineWidth = 2;
         this.ctx.strokeRect(4, this.height - 64, this.width - 8, 60);
         
-        // 对话内容
         this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.font = '10px "Courier New", monospace';
+        this.ctx.font = '10px "Courier New"';
         this.ctx.textAlign = 'left';
         
         if (this.dialogState.index < this.dialogState.lines.length) {
-            const line = this.dialogState.lines[this.dialogState.index];
-            this.ctx.fillText(line, 12, this.height - 40);
+            this.ctx.fillText(this.dialogState.lines[this.dialogState.index], 12, this.height - 40);
         }
         
-        // 继续提示三角
-        this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.font = '8px "Courier New", monospace';
-        this.ctx.textAlign = 'right';
         const blink = Math.floor(Date.now() / 300) % 2 === 0;
         if (blink) {
+            this.ctx.textAlign = 'right';
             this.ctx.fillText('▼', this.width - 12, this.height - 12);
         }
     }
     
-    // ==========================================
-    // 渲染系统
-    // ==========================================
+    // 渲染
     render() {
         if (!this.ctx) return;
         
@@ -663,15 +541,9 @@ class Game {
             this.ctx.fillRect(0, 0, this.width, this.height);
             
             switch(this.gameState) {
-                case 'TITLE':
-                    this.renderTitle();
-                    break;
-                case 'INTRO':
-                    this.renderIntro();
-                    break;
-                case 'WORLD':
-                    this.renderWorld();
-                    break;
+                case 'TITLE': this.renderTitle(); break;
+                case 'INTRO': this.renderIntro(); break;
+                case 'WORLD': this.renderWorld(); break;
                 case 'DIALOG':
                     this.renderWorld();
                     this.renderDialog();
@@ -716,44 +588,32 @@ class Game {
                 this.ctx.fillStyle = '#2A5A2A';
                 this.ctx.fillRect(x + 3, y + 3, 2, 2);
                 break;
-                
             case 'floor':
                 this.ctx.fillStyle = '#9A8A6A';
                 this.ctx.fillRect(x, y, 16, 16);
                 this.ctx.fillStyle = '#8A7A5A';
                 this.ctx.fillRect(x + 1, y + 1, 6, 6);
                 break;
-                
             case 'wall':
                 this.ctx.fillStyle = '#5A5A6A';
                 this.ctx.fillRect(x, y, 16, 16);
                 this.ctx.fillStyle = '#7A7A8A';
                 this.ctx.fillRect(x + 1, y + 1, 14, 4);
                 break;
-                
             case 'tree':
                 this.ctx.fillStyle = '#2A6A2A';
                 this.ctx.fillRect(x, y, 16, 16);
                 this.ctx.fillStyle = '#4A9A4A';
                 this.ctx.fillRect(x + 4, y + 2, 8, 10);
                 break;
-                
             case 'door':
                 this.ctx.fillStyle = '#6A5A4A';
                 this.ctx.fillRect(x, y, 16, 16);
-                this.ctx.fillStyle = '#4A3A2A';
-                this.ctx.fillRect(x + 3, y + 2, 10, 12);
                 break;
-                
             case 'stair':
                 this.ctx.fillStyle = '#8A7A6A';
                 this.ctx.fillRect(x, y, 16, 16);
-                this.ctx.fillStyle = '#6A5A4A';
-                for (let i = 0; i < 4; i++) {
-                    this.ctx.fillRect(x + 2, y + 2 + i * 3, 12 - i * 2, 2);
-                }
                 break;
-                
             default:
                 this.ctx.fillStyle = '#000000';
                 this.ctx.fillRect(x, y, 16, 16);
@@ -778,24 +638,19 @@ class Game {
         const colors = this.getCharacterColors(type);
         const bob = (frame % 2 === 0) ? 0 : -1;
         
-        // 身体
         this.ctx.fillStyle = colors.body;
         this.ctx.fillRect(x + 5, y + 9 + bob, 6, 6);
         
-        // 头部
         this.ctx.fillStyle = colors.skin;
         this.ctx.fillRect(x + 5, y + 2 + bob, 6, 6);
         
-        // 头发
         this.ctx.fillStyle = colors.hair;
         this.ctx.fillRect(x + 4, y + 1 + bob, 8, 4);
         
-        // 眼睛
         this.ctx.fillStyle = '#000000';
         this.ctx.fillRect(x + 5, y + 4 + bob, 1, 1);
         this.ctx.fillRect(x + 9, y + 4 + bob, 1, 1);
         
-        // 腿
         this.ctx.fillStyle = colors.bodyDark;
         if (frame % 2 === 0) {
             this.ctx.fillRect(x + 5, y + 14 + bob, 2, 2);
@@ -808,41 +663,30 @@ class Game {
     
     getCharacterColors(type) {
         switch(type) {
-            case 'hero':
-                return { body: '#4080C0', bodyDark: '#3060A0', skin: '#FFD0A0', hair: '#804020' };
-            case 'young':
-                return { body: '#40A040', bodyDark: '#308030', skin: '#FFD0A0', hair: '#402020' };
-            case 'guard':
-                return { body: '#808080', bodyDark: '#606060', skin: '#FFD0A0', hair: '#202020' };
-            case 'uncle':
-                return { body: '#4040A0', bodyDark: '#303080', skin: '#FFD0A0', hair: '#606060' };
-            case 'lady':
-                return { body: '#A040A0', bodyDark: '#803080', skin: '#FFD0A0', hair: '#A06040' };
-            case 'redwolf':
-                return { body: '#C02020', bodyDark: '#A01010', skin: '#FFD0A0', hair: '#C04040' };
-            default:
-                return { body: '#808080', bodyDark: '#606060', skin: '#FFD0A0', hair: '#404040' };
+            case 'hero': return { body: '#4080C0', bodyDark: '#3060A0', skin: '#FFD0A0', hair: '#804020' };
+            case 'young': return { body: '#40A040', bodyDark: '#308030', skin: '#FFD0A0', hair: '#402020' };
+            case 'guard': return { body: '#808080', bodyDark: '#606060', skin: '#FFD0A0', hair: '#202020' };
+            case 'uncle': return { body: '#4040A0', bodyDark: '#303080', skin: '#FFD0A0', hair: '#606060' };
+            case 'lady': return { body: '#A040A0', bodyDark: '#803080', skin: '#FFD0A0', hair: '#A06040' };
+            case 'redwolf': return { body: '#C02020', bodyDark: '#A01010', skin: '#FFD0A0', hair: '#C04040' };
+            default: return { body: '#808080', bodyDark: '#606060', skin: '#FFD0A0', hair: '#404040' };
         }
     }
     
     renderUI() {
-        // 状态窗口
         this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
         this.ctx.fillRect(0, 0, this.width, 40);
         
-        // 边框
         this.ctx.strokeStyle = '#FFFFFF';
         this.ctx.lineWidth = 1;
         this.ctx.strokeRect(0, 0, this.width, 40);
         
         this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.font = '8px "Courier New", monospace';
+        this.ctx.font = '8px "Courier New"';
         this.ctx.textAlign = 'left';
         
-        // 角色名和等级
         this.ctx.fillText(`${this.player.name} Lv${this.player.level}`, 8, 12);
         
-        // HP
         this.ctx.fillText('HP', 8, 22);
         this.ctx.fillStyle = '#E04040';
         this.ctx.fillRect(28, 17, 60, 6);
@@ -852,19 +696,15 @@ class Game {
         this.ctx.fillStyle = '#FFFFFF';
         this.ctx.fillText(`${this.player.hp}/${this.player.maxHp}`, 92, 22);
         
-        // 金币
         this.ctx.fillText('G', 8, 32);
         this.ctx.fillText(this.player.gold.toString(), 28, 32);
         
-        // 地图名
         this.ctx.textAlign = 'right';
         this.ctx.fillText(this.mapData.name, this.width - 8, 12);
     }
 }
 
-// ==========================================
 // 启动游戏
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 DOM已加载，启动游戏...');
     try {
