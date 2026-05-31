@@ -17,26 +17,33 @@ body {
 
 #game-container {
     position: relative;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
 }
 
 #game-canvas {
+    flex: 1;
+    width: 100%;
+    height: calc(100vh - 140px);
     image-rendering: pixelated;
     image-rendering: crisp-edges;
-    border: 4px solid #4a4a6a;
+    border: none;
     background: #000;
 }
 
 #mobile-controls {
-    position: absolute;
-    bottom: 10px;
+    position: fixed;
+    bottom: 0;
     left: 0;
     right: 0;
+    height: 130px;
     display: flex;
     justify-content: space-between;
-    padding: 0 20px;
+    align-items: center;
+    padding: 10px 30px;
+    background: linear-gradient(to top, rgba(30, 30, 46, 0.95), rgba(30, 30, 46, 0.7));
     pointer-events: none;
 }
 
@@ -46,51 +53,19 @@ body {
 
 #dpad {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
     pointer-events: auto;
 }
 
 .dpad-btn {
     position: absolute;
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     background: rgba(60, 60, 80, 0.9);
-    border: 2px solid rgba(100, 100, 140);
+    border: 3px solid rgba(100, 100, 140);
     color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.dpad-btn.active {
-    background: rgba(100, 100, 140, 0.9);
-    border-color: rgba(150, 150, 200);
-}
-
-#btn-up { top: 0; left: 50%; transform: translateX(-50%); border-radius: 8px 8px 4px 4px; }
-#btn-down { bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 4px 4px 8px 8px; }
-#btn-left { left: 0; top: 50%; transform: translateY(-50%); border-radius: 8px 4px 4px 8px; }
-#btn-right { right: 0; top: 50%; transform: translateY(-50%); border-radius: 4px 8px 8px 4px; }
-
-#action-buttons {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    pointer-events: auto;
-}
-
-.action-btn {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    border: 3px solid;
-    color: #fff;
-    font-size: 16px;
+    font-size: 24px;
     font-weight: bold;
     cursor: pointer;
     user-select: none;
@@ -98,25 +73,71 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.dpad-btn:active, .dpad-btn.active {
+    background: rgba(100, 100, 140, 0.9);
+    border-color: rgba(150, 150, 200);
+    transform: scale(0.95);
+}
+
+#btn-up { top: 0; left: 50%; transform: translateX(-50%); border-radius: 12px 12px 6px 6px; }
+#btn-down { bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 6px 6px 12px 12px; }
+#btn-left { left: 0; top: 50%; transform: translateY(-50%); border-radius: 12px 6px 6px 12px; }
+#btn-right { right: 0; top: 50%; transform: translateY(-50%); border-radius: 6px 12px 12px 6px; }
+
+#btn-up:active, #btn-up.active { transform: translateX(-50%) scale(0.95); }
+#btn-down:active, #btn-down.active { transform: translateX(-50%) scale(0.95); }
+#btn-left:active, #btn-left.active { transform: translateY(-50%) scale(0.95); }
+#btn-right:active, #btn-right.active { transform: translateY(-50%) scale(0.95); }
+
+#action-buttons {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    pointer-events: auto;
+}
+
+.action-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 4px solid;
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
 }
 
 .action-btn.confirm {
-    background: rgba(40, 100, 40);
-    border-color: rgba(80, 160, 80);
+    background: linear-gradient(145deg, #50c878, #228b22);
+    border-color: #90EE90;
 }
 
 .action-btn.cancel {
-    background: rgba(100, 40, 40);
-    border-color: rgba(160, 80, 80);
+    background: linear-gradient(145deg, #ff6b6b, #dc143c);
+    border-color: #ffb6c1;
 }
 
-.action-btn.active {
-    transform: scale(0.95);
-    filter: brightness(1.3);
+.action-btn:active, .action-btn.active {
+    transform: scale(0.9);
+    filter: brightness(1.2);
 }
 
 @media (min-width: 768px) {
     #mobile-controls {
         display: none !important;
+    }
+    
+    #game-canvas {
+        height: 100vh;
+        border: 4px solid #4a4a6a;
     }
 }
