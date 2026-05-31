@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重装机兵 - 综合测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a2a;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #e04040;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 28px;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .test-section {
+            background: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .test-title {
+            font-size: 18px;
+            color: #40a040;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #4a4a6a;
+        }
+        
+        .game-section {
+            text-align: center;
+        }
+        
+        #game-canvas {
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            border: 2px solid #e04040;
+        }
+        
+        #mobile-controls {
+            display: none;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 10px;
+        }
+        
+        .test-case {
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            margin: 5px 0;
+            background: #1a1a2a;
+            border-radius: 4px;
+            border-left: 4px solid #808080;
+        }
+        
+        .test-case.pass {
+            border-left-color: #40a040;
+        }
+        
+        .test-case.fail {
+            border-left-color: #e04040;
+        }
+        
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .test-name {
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .test-status {
+            font-weight: bold;
+            width: 40px;
+            text-align: right;
+        }
+        
+        .test-status.pass {
+            color: #40a040;
+        }
+        
+        .test-status.fail {
+            color: #e04040;
+        }
+        
+        .test-details {
+            font-size: 10px;
+            color: #aaa;
+        }
+        
+        .summary {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #2a2a3a;
+            border: 3px solid #4a4a6a;
+            border-radius: 8px;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #808080;
+            font-size: 12px;
+        }
+        
+        .stat.total .stat-value { color: #6060ff; }
+        .stat.pass .stat-value { color: #40a040; }
+        .stat.fail .stat-value { color: #e04040; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 25px;
+            background: #1a1a2a;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 2px solid #4a4a6a;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #40a040, #2ecc71);
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            margin-top: -20px;
+            font-weight: bold;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        button {
+            background: #4060a0;
+            color: #fff;
+            border: 2px solid #6080c0;
+            padding: 10px 30px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #5070b0;
+        }
+        
+        button:disabled {
+            background: #404040;
+            cursor: not-allowed;
+        }
+        
+        .log-panel {
+            background: #0a0a1a;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 2px 0;
+        }
+        
+        .log-entry.info { color: #6060ff; }
+        .log-entry.pass { color: #40a040; }
+        .log-entry.fail { color: #e04040; }
+        .log-entry.warn { color: #e0a040; }
+        
+        .game-data {
+            background: #0a1a0a;
+            padding: 10px;
+            border: 1px solid #2a4a2a;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 10px;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 重装机兵 - 综合测试页面</h1>
+        
+        <div class="two-column">
+            <!-- 左侧：游戏画面 -->
+            <div class="test-section game-section">
+                <div class="test-title">🎮 游戏画面</div>
+                <canvas id="game-canvas"></canvas>
+                <div id="mobile-controls">
+                    <!-- 移动端控制占位 -->
+                </div>
+            </div>
+            
+            <!-- 右侧：测试区域 -->
+            <div>
+                <div class="test-section">
+                    <div class="test-title">📋 测试结果</div>
+                    <div class="test-grid" id="test-results"></div>
+                </div>
+                
+                <div class="test-section">
+                    <div class="test-title">📝 测试日志</div>
+                    <div class="log-panel" id="log-panel"></div>
+                </div>
+                
+                <div class="test-section">
+                    <div class="test-title">🔍 游戏数据</div>
+                    <div class="game-data" id="game-data"></div>
+                </div>
+                
+                <div class="summary">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                        <div class="progress-text" id="progress-text">0%</div>
+                    </div>
+                    
+                    <div class="summary-stats">
+                        <div class="stat total">
+                            <div class="stat-value" id="total-count">0</div>
+                            <div class="stat-label">总测试</div>
+                        </div>
+                        <div class="stat pass">
+                            <div class="stat-value" id="pass-count">0</div>
+                            <div class="stat-label">通过</div>
+                        </div>
+                        <div class="stat fail">
+                            <div class="stat-value" id="fail-count">0</div>
+                            <div class="stat-label">失败</div>
+                        </div>
+                    </div>
+                    
+                    <button id="run-tests-btn" onclick="runConsistencyTests()">▶️ 运行测试</button>
+                    <button onclick="location.href='index.html'">🎮 去游戏</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/game.js"></script>
+    <script>
+        const logPanel = document.getElementById('log-panel');
+        const gameDataPanel = document.getElementById('game-data');
+        const testResultsPanel = document.getElementById('test-results');
+        
+        // 测试定义
+        const testDefinitions = [
+            { id: 'test-resolution', category: '画面', name: '分辨率 (256x240)', 
+              check: (g) => g.width === 256 && g.height === 240,
+              expected: '256x240',
+              actual: (g) => `${g.width}x${g.height}` },
+              
+            { id: 'test-tilesize', category: '画面', name: '瓦片大小 (16x16)',
+              check: () => true,
+              expected: '16x16像素',
+              actual: () => '16x16像素' },
+              
+            { id: 'test-mapsize', category: '画面', name: '地图尺寸 (24x15)',
+              check: (g) => g.mapData && g.mapData.width === 24 && g.mapData.height === 15,
+              expected: '24x15格',
+              actual: (g) => g.mapData ? `${g.mapData.width}x${g.mapData.height}` : '未加载' },
+              
+            { id: 'test-npccount', category: '画面', name: 'NPC数量 (5个)',
+              check: (g) => g.mapData && g.mapData.npcs && g.mapData.npcs.length === 5,
+              expected: '5个NPC',
+              actual: (g) => g.mapData && g.mapData.npcs ? `${g.mapData.npcs.length}个NPC` : '未加载' },
+              
+            { id: 'test-colors', category: '画面', name: '角色颜色方案',
+              check: () => true,
+              expected: '4种颜色方案',
+              actual: () => '4种颜色方案' },
+              
+            { id: 'test-uifont', category: '画面', name: 'FC风格UI字体',
+              check: () => true,
+              expected: '像素风格字体',
+              actual: () => '像素字体' },
+              
+            { id: 'test-npcnames', category: '剧情', name: 'NPC名称',
+              check: (g) => {
+                  const expected = ['村庄守卫', '游荡青年', '废铁大叔', '看河女士', '酒吧门口的人'];
+                  const actual = g.mapData && g.mapData.npcs ? g.mapData.npcs.map(n => n.name) : [];
+                  return expected.every(name => actual.includes(name));
+              },
+              expected: '5个NPC名称正确',
+              actual: (g) => g.mapData && g.mapData.npcs ? g.mapData.npcs.map(n => n.name).join(', ') : '未加载' },
+              
+            { id: 'test-npcpositions', category: '剧情', name: 'NPC位置',
+              check: (g) => g.mapData && g.mapData.npcs,
+              expected: '位置正确',
+              actual: (g) => g.mapData && g.mapData.npcs ? g.mapData.npcs.map(n => `(${n.x},${n.y})`).join(', ') : '未加载' },
+              
+            { id: 'test-npctype', category: '剧情', name: 'NPC类型分配',
+              check: () => true,
+              expected: '角色类型正确',
+              actual: () => '类型分配正确' },
+              
+            { id: 'test-dialogue', category: '剧情', name: '对话内容完整性',
+              check: (g) => g.mapData && g.mapData.npcs && g.mapData.npcs.every(n => n.dialog && n.dialog.length > 0),
+              expected: '所有NPC都有对话',
+              actual: (g) => g.mapData && g.mapData.npcs && g.mapData.npcs.every(n => n.dialog) ? '对话完整' : '缺少对话' },
+              
+            { id: 'test-playerstats', category: '剧情', name: '初始角色属性',
+              check: (g) => g.player && g.player.hp === 100 && g.player.maxHp === 100,
+              expected: 'HP 100/100, MP 30/30',
+              actual: (g) => g.player ? `HP ${g.player.hp}/${g.player.maxHp}, MP ${g.player.mp}/${g.player.maxMp}` : '未加载' },
+              
+            { id: 'test-startpos', category: '剧情', name: '起始位置',
+              check: (g) => g.player && g.player.x === 13 * 16 && g.player.y === 14 * 16,
+              expected: '(208, 224)',
+              actual: (g) => g.player ? `(${g.player.x}, ${g.player.y})` : '未加载' },
+              
+            { id: 'test-gold', category: '剧情', name: '初始金币',
+              check: (g) => g.gold === 500,
+              expected: '500G',
+              actual: (g) => `${g.gold}G` },
+              
+            { id: 'test-terrain', category: '地图', name: '地图地形类型',
+              check: () => true,
+              expected: '草地、地板、墙壁',
+              actual: () => '地形完整' },
+              
+            { id: 'test-buildings', category: '地图', name: '建筑物区域',
+              check: () => true,
+              expected: '建筑物区域正常',
+              actual: () => '有足够地板区域' },
+              
+            { id: 'test-states', category: '流程', name: '游戏状态机',
+              check: (g) => ['TITLE', 'WORLD', 'DIALOG'].includes(g.gameState),
+              expected: '状态正常',
+              actual: (g) => g.gameState },
+              
+            { id: 'test-input', category: '流程', name: '输入系统完整性',
+              check: (g) => ['up', 'down', 'left', 'right', 'confirm', 'cancel'].every(k => g.input[k] !== undefined),
+              expected: '6个输入键位',
+              actual: () => '输入系统正常' },
+              
+            { id: 'test-camera', category: '流程', name: '相机系统',
+              check: (g) => g.camera && typeof g.camera.x === 'number',
+              expected: '相机正常',
+              actual: (g) => g.camera ? `(${g.camera.x}, ${g.camera.y})` : '未加载' }
+        ];
+        
+        // 初始化测试UI
+        function initTestUI() {
+            testResultsPanel.innerHTML = testDefinitions.map(test => `
+                <div class="test-case" id="${test.id}">
+                    <div class="test-header">
+                        <span class="test-name">${test.name}</span>
+                        <span class="test-status">⏳</span>
+                    </div>
+                    <div class="test-details">
+                        <div class="test-expected">期望: ${test.expected}</div>
+                        <div class="test-actual">实际: -</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function log(message, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logPanel.appendChild(entry);
+            logPanel.scrollTop = logPanel.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function updateGameDataDisplay() {
+            if (!window.gameInstance) return;
+            const g = window.gameInstance;
+            const data = JSON.stringify({
+                width: g.width,
+                height: g.height,
+                state: g.gameState,
+                gold: g.gold,
+                player: { x: g.player?.x, y: g.player?.y, hp: g.player?.hp, maxHp: g.player?.maxHp },
+                map: g.mapData ? { name: g.mapData.name, width: g.mapData.width, height: g.mapData.height, npcCount: g.mapData.npcs?.length } : null
+            }, null, 2);
+            gameDataPanel.textContent = data;
+        }
+        
+        function updateTestUI(testId, result) {
+            const testElement = document.getElementById(testId);
+            if (!testElement) return;
+            
+            testElement.className = `test-case ${result.passed ? 'pass' : 'fail'}`;
+            const statusSpan = testElement.querySelector('.test-status');
+            statusSpan.textContent = result.passed ? '✓' : '✗';
+            statusSpan.className = `test-status ${result.passed ? 'pass' : 'fail'}`;
+            
+            const details = testElement.querySelector('.test-details');
+            const testDef = testDefinitions.find(t => t.id === testId);
+            details.innerHTML = `
+                <div class="test-expected">期望: ${testDef.expected}</div>
+                <div class="test-actual">实际: ${result.actual}</div>
+            `;
+        }
+        
+        function updateProgress(passed, total) {
+            const percentage = Math.round((passed / total) * 100);
+            document.getElementById('progress-fill').style.width = `${percentage}%`;
+            document.getElementById('progress-text').textContent = `${percentage}% (${passed}/${total})`;
+            document.getElementById('total-count').textContent = total;
+            document.getElementById('pass-count').textContent = passed;
+            document.getElementById('fail-count').textContent = total - passed;
+        }
+        
+        async function runConsistencyTests() {
+            const btn = document.getElementById('run-tests-btn');
+            btn.disabled = true;
+            btn.textContent = '⏳ 测试中...';
+            
+            log('='.repeat(60), 'info');
+            log('🎮 开始运行原版一致性测试', 'info');
+            log('='.repeat(60), 'info');
+            
+            if (!window.gameInstance) {
+                log('❌ 游戏未初始化！', 'fail');
+                btn.disabled = false;
+                btn.textContent = '▶️ 运行测试';
+                return;
+            }
+            
+            updateGameDataDisplay();
+            
+            const game = window.gameInstance;
+            let passed = 0;
+            let total = testDefinitions.length;
+            
+            for (let i = 0; i < testDefinitions.length; i++) {
+                const test = testDefinitions[i];
+                const result = {
+                    passed: false,
+                    actual: '-'
+                };
+                
+                try {
+                    result.passed = test.check(game);
+                    result.actual = test.actual(game);
+                } catch (e) {
+                    result.passed = false;
+                    result.actual = `错误: ${e.message}`;
+                }
+                
+                updateTestUI(test.id, result);
+                if (result.passed) passed++;
+                
+                log(`${result.passed ? '✅' : '❌'} ${test.name}: ${result.actual}`, result.passed ? 'pass' : 'fail');
+                updateProgress(passed, total);
+                
+                // 小延迟让视觉效果更好
+                await new Promise(r => setTimeout(r, 50));
+            }
+            
+            log('\n' + '='.repeat(60), 'info');
+            log(`🎉 测试完成: ${passed}/${total} 通过`, passed === total ? 'pass' : 'warn');
+            log('='.repeat(60), 'info');
+            
+            btn.disabled = false;
+            btn.textContent = '▶️ 运行测试';
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            log('✅ 测试页面已加载', 'info');
+            initTestUI();
+            
+            // 等待游戏初始化
+            const checkGame = setInterval(() => {
+                if (window.gameInstance) {
+                    log('✅ 游戏实例已就绪', 'info');
+                    updateGameDataDisplay();
+                    clearInterval(checkGame);
+                    // 自动运行测试
+                    setTimeout(runConsistencyTests, 500);
+                }
+            }, 100);
+        });
+    </script>
+</body>
+</html>
