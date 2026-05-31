@@ -16,15 +16,23 @@ class Game {
         this.deltaTime = 0;
         this.fps = 0;
         
-        this.scenes = new Map();
-        this.currentScene = null;
+        this.playerData = null;
+        this.currentMap = null;
+        this.gameFlags = {};
+        this.playTime = 0;
         
         this.inputManager = null;
         this.audioManager = null;
+        this.saveManager = null;
         
-        this.loadedAssets = new Map();
-        this.totalAssets = 0;
-        this.loadedCount = 0;
+        this.worldScene = null;
+        this.battleSystem = null;
+        this.menuSystem = null;
+        this.shopSystem = null;
+        this.hospitalSystem = null;
+        this.repairSystem = null;
+        
+        this.gameLog = [];
     }
 
     async init() {
@@ -33,13 +41,17 @@ class Game {
         this.setupCanvas();
         this.setupInput();
         
-        await this.loadAssets();
+        this.updateLoadingProgress(10, '加载资源配置...');
+        await this.loadGameData();
         
-        this.updateLoadingProgress(80, '初始化系统...');
-        await this.initSystems();
+        this.updateLoadingProgress(30, '初始化系统...');
+        this.initSystems();
         
-        this.updateLoadingProgress(90, '创建场景...');
-        await this.initScenes();
+        this.updateLoadingProgress(50, '创建世界场景...');
+        await this.initWorldScene();
+        
+        this.updateLoadingProgress(80, '检查存档...');
+        await this.checkSaveData();
         
         this.updateLoadingProgress(100, '准备完成!');
         await this.delay(500);
@@ -48,7 +60,6 @@ class Game {
         this.showMobileControls();
         
         this.gameState = 'TITLE';
-        this.currentScene = this.scenes.get('title');
         
         this.gameLoop(0);
     }
@@ -87,62 +98,47 @@ class Game {
         this.inputManager = new InputManager(this.canvas);
     }
 
-    async loadAssets() {
-        this.totalAssets = 5;
-        this.loadedCount = 0;
-        
-        this.updateLoadingProgress(
-            (this.loadedCount / this.totalAssets) * 70,
-            `加载资源 ${this.loadedCount}/${this.totalAssets}...`
-        );
-        
-        await this.loadImage('tileset', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
-        this.loadedCount++;
-        this.updateLoadingProgress((this.loadedCount / this.totalAssets) * 70, '加载瓦片资源...');
-        
-        await this.loadImage('player', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg==');
-        this.loadedCount++;
-        this.updateLoadingProgress((this.loadedCount / this.totalAssets) * 70, '加载角色资源...');
-        
-        await this.loadImage('ui', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
-        this.loadedCount++;
-        this.updateLoadingProgress((this.loadedCount / this.totalAssets) * 70, '加载UI资源...');
-        
-        await this.loadImage('npc', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
-        this.loadedCount++;
-        this.updateLoadingProgress((this.loadedCount / this.totalAssets) * 70, '加载NPC资源...');
-        
-        await this.loadImage('enemy', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
-        this.loadedCount++;
+    async loadGameData() {
+        await this.delay(100);
     }
 
-    loadImage(name, src) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-                this.loadedAssets.set(name, img);
-                resolve();
-            };
-            img.onerror = () => {
-                console.warn(`Failed to load image: ${name}`);
-                resolve();
-            };
-            img.src = src;
-        });
-    }
-
-    async initSystems() {
+    initSystems() {
         this.audioManager = new AudioManager();
+        this.saveManager = new SaveManager(this);
+        this.battleSystem = new BattleSystem(this);
+        this.menuSystem = new MenuSystem(this);
+        this.shopSystem = new ShopSystem(this);
+        this.hospitalSystem = new HospitalSystem(this);
+        this.repairSystem = new RepairSystem(this);
     }
 
-    async initScenes() {
-        const titleScene = new TitleScene(this);
-        await titleScene.init();
-        this.scenes.set('title', titleScene);
+    async initWorldScene() {
+        this.worldScene = new WorldScene(this);
+        await this.worldScene.init();
+    }
+
+    async checkSaveData() {
+        const saves = this.saveManager.getAllSaves();
+        const hasSave = saves.some(s => s !== null);
         
-        const worldScene = new WorldScene(this);
-        await worldScene.init();
-        this.scenes.set('world', worldScene);
+        if (hasSave) {
+            const latestSave = saves.find(s => s !== null);
+            if (latestSave) {
+                this.playerData = latestSave.player;
+                this.currentMap = latestSave.currentMap;
+                this.gameFlags = latestSave.gameFlags || {};
+                this.playTime = latestSave.playTime || 0;
+            }
+        } else {
+            this.createNewGame();
+        }
+    }
+
+    createNewGame() {
+        this.playerData = JSON.parse(JSON.stringify(GAME_DATA.INITIAL_PLAYER));
+        this.currentMap = 'paradise';
+        this.gameFlags = {};
+        this.playTime = 0;
     }
 
     gameLoop(timestamp) {
@@ -157,8 +153,181 @@ class Game {
     }
 
     update(deltaTime) {
-        if (this.currentScene) {
-            this.currentScene.update(deltaTime);
+        if (this.gameState === 'TITLE') {
+            this.updateTitle(deltaTime);
+        } else if (this.gameState === 'WORLD') {
+            this.updateWorld(deltaTime);
+        } else if (this.gameState === 'BATTLE') {
+            this.updateBattle(deltaTime);
+        } else if (this.gameState === 'MENU') {
+            this.updateMenu(deltaTime);
+        } else if (this.gameState === 'SHOP') {
+            this.updateShop(deltaTime);
+        } else if (this.gameState === 'HOSPITAL') {
+            this.updateHospital(deltaTime);
+        } else if (this.gameState === 'REPAIR') {
+            this.updateRepair(deltaTime);
+        }
+    }
+
+    updateTitle(deltaTime) {
+        this.worldScene.update(deltaTime);
+        
+        const input = this.inputManager;
+        if (input.isKeyPressed('Enter') || input.isKeyPressed('KeyJ')) {
+            if (!this.titleConfirmPressed) {
+                this.startGame();
+            }
+            this.titleConfirmPressed = true;
+        } else {
+            this.titleConfirmPressed = false;
+        }
+    }
+
+    startGame() {
+        if (!this.playerData) {
+            this.createNewGame();
+        }
+        this.gameState = 'WORLD';
+        this.worldScene.loadMap(this.currentMap || 'paradise');
+    }
+
+    updateWorld(deltaTime) {
+        if (this.worldScene) {
+            this.worldScene.update(deltaTime);
+        }
+        
+        const input = this.inputManager;
+        
+        if (input.isKeyPressed('Escape') || input.isKeyPressed('KeyK')) {
+            if (!this.menuKeyPressed) {
+                this.openMenu();
+            }
+            this.menuKeyPressed = true;
+        } else {
+            this.menuKeyPressed = false;
+        }
+    }
+
+    updateBattle(deltaTime) {
+        if (this.battleSystem) {
+            const input = this.inputManager;
+            
+            if (input.isKeyPressed('1')) this.battleSystem.handleInput('1');
+            else if (input.isKeyPressed('2')) this.battleSystem.handleInput('2');
+            else if (input.isKeyPressed('3')) this.battleSystem.handleInput('3');
+            else if (input.isKeyPressed('4')) this.battleSystem.handleInput('4');
+            else if (input.isKeyPressed('5')) this.battleSystem.handleInput('5');
+            else if (input.isKeyPressed('6')) this.battleSystem.handleInput('6');
+            else if (input.isKeyPressed('7')) this.battleSystem.handleInput('7');
+            else if (input.isKeyPressed('8')) this.battleSystem.handleInput('8');
+            else if (input.isKeyPressed('9')) this.battleSystem.handleInput('9');
+            else if (input.isKeyPressed('0')) this.battleSystem.handleInput('0');
+            else if (input.isKeyPressed('Tab')) this.battleSystem.handleInput('Tab');
+            
+            if (this.battleSystem.state === 'victory' || this.battleSystem.state === 'game_over') {
+                if (!this.battleEndKeyPressed) {
+                    if (this.inputManager.isKeyPressed('Enter') || this.inputManager.isKeyPressed('KeyJ')) {
+                        this.endBattle();
+                    }
+                }
+            }
+        }
+    }
+
+    endBattle() {
+        if (!this.battleEndKeyPressed) {
+            this.gameState = 'WORLD';
+            this.battleEndKeyPressed = true;
+        } else {
+            this.battleEndKeyPressed = false;
+        }
+    }
+
+    openMenu() {
+        if (!this.menuKeyPressed) {
+            this.gameState = 'MENU';
+            this.menuSystem.open();
+        }
+    }
+
+    updateMenu(deltaTime) {
+        if (this.menuSystem.state === 'open') {
+            const input = this.inputManager;
+            
+            if (input.isKeyPressed('ArrowUp') || input.isKeyPressed('KeyW')) {
+                this.menuSystem.selectedIndex = (this.menuSystem.selectedIndex - 1 + this.menuSystem.menuItems.length) % this.menuSystem.menuItems.length;
+            } else if (input.isKeyPressed('ArrowDown') || input.isKeyPressed('KeyS')) {
+                this.menuSystem.selectedIndex = (this.menuSystem.selectedIndex + 1) % this.menuSystem.menuItems.length;
+            } else if (input.isKeyPressed('Enter') || input.isKeyPressed('KeyJ')) {
+                const itemId = this.menuSystem.menuItems[this.menuSystem.selectedIndex].id;
+                this.menuSystem.selectMenuItem(itemId);
+            } else if (input.isKeyPressed('Escape') || input.isKeyPressed('KeyK')) {
+                this.menuSystem.handleInput('Escape');
+                if (this.menuSystem.state === 'closed') {
+                    this.gameState = 'WORLD';
+                }
+            }
+            
+            if (this.menuSystem.currentMenu !== 'main') {
+                this.menuSystem.handleMenuInput(
+                    input.isKeyPressed('1') ? '1' :
+                    input.isKeyPressed('2') ? '2' :
+                    input.isKeyPressed('3') ? '3' :
+                    input.isKeyPressed('0') || input.isKeyPressed('Escape') || input.isKeyPressed('KeyK') ? '0' : null
+                );
+            }
+        }
+    }
+
+    updateShop(deltaTime) {
+        if (this.shopSystem.state === 'open') {
+            const input = this.inputManager;
+            
+            if (input.isKeyPressed('ArrowUp') || input.isKeyPressed('KeyW')) {
+                this.shopSystem.selectedIndex = (this.shopSystem.selectedIndex - 1 + Math.max(1, this.shopSystem.goods.length)) % Math.max(1, this.shopSystem.goods.length);
+            } else if (input.isKeyPressed('ArrowDown') || input.isKeyPressed('KeyS')) {
+                this.shopSystem.selectedIndex = (this.shopSystem.selectedIndex + 1) % Math.max(1, this.shopSystem.goods.length);
+            } else if (input.isKeyPressed('Enter') || input.isKeyPressed('KeyJ')) {
+                this.shopSystem.handleInput('Enter');
+            } else if (input.isKeyPressed('Tab') || input.isKeyPressed('KeyQ')) {
+                this.shopSystem.handleInput('Tab');
+            } else if (input.isKeyPressed('Escape') || input.isKeyPressed('KeyK')) {
+                this.shopSystem.handleInput('Escape');
+                if (this.shopSystem.state === 'closed') {
+                    this.gameState = 'WORLD';
+                }
+            }
+        }
+    }
+
+    updateHospital(deltaTime) {
+        if (this.hospitalSystem.state === 'open') {
+            const input = this.inputManager;
+            
+            if (input.isKeyPressed('Enter') || input.isKeyPressed('KeyJ')) {
+                this.hospitalSystem.handleInput('Enter');
+            } else if (input.isKeyPressed('Escape') || input.isKeyPressed('KeyK')) {
+                this.hospitalSystem.handleInput('Escape');
+                if (this.hospitalSystem.state === 'closed') {
+                    this.gameState = 'WORLD';
+                }
+            }
+        }
+    }
+
+    updateRepair(deltaTime) {
+        if (this.repairSystem.state === 'open') {
+            const input = this.inputManager;
+            
+            if (input.isKeyPressed('Enter') || input.isKeyPressed('KeyJ')) {
+                this.repairSystem.handleInput('Enter');
+            } else if (input.isKeyPressed('Escape') || input.isKeyPressed('KeyK')) {
+                this.repairSystem.handleInput('Escape');
+                if (this.repairSystem.state === 'closed') {
+                    this.gameState = 'WORLD';
+                }
+            }
         }
     }
 
@@ -166,25 +335,100 @@ class Game {
         this.ctx.fillStyle = '#1A252F';
         this.ctx.fillRect(0, 0, this.width, this.height);
         
-        if (this.currentScene) {
-            this.currentScene.render(this.ctx);
+        if (this.gameState === 'TITLE') {
+            this.renderTitle();
+        } else if (this.gameState === 'WORLD' || this.gameState === 'MENU' || this.gameState === 'SHOP' || this.gameState === 'HOSPITAL' || this.gameState === 'REPAIR') {
+            this.renderWorld();
+            if (this.gameState === 'MENU') {
+                this.menuSystem.render(this.ctx);
+            } else if (this.gameState === 'SHOP') {
+                this.shopSystem.render(this.ctx);
+            } else if (this.gameState === 'HOSPITAL') {
+                this.hospitalSystem.render(this.ctx);
+            } else if (this.gameState === 'REPAIR') {
+                this.repairSystem.render(this.ctx);
+            }
+        } else if (this.gameState === 'BATTLE') {
+            this.battleSystem.render(this.ctx);
         }
         
         this.renderDebugInfo();
     }
 
-    renderDebugInfo() {
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    renderTitle() {
+        if (this.worldScene) {
+            this.worldScene.render(this.ctx);
+        }
+        
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        this.ctx.fillRect(0, 0, this.width, this.height);
+        
+        const titleY = 60;
+        
+        this.ctx.save();
+        this.ctx.shadowColor = '#F39C12';
+        this.ctx.shadowBlur = 20;
+        this.ctx.fillStyle = '#F39C12';
+        this.ctx.font = 'bold 32px Courier New';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('重装机兵', this.width / 2, titleY);
+        this.ctx.restore();
+        
+        this.ctx.fillStyle = '#ECF0F1';
+        this.ctx.font = '12px Courier New';
+        this.ctx.fillText('METAL MAX', this.width / 2, titleY + 25);
+        
+        this.ctx.fillStyle = '#34495E';
+        this.ctx.fillRect(this.width / 2 - 70, titleY + 35, 140, 2);
+        
+        const menuY = titleY + 70;
+        const menuItems = ['开始游戏', '继续游戏', '游戏设置'];
+        
+        menuItems.forEach((item, index) => {
+            const isSelected = this.selectedTitleIndex === index;
+            const itemY = menuY + index * 25;
+            
+            if (isSelected) {
+                this.ctx.fillStyle = '#2C3E50';
+                this.ctx.fillRect(this.width / 2 - 60, itemY - 10, 120, 20);
+                this.ctx.fillStyle = '#F39C12';
+                this.ctx.fillText('▶', this.width / 2 - 45, itemY + 5);
+            }
+            
+            this.ctx.fillStyle = isSelected ? '#ECF0F1' : '#7F8C8D';
+            this.ctx.font = '14px Courier New';
+            this.ctx.fillText(item, this.width / 2, itemY + 5);
+        });
+        
+        this.ctx.fillStyle = '#7F8C8D';
         this.ctx.font = '10px Courier New';
-        this.ctx.fillText(`FPS: ${this.fps}`, 5, 10);
-        this.ctx.fillText(`State: ${this.gameState}`, 5, 20);
+        this.ctx.fillText('↑↓选择  Enter确认', this.width / 2, this.height - 30);
+    }
+
+    renderWorld() {
+        if (this.worldScene) {
+            this.worldScene.render(this.ctx);
+        }
+    }
+
+    renderDebugInfo() {
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.font = '8px Courier New';
+        this.ctx.textAlign = 'left';
+        this.ctx.fillText(`FPS:${this.fps} State:${this.gameState}`, 3, 8);
     }
 
     changeScene(sceneName) {
-        if (this.scenes.has(sceneName)) {
-            this.currentScene = this.scenes.get(sceneName);
-            this.gameState = sceneName.toUpperCase();
+        if (sceneName === 'world') {
+            this.gameState = 'WORLD';
+        } else if (sceneName === 'battle') {
+            this.gameState = 'BATTLE';
         }
+    }
+
+    startBattle(enemyIds) {
+        this.gameState = 'BATTLE';
+        this.battleSystem.startBattle(enemyIds);
     }
 
     updateLoadingProgress(percent, text) {
@@ -212,6 +456,13 @@ class Game {
 
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    addLog(message) {
+        this.gameLog.push(message);
+        if (this.gameLog.length > 50) {
+            this.gameLog.shift();
+        }
     }
 }
 
@@ -248,12 +499,6 @@ class InputManager {
         this.canvas.addEventListener('mouseup', () => {
             this.mouse.down = false;
         });
-        
-        this.canvas.addEventListener('mousemove', (e) => {
-            if (this.mouse.down) {
-                this.updateMousePosition(e);
-            }
-        });
     }
 
     setupTouchListeners() {
@@ -269,14 +514,6 @@ class InputManager {
         
         this.canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
-            for (let touch of e.changedTouches) {
-                if (this.touches.has(touch.identifier)) {
-                    this.touches.set(touch.identifier, {
-                        x: touch.clientX,
-                        y: touch.clientY
-                    });
-                }
-            }
         });
         
         this.canvas.addEventListener('touchend', (e) => {
@@ -340,7 +577,6 @@ class InputManager {
             });
         });
         
-        // Confirm and Cancel buttons
         [
             { btn: btnConfirm, key: 'KeyJ' },
             { btn: btnCancel, key: 'KeyK' },
@@ -417,11 +653,9 @@ class AudioManager {
 
     playBGM(src) {
         if (!this.enabled) return;
-        
         if (this.bgm) {
             this.bgm.pause();
         }
-        
         this.bgm = new Audio(src);
         this.bgm.volume = this.bgmVolume;
         this.bgm.loop = true;
@@ -437,7 +671,6 @@ class AudioManager {
 
     playSE(src) {
         if (!this.enabled) return;
-        
         const se = new Audio(src);
         se.volume = this.seVolume;
         se.play().catch(() => {});
@@ -463,185 +696,17 @@ class AudioManager {
     }
 }
 
-class Scene {
+class WorldScene {
     constructor(game) {
         this.game = game;
-        this.initialized = false;
-    }
-
-    async init() {
-        this.initialized = true;
-    }
-
-    update(deltaTime) {}
-
-    render(ctx) {}
-}
-
-class TitleScene extends Scene {
-    constructor(game) {
-        super(game);
-        this.selectedIndex = 0;
-        this.menuItems = ['开始游戏', '继续游戏', '游戏设置'];
-        this.blinkTimer = 0;
-        this.showCursor = true;
-        this.animationTimer = 0;
-    }
-
-    async init() {
-        await super.init();
-    }
-
-    update(deltaTime) {
-        this.blinkTimer += deltaTime;
-        if (this.blinkTimer > 500) {
-            this.blinkTimer = 0;
-            this.showCursor = !this.showCursor;
-        }
-        
-        this.animationTimer += deltaTime;
-        
-        const input = this.game.inputManager;
-        
-        if (input.isKeyPressed('ArrowUp') || input.isKeyPressed('KeyW')) {
-            if (!this.upPressed) {
-                this.selectedIndex = (this.selectedIndex - 1 + this.menuItems.length) % this.menuItems.length;
-                this.game.audioManager.playSE('');
-            }
-            this.upPressed = true;
-        } else {
-            this.upPressed = false;
-        }
-        
-        if (input.isKeyPressed('ArrowDown') || input.isKeyPressed('KeyS')) {
-            if (!this.downPressed) {
-                this.selectedIndex = (this.selectedIndex + 1) % this.menuItems.length;
-                this.game.audioManager.playSE('');
-            }
-            this.downPressed = true;
-        } else {
-            this.downPressed = false;
-        }
-        
-        if (input.isKeyPressed('Enter') || input.isKeyPressed('KeyJ')) {
-            if (!this.confirmPressed) {
-                this.selectMenu();
-            }
-            this.confirmPressed = true;
-        } else {
-            this.confirmPressed = false;
-        }
-    }
-
-    selectMenu() {
-        switch (this.selectedIndex) {
-            case 0:
-                this.game.changeScene('world');
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-        }
-    }
-
-    render(ctx) {
-        ctx.fillStyle = '#1A252F';
-        ctx.fillRect(0, 0, this.game.width, this.game.height);
-        
-        this.renderBackground(ctx);
-        
-        this.renderTitle(ctx);
-        
-        this.renderMenu(ctx);
-    }
-
-    renderBackground(ctx) {
-        const gradient = ctx.createLinearGradient(0, 0, 0, this.game.height);
-        gradient.addColorStop(0, '#1A252F');
-        gradient.addColorStop(1, '#2C3E50');
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, this.game.width, this.game.height);
-        
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-        ctx.lineWidth = 1;
-        for (let i = 0; i < this.game.width; i += 16) {
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, this.game.height);
-            ctx.stroke();
-        }
-        for (let i = 0; i < this.game.height; i += 16) {
-            ctx.beginPath();
-            ctx.moveTo(0, i);
-            ctx.lineTo(this.game.width, i);
-            ctx.stroke();
-        }
-    }
-
-    renderTitle(ctx) {
-        const wave = Math.sin(this.animationTimer / 500) * 2;
-        
-        ctx.save();
-        ctx.shadowColor = '#F39C12';
-        ctx.shadowBlur = 20 + wave * 2;
-        
-        ctx.fillStyle = '#F39C12';
-        ctx.font = 'bold 28px Courier New';
-        ctx.textAlign = 'center';
-        ctx.fillText('重装机兵', this.game.width / 2, 60 + wave);
-        
-        ctx.restore();
-        
-        ctx.fillStyle = '#ECF0F1';
-        ctx.font = '10px Courier New';
-        ctx.textAlign = 'center';
-        ctx.fillText('METAL MAX - H5', this.game.width / 2, 80);
-        
-        ctx.fillStyle = '#34495E';
-        ctx.fillRect(this.game.width / 2 - 60, 90, 120, 2);
-    }
-
-    renderMenu(ctx) {
-        const startY = 120;
-        const lineHeight = 20;
-        
-        for (let i = 0; i < this.menuItems.length; i++) {
-            const y = startY + i * lineHeight;
-            const isSelected = i === this.selectedIndex;
-            
-            if (isSelected) {
-                ctx.fillStyle = '#2C3E50';
-                ctx.fillRect(this.game.width / 2 - 50, y - 12, 100, 18);
-                
-                if (this.showCursor) {
-                    ctx.fillStyle = '#F39C12';
-                    ctx.fillText('▶', this.game.width / 2 - 40, y);
-                }
-            }
-            
-            ctx.fillStyle = isSelected ? '#ECF0F1' : '#7F8C8D';
-            ctx.font = '14px Courier New';
-            ctx.textAlign = 'center';
-            ctx.fillText(this.menuItems[i], this.game.width / 2, y);
-        }
-        
-        ctx.fillStyle = '#34495E';
-        ctx.font = '10px Courier New';
-        ctx.textAlign = 'center';
-        ctx.fillText('方向键移动 | Enter确认', this.game.width / 2, this.game.height - 20);
-    }
-}
-
-class WorldScene extends Scene {
-    constructor(game) {
-        super(game);
         this.tileSize = 16;
         this.mapWidth = 20;
         this.mapHeight = 15;
-        
         this.camera = { x: 0, y: 0 };
-        
+        this.mapData = [];
+        this.collisionData = [];
+        this.npcs = [];
+        this.currentMapId = 'paradise';
         this.player = {
             x: 160,
             y: 120,
@@ -653,11 +718,6 @@ class WorldScene extends Scene {
             frame: 0,
             frameTimer: 0
         };
-        
-        this.mapData = [];
-        this.collisionData = [];
-        this.npcs = [];
-        
         this.dialogActive = false;
         this.currentDialog = null;
         this.dialogText = '';
@@ -666,58 +726,78 @@ class WorldScene extends Scene {
     }
 
     async init() {
-        this.generateMap();
-        await super.init();
+        this.loadMap('paradise');
     }
 
-    generateMap() {
+    loadMap(mapId) {
+        this.currentMapId = mapId;
+        const mapConfig = GAME_DATA.MAPS[mapId];
+        
+        if (mapConfig) {
+            this.mapWidth = mapConfig.width;
+            this.mapHeight = mapConfig.height;
+            this.npcs = mapConfig.npcs.map(npcId => {
+                const npcData = GAME_DATA.NPCS[npcId];
+                return { ...npcData };
+            });
+        } else {
+            this.generateRandomMap();
+        }
+        
+        this.generateMapTerrain();
+    }
+
+    generateRandomMap() {
         for (let y = 0; y < this.mapHeight; y++) {
             this.mapData[y] = [];
             this.collisionData[y] = [];
             for (let x = 0; x < this.mapWidth; x++) {
                 if (y === 0 || y === this.mapHeight - 1 || x === 0 || x === this.mapWidth - 1) {
-                    this.mapData[y][x] = 1;
+                    this.mapData[y][x] = GAME_DATA.TILES.WALL;
                     this.collisionData[y][x] = true;
-                } else if (Math.random() < 0.1) {
-                    this.mapData[y][x] = 2;
+                } else if (Math.random() < 0.15) {
+                    this.mapData[y][x] = GAME_DATA.TILES.TREE;
+                    this.collisionData[y][x] = true;
+                } else if (Math.random() < 0.02) {
+                    this.mapData[y][x] = GAME_DATA.TILES.WATER;
                     this.collisionData[y][x] = true;
                 } else {
-                    this.mapData[y][x] = 0;
+                    this.mapData[y][x] = GAME_DATA.TILES.GRASS;
+                    this.collisionData[y][x] = false;
+                }
+            }
+        }
+    }
+
+    generateMapTerrain() {
+        for (let y = 0; y < this.mapHeight; y++) {
+            this.mapData[y] = [];
+            this.collisionData[y] = [];
+            for (let x = 0; x < this.mapWidth; x++) {
+                if (y === 0 || y === this.mapHeight - 1 || x === 0 || x === this.mapWidth - 1) {
+                    this.mapData[y][x] = GAME_DATA.TILES.WALL;
+                    this.collisionData[y][x] = true;
+                } else if (Math.random() < 0.1) {
+                    this.mapData[y][x] = GAME_DATA.TILES.TREE;
+                    this.collisionData[y][x] = true;
+                } else if (Math.random() < 0.02) {
+                    this.mapData[y][x] = GAME_DATA.TILES.WATER;
+                    this.collisionData[y][x] = true;
+                } else {
+                    this.mapData[y][x] = GAME_DATA.TILES.GRASS;
                     this.collisionData[y][x] = false;
                 }
             }
         }
         
-        for (let y = 3; y < 8; y++) {
-            for (let x = 3; x < 8; x++) {
-                this.mapData[y][x] = 0;
-                this.collisionData[y][x] = false;
+        if (this.currentMapId === 'paradise') {
+            for (let y = 3; y < 10; y++) {
+                for (let x = 3; x < 17; x++) {
+                    this.mapData[y][x] = GAME_DATA.TILES.FLOOR;
+                    this.collisionData[y][x] = false;
+                }
             }
         }
-        
-        this.mapData[10][15] = 3;
-        this.collisionData[10][15] = false;
-        
-        this.npcs = [
-            {
-                x: 5 * this.tileSize,
-                y: 5 * this.tileSize,
-                width: 16,
-                height: 16,
-                name: '村民',
-                color: '#3498DB',
-                dialog: ['欢迎来到重装机兵的世界！', '在这里你可以探索世界，', '与敌人战斗，成为最强的赏金猎人！']
-            },
-            {
-                x: 12 * this.tileSize,
-                y: 8 * this.tileSize,
-                width: 16,
-                height: 16,
-                name: '商人',
-                color: '#E74C3C',
-                dialog: ['需要道具吗？', '这里有各种装备和药品出售！']
-            }
-        ];
     }
 
     update(deltaTime) {
@@ -729,6 +809,7 @@ class WorldScene extends Scene {
         this.updatePlayer(deltaTime);
         this.updateCamera();
         this.checkNPCInteraction();
+        this.checkRandomBattle();
     }
 
     updatePlayer(deltaTime) {
@@ -815,18 +896,10 @@ class WorldScene extends Scene {
                 const checkY = this.player.y;
                 
                 switch (this.player.direction) {
-                    case 'up': 
-                        checkY -= this.tileSize;
-                        break;
-                    case 'down':
-                        checkY += this.tileSize;
-                        break;
-                    case 'left':
-                        checkX -= this.tileSize;
-                        break;
-                    case 'right':
-                        checkX += this.tileSize;
-                        break;
+                    case 'up': checkY -= this.tileSize; break;
+                    case 'down': checkY += this.tileSize; break;
+                    case 'left': checkX -= this.tileSize; break;
+                    case 'right': checkX += this.tileSize; break;
                 }
                 
                 for (const npc of this.npcs) {
@@ -843,12 +916,27 @@ class WorldScene extends Scene {
         }
     }
 
+    checkRandomBattle() {
+        if (this.currentMapId === 'world' && Math.random() < 0.002) {
+            const enemies = ['rat', 'worm', 'dog', 'soldier'];
+            const enemyCount = Math.floor(Math.random() * 2) + 1;
+            const battleEnemies = [];
+            
+            for (let i = 0; i < enemyCount; i++) {
+                battleEnemies.push(enemies[Math.floor(Math.random() * enemies.length)]);
+            }
+            
+            this.game.startBattle(battleEnemies);
+        }
+    }
+
     startDialog(npc) {
         this.dialogActive = true;
         this.currentDialog = npc.dialog;
         this.dialogText = '';
         this.dialogIndex = 0;
         this.dialogComplete = false;
+        this.currentNPC = npc;
     }
 
     updateDialog(deltaTime) {
@@ -864,8 +952,7 @@ class WorldScene extends Scene {
             if (!this.dialogConfirmPressed) {
                 this.dialogIndex++;
                 if (this.dialogIndex >= this.currentDialog.length) {
-                    this.dialogActive = false;
-                    this.currentDialog = null;
+                    this.endDialog();
                 } else {
                     this.dialogComplete = false;
                 }
@@ -874,6 +961,30 @@ class WorldScene extends Scene {
         } else {
             this.dialogConfirmPressed = false;
         }
+    }
+
+    endDialog() {
+        this.dialogActive = false;
+        this.currentDialog = null;
+        
+        if (this.currentNPC) {
+            switch (this.currentNPC.type) {
+                case 'shop':
+                    this.game.gameState = 'SHOP';
+                    this.game.shopSystem.open('general');
+                    break;
+                case 'hospital':
+                    this.game.gameState = 'HOSPITAL';
+                    this.game.hospitalSystem.open();
+                    break;
+                case 'repair':
+                    this.game.gameState = 'REPAIR';
+                    this.game.repairSystem.open();
+                    break;
+            }
+        }
+        
+        this.currentNPC = null;
     }
 
     render(ctx) {
@@ -905,31 +1016,41 @@ class WorldScene extends Scene {
                 const tile = this.mapData[y][x];
                 
                 switch (tile) {
-                    case 0:
+                    case GAME_DATA.TILES.GRASS:
                         ctx.fillStyle = '#27AE60';
                         ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
                         ctx.fillStyle = '#2ECC71';
                         ctx.fillRect(screenX + 2, screenY + 2, 4, 4);
-                        ctx.fillRect(screenX + 10, screenY + 8, 3, 3);
                         break;
-                    case 1:
+                    case GAME_DATA.TILES.WALL:
                         ctx.fillStyle = '#5D6D7E';
                         ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
                         ctx.fillStyle = '#85929E';
                         ctx.fillRect(screenX + 2, screenY + 2, 4, 4);
                         break;
-                    case 2:
-                        ctx.fillStyle = '#7F8C8D';
+                    case GAME_DATA.TILES.TREE:
+                        ctx.fillStyle = '#27AE60';
                         ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
-                        ctx.fillStyle = '#566573';
+                        ctx.fillStyle = '#1E8449';
                         ctx.fillRect(screenX + 4, screenY + 2, 8, 12);
+                        ctx.fillStyle = '#196F3D';
+                        ctx.fillRect(screenX + 6, screenY, 4, 6);
                         break;
-                    case 3:
-                        ctx.fillStyle = '#F39C12';
+                    case GAME_DATA.TILES.WATER:
+                        ctx.fillStyle = '#3498DB';
                         ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
-                        ctx.fillStyle = '#E67E22';
-                        ctx.fillRect(screenX + 2, screenY + 2, 12, 12);
+                        ctx.fillStyle = '#5DADE2';
+                        ctx.fillRect(screenX + 2, screenY + 4, 6, 2);
                         break;
+                    case GAME_DATA.TILES.FLOOR:
+                        ctx.fillStyle = '#BDC3C7';
+                        ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
+                        ctx.fillStyle = '#D5DBDB';
+                        ctx.fillRect(screenX + 1, screenY + 1, 6, 6);
+                        break;
+                    default:
+                        ctx.fillStyle = '#27AE60';
+                        ctx.fillRect(screenX, screenY, this.tileSize, this.tileSize);
                 }
                 
                 ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
@@ -957,20 +1078,10 @@ class WorldScene extends Scene {
         let indicatorY = screenY - 4;
         
         switch (this.player.direction) {
-            case 'up':
-                indicatorY = screenY - 4;
-                break;
-            case 'down':
-                indicatorY = screenY + 16;
-                break;
-            case 'left':
-                indicatorX = screenX - 4;
-                indicatorY = screenY + 6;
-                break;
-            case 'right':
-                indicatorX = screenX + 16;
-                indicatorY = screenY + 6;
-                break;
+            case 'up': indicatorY = screenY - 4; break;
+            case 'down': indicatorY = screenY + 16; break;
+            case 'left': indicatorX = screenX - 4; indicatorY = screenY + 6; break;
+            case 'right': indicatorX = screenX + 16; indicatorY = screenY + 6; break;
         }
         
         ctx.fillStyle = '#F39C12';
@@ -986,7 +1097,6 @@ class WorldScene extends Scene {
         const bodyColor = mainColor;
         const darkColor = this.darkenColor(mainColor, 30);
         const skinColor = '#FFD5AA';
-        const darkSkin = '#CCAA80';
         const hairColor = isPlayer ? '#8B4513' : '#4A4A4A';
         
         const bob = frame % 2 === 0 ? 0 : -1;
@@ -1000,9 +1110,6 @@ class WorldScene extends Scene {
         
         ctx.fillStyle = skinColor;
         ctx.fillRect(x + 4, y + 1 + bob, 8, 7);
-        
-        ctx.fillStyle = darkSkin;
-        ctx.fillRect(x + 5, y + 6 + bob, 6, 2);
         
         ctx.fillStyle = hairColor;
         ctx.fillRect(x + 3, y + bob, 10, 4);
@@ -1044,52 +1151,50 @@ class WorldScene extends Scene {
         ctx.fillRect(0, 0, this.game.width, 24);
         
         ctx.fillStyle = '#ECF0F1';
-        ctx.font = '12px Courier New';
+        ctx.font = '10px Courier New';
         ctx.textAlign = 'left';
-        ctx.fillText('HP: 100/100', 10, 16);
+        
+        if (this.game.playerData) {
+            ctx.fillText(`${this.game.playerData.name} Lv${this.game.playerData.level}`, 5, 10);
+            ctx.fillText(`HP:${this.game.playerData.hp}/${this.game.playerData.maxHp}`, 5, 20);
+            ctx.fillText(`G:${this.game.playerData.gold}`, 100, 10);
+            
+            ctx.fillStyle = '#333';
+            ctx.fillRect(150, 4, 60, 8);
+            ctx.fillStyle = '#E74C3C';
+            ctx.fillRect(150, 4, 60 * (this.game.playerData.hp / this.game.playerData.maxHp), 8);
+        }
         
         ctx.fillStyle = '#F39C12';
-        ctx.fillRect(80, 6, 50, 12);
-        ctx.fillStyle = '#E74C3C';
-        ctx.fillRect(80, 6, 50, 12);
-        
-        ctx.textAlign = 'right';
-        ctx.fillStyle = '#F39C12';
-        ctx.fillText('G: 0', this.game.width - 10, 16);
-        
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(this.game.width - 60, 30, 50, 50);
-        ctx.strokeStyle = '#34495E';
-        ctx.strokeRect(this.game.width - 60, 30, 50, 50);
-        
-        ctx.fillStyle = '#7F8C8D';
         ctx.font = '8px Courier New';
-        ctx.textAlign = 'center';
-        ctx.fillText('小地图', this.game.width - 35, 88);
+        ctx.textAlign = 'right';
+        ctx.fillText(`[${GAME_DATA.MAPS[this.currentMapId]?.name || '未知'}]`, this.game.width - 5, 16);
     }
 
     renderDialog(ctx) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
-        ctx.fillRect(10, this.game.height - 60, this.game.width - 20, 50);
+        ctx.fillRect(10, this.game.height - 70, this.game.width - 20, 60);
         
         ctx.strokeStyle = '#F39C12';
         ctx.lineWidth = 2;
-        ctx.strokeRect(10, this.game.height - 60, this.game.width - 20, 50);
+        ctx.strokeRect(10, this.game.height - 70, this.game.width - 20, 60);
         
-        ctx.fillStyle = '#3498DB';
-        ctx.fillRect(15, this.game.height - 55, 60, 12);
-        ctx.fillStyle = '#ECF0F1';
-        ctx.font = '10px Courier New';
-        ctx.fillText('???', 20, this.game.height - 47);
+        if (this.currentNPC) {
+            ctx.fillStyle = this.currentNPC.color || '#3498DB';
+            ctx.fillRect(15, this.game.height - 65, 80, 16);
+            ctx.fillStyle = '#FFF';
+            ctx.font = '10px Courier New';
+            ctx.fillText(this.currentNPC.name, 20, this.game.height - 54);
+        }
         
         ctx.fillStyle = '#ECF0F1';
-        ctx.font = '12px Courier New';
+        ctx.font = '11px Courier New';
         ctx.textAlign = 'left';
         
         const maxWidth = this.game.width - 40;
         const words = this.dialogText.split('');
         let line = '';
-        let y = this.game.height - 35;
+        let y = this.game.height - 40;
         
         for (let i = 0; i < words.length; i++) {
             const testLine = line + words[i];
@@ -1098,7 +1203,7 @@ class WorldScene extends Scene {
             if (metrics.width > maxWidth && i > 0) {
                 ctx.fillText(line, 20, y);
                 line = words[i];
-                y += 16;
+                y += 14;
             } else {
                 line = testLine;
             }
@@ -1106,9 +1211,9 @@ class WorldScene extends Scene {
         ctx.fillText(line, 20, y);
         
         ctx.fillStyle = '#F39C12';
-        ctx.font = '10px Courier New';
+        ctx.font = '9px Courier New';
         ctx.textAlign = 'right';
-        ctx.fillText('▼ 按Enter继续', this.game.width - 20, this.game.height - 15);
+        ctx.fillText('▼ Enter继续', this.game.width - 20, this.game.height - 18);
     }
 }
 
