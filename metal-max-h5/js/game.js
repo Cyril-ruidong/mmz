@@ -1,7 +1,7 @@
 class Game {
-    constructor() {
+    constructor(autoInit = true) {
         this.canvas = document.getElementById('game-canvas');
-        this.ctx = this.canvas.getContext('2d');
+        this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
         this.mobileControls = document.getElementById('mobile-controls');
         
         this.width = 256;
@@ -33,7 +33,9 @@ class Game {
             confirm: false, cancel: false
         };
         
-        this.init();
+        if (autoInit && this.canvas) {
+            this.init();
+        }
     }
     
     init() {
@@ -173,7 +175,9 @@ class Game {
     }
     
     showMobileControls() {
-        this.mobileControls.classList.remove('hidden');
+        if (this.mobileControls) {
+            this.mobileControls.classList.remove('hidden');
+        }
     }
     
     gameLoop(timestamp) {
@@ -557,5 +561,10 @@ class Game {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new Game();
+    // 检查是否是游戏主页面
+    const isMainGame = document.getElementById('main-game-page') !== null || 
+                      window.location.pathname.includes('index.html');
+    if (isMainGame || (document.getElementById('game-canvas') && !window.location.pathname.includes('test'))) {
+        window.gameInstance = new Game();
+    }
 });
