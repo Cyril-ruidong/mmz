@@ -41,6 +41,8 @@ class Game {
         this.setupInput();
         this.createPlayer();
         this.loadMap('riolado');
+        window.gameInstance = this;
+        
         this.gameLoop(0);
         this.showMobileControls();
     }
