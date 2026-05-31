@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>重装机兵 - 自动化测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1a1a2a;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #e04040;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .test-section {
+            background: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .test-title {
+            font-size: 18px;
+            color: #40a040;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #4a4a6a;
+        }
+        
+        .test-case {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #1a1a2a;
+            border-radius: 4px;
+        }
+        
+        .test-case.pass {
+            border-left: 4px solid #40a040;
+        }
+        
+        .test-case.fail {
+            border-left: 4px solid #e04040;
+        }
+        
+        .test-status {
+            margin-right: 15px;
+            font-weight: bold;
+            width: 60px;
+        }
+        
+        .test-status.pass {
+            color: #40a040;
+        }
+        
+        .test-status.fail {
+            color: #e04040;
+        }
+        
+        .test-name {
+            flex: 1;
+        }
+        
+        .test-time {
+            color: #808080;
+            font-size: 12px;
+        }
+        
+        .summary {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #2a2a3a;
+            border: 2px solid #4a4a6a;
+            border-radius: 8px;
+        }
+        
+        .summary-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #808080;
+            font-size: 12px;
+        }
+        
+        .stat.pass .stat-value { color: #40a040; }
+        .stat.fail .stat-value { color: #e04040; }
+        .stat.total .stat-value { color: #6060ff; }
+        
+        button {
+            background: #4060a0;
+            color: #fff;
+            border: 2px solid #6080c0;
+            padding: 10px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button:hover {
+            background: #5070b0;
+        }
+        
+        .log-panel {
+            background: #0a0a1a;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 4px 0;
+        }
+        
+        .log-entry.info { color: #6060ff; }
+        .log-entry.pass { color: #40a040; }
+        .log-entry.fail { color: #e04040; }
+        .log-entry.warn { color: #e0a040; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 重装机兵 - 自动化测试</h1>
+        
+        <div class="test-section">
+            <div class="test-title">📋 核心游戏系统测试</div>
+            <div id="core-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">🗺️ 地图和渲染测试</div>
+            <div id="map-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">🎯 输入和交互测试</div>
+            <div id="input-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <div class="test-title">📝 测试日志</div>
+            <div class="log-panel" id="log-panel"></div>
+        </div>
+        
+        <div class="summary">
+            <div class="summary-stats">
+                <div class="stat total">
+                    <div class="stat-value" id="total-count">0</div>
+                    <div class="stat-label">总测试</div>
+                </div>
+                <div class="stat pass">
+                    <div class="stat-value" id="pass-count">0</div>
+                    <div class="stat-label">通过</div>
+                </div>
+                <div class="stat fail">
+                    <div class="stat-value" id="fail-count">0</div>
+                    <div class="stat-label">失败</div>
+                </div>
+            </div>
+            <button onclick="runAllTests()">▶️ 运行全部测试</button>
+        </div>
+    </div>
+    
+    <script src="js/tests.js"></script>
+</body>
+</html>
