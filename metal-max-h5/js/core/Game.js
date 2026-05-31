@@ -201,11 +201,7 @@ class Game {
     }
 
     showMobileControls() {
-        if (this.isTouchDevice()) {
-            this.mobileControls.classList.remove('hidden');
-        } else {
-            this.mobileControls.classList.add('hidden');
-        }
+        this.mobileControls.classList.remove('hidden');
     }
 
     isTouchDevice() {
@@ -223,14 +219,14 @@ class InputManager {
     constructor(canvas) {
         this.canvas = canvas;
         this.keys = new Map();
-        this.joystick = { x: 0, y: 0, active: false };
+        this.dpad = { up: false, down: false, left: false, right: false };
         this.mouse = { x: 0, y: 0, down: false };
         this.touches = new Map();
         
         this.setupKeyboardListeners();
         this.setupMouseListeners();
         this.setupTouchListeners();
-        this.setupJoystickListeners();
+        this.setupDPadListeners();
     }
 
     setupKeyboardListeners() {
@@ -291,95 +287,95 @@ class InputManager {
         });
     }
 
-    setupJoystickListeners() {
-        const joystickBase = document.getElementById('joystick-base');
-        const joystickThumb = document.getElementById('joystick-thumb');
+    setupDPadListeners() {
+        const btnUp = document.getElementById('dpad-up');
+        const btnDown = document.getElementById('dpad-down');
+        const btnLeft = document.getElementById('dpad-left');
+        const btnRight = document.getElementById('dpad-right');
         const btnConfirm = document.getElementById('btn-confirm');
         const btnCancel = document.getElementById('btn-cancel');
         
-        if (!joystickBase) return;
+        const buttons = [
+            { btn: btnUp, key: 'ArrowUp', dir: 'up' },
+            { btn: btnDown, key: 'ArrowDown', dir: 'down' },
+            { btn: btnLeft, key: 'ArrowLeft', dir: 'left' },
+            { btn: btnRight, key: 'ArrowRight', dir: 'right' },
+        ];
         
-        let joystickTouch = null;
-        const baseRect = { centerX: 0, centerY: 0, radius: 40 };
-        
-        joystickBase.parentElement.addEventListener('touchstart', (e) => {
-            if (joystickTouch !== null) return;
+        buttons.forEach(({ btn, key, dir }) => {
+            if (!btn) return;
             
-            const touch = e.changedTouches[0];
-            const rect = joystickBase.parentElement.getBoundingClientRect();
-            baseRect.centerX = rect.left + rect.width / 2;
-            baseRect.centerY = rect.top + rect.height / 2;
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.keys.set(key, true);
+                this.dpad[dir] = true;
+                btn.classList.add('active');
+            });
             
-            joystickTouch = touch.identifier;
-            joystickBase.classList.add('active');
-            this.updateJoystick(touch.clientX, touch.clientY, baseRect, joystickThumb);
-        });
-        
-        joystickBase.parentElement.addEventListener('touchmove', (e) => {
-            if (joystickTouch === null) return;
+            btn.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                this.keys.set(key, true);
+                this.dpad[dir] = true;
+                btn.classList.add('active');
+            });
             
-            for (let touch of e.changedTouches) {
-                if (touch.identifier === joystickTouch) {
-                    this.updateJoystick(touch.clientX, touch.clientY, baseRect, joystickThumb);
-                    break;
-                }
-            }
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.keys.set(key, false);
+                this.dpad[dir] = false;
+                btn.classList.remove('active');
+            });
+            
+            btn.addEventListener('mouseup', (e) => {
+                e.preventDefault();
+                this.keys.set(key, false);
+                this.dpad[dir] = false;
+                btn.classList.remove('active');
+            });
+            
+            btn.addEventListener('mouseleave', (e) => {
+                this.keys.set(key, false);
+                this.dpad[dir] = false;
+                btn.classList.remove('active');
+            });
         });
         
-        joystickBase.parentElement.addEventListener('touchend', (e) => {
-            for (let touch of e.changedTouches) {
-                if (touch.identifier === joystickTouch) {
-                    joystickTouch = null;
-                    joystickBase.classList.remove('active');
-                    this.joystick.x = 0;
-                    this.joystick.y = 0;
-                    this.joystick.active = false;
-                    joystickThumb.style.transform = 'translate(-50%, -50%)';
-                    break;
-                }
-            }
+        // Confirm and Cancel buttons
+        [
+            { btn: btnConfirm, key: 'KeyJ' },
+            { btn: btnCancel, key: 'KeyK' },
+        ].forEach(({ btn, key }) => {
+            if (!btn) return;
+            
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.keys.set(key, true);
+                btn.classList.add('active');
+            });
+            
+            btn.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                this.keys.set(key, true);
+                btn.classList.add('active');
+            });
+            
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.keys.set(key, false);
+                btn.classList.remove('active');
+            });
+            
+            btn.addEventListener('mouseup', (e) => {
+                e.preventDefault();
+                this.keys.set(key, false);
+                btn.classList.remove('active');
+            });
+            
+            btn.addEventListener('mouseleave', (e) => {
+                this.keys.set(key, false);
+                btn.classList.remove('active');
+            });
         });
-        
-        btnConfirm.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.keys.set('KeyJ', true);
-        });
-        
-        btnConfirm.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.keys.set('KeyJ', false);
-        });
-        
-        btnCancel.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            this.keys.set('KeyK', true);
-        });
-        
-        btnCancel.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            this.keys.set('KeyK', false);
-        });
-    }
-
-    updateJoystick(touchX, touchY, baseRect, thumb) {
-        const dx = touchX - baseRect.centerX;
-        const dy = touchY - baseRect.centerY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const maxDistance = baseRect.radius;
-        
-        let clampedX = dx;
-        let clampedY = dy;
-        
-        if (distance > maxDistance) {
-            clampedX = (dx / distance) * maxDistance;
-            clampedY = (dy / distance) * maxDistance;
-        }
-        
-        thumb.style.transform = `translate(calc(-50% + ${clampedX}px), calc(-50% + ${clampedY}px))`;
-        
-        this.joystick.x = clampedX / maxDistance;
-        this.joystick.y = clampedY / maxDistance;
-        this.joystick.active = true;
     }
 
     updateMousePosition(e) {
@@ -396,16 +392,10 @@ class InputManager {
         let x = 0;
         let y = 0;
         
-        if (this.isKeyPressed('ArrowLeft') || this.isKeyPressed('KeyA')) x -= 1;
-        if (this.isKeyPressed('ArrowRight') || this.isKeyPressed('KeyD')) x += 1;
-        if (this.isKeyPressed('ArrowUp') || this.isKeyPressed('KeyW')) y -= 1;
-        if (this.isKeyPressed('ArrowDown') || this.isKeyPressed('KeyS')) y += 1;
-        
-        if (this.joystick.active) {
-            const deadzone = 0.2;
-            if (Math.abs(this.joystick.x) > deadzone) x = this.joystick.x;
-            if (Math.abs(this.joystick.y) > deadzone) y = this.joystick.y;
-        }
+        if (this.isKeyPressed('ArrowLeft') || this.isKeyPressed('KeyA') || this.dpad.left) x -= 1;
+        if (this.isKeyPressed('ArrowRight') || this.isKeyPressed('KeyD') || this.dpad.right) x += 1;
+        if (this.isKeyPressed('ArrowUp') || this.isKeyPressed('KeyW') || this.dpad.up) y -= 1;
+        if (this.isKeyPressed('ArrowDown') || this.isKeyPressed('KeyS') || this.dpad.down) y += 1;
         
         const length = Math.sqrt(x * x + y * y);
         if (length > 1) {
@@ -953,15 +943,7 @@ class WorldScene extends Scene {
             const screenX = npc.x - this.camera.x;
             const screenY = npc.y - this.camera.y;
             
-            ctx.fillStyle = npc.color;
-            ctx.fillRect(screenX, screenY, npc.width, npc.height);
-            
-            ctx.fillStyle = '#F1C40F';
-            ctx.fillRect(screenX + 4, screenY + 4, 3, 3);
-            ctx.fillRect(screenX + 9, screenY + 4, 3, 3);
-            
-            ctx.fillStyle = '#2C3E50';
-            ctx.fillRect(screenX + 5, screenY + 10, 6, 3);
+            this.renderPixelCharacter(ctx, screenX, screenY, npc.color, false);
         }
     }
 
@@ -969,15 +951,7 @@ class WorldScene extends Scene {
         const screenX = this.player.x - this.camera.x;
         const screenY = this.player.y - this.camera.y;
         
-        ctx.fillStyle = '#3498DB';
-        ctx.fillRect(screenX, screenY, this.player.width, this.player.height);
-        
-        ctx.fillStyle = '#2980B9';
-        ctx.fillRect(screenX + 2, screenY + 2, 12, 12);
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(screenX + 4, screenY + 4, 3, 3);
-        ctx.fillRect(screenX + 9, screenY + 4, 3, 3);
+        this.renderPixelCharacter(ctx, screenX, screenY, '#3498DB', true, this.player.direction, this.player.frame);
         
         let indicatorX = screenX + 8;
         let indicatorY = screenY - 4;
@@ -1006,6 +980,63 @@ class WorldScene extends Scene {
         ctx.lineTo(indicatorX + 3, indicatorY - 5);
         ctx.closePath();
         ctx.fill();
+    }
+
+    renderPixelCharacter(ctx, x, y, mainColor, isPlayer, direction = 'down', frame = 0) {
+        const bodyColor = mainColor;
+        const darkColor = this.darkenColor(mainColor, 30);
+        const skinColor = '#FFD5AA';
+        const darkSkin = '#CCAA80';
+        const hairColor = isPlayer ? '#8B4513' : '#4A4A4A';
+        
+        const bob = frame % 2 === 0 ? 0 : -1;
+        
+        ctx.fillStyle = bodyColor;
+        ctx.fillRect(x + 3, y + 8 + bob, 10, 6);
+        ctx.fillRect(x + 4, y + 5 + bob, 8, 3);
+        
+        ctx.fillStyle = darkColor;
+        ctx.fillRect(x + 3, y + 12 + bob, 10, 2);
+        
+        ctx.fillStyle = skinColor;
+        ctx.fillRect(x + 4, y + 1 + bob, 8, 7);
+        
+        ctx.fillStyle = darkSkin;
+        ctx.fillRect(x + 5, y + 6 + bob, 6, 2);
+        
+        ctx.fillStyle = hairColor;
+        ctx.fillRect(x + 3, y + bob, 10, 4);
+        ctx.fillRect(x + 4, y - 1 + bob, 8, 2);
+        
+        ctx.fillStyle = '#000000';
+        if (direction === 'left') {
+            ctx.fillRect(x + 4, y + 3 + bob, 2, 2);
+            ctx.fillRect(x + 7, y + 3 + bob, 2, 2);
+        } else if (direction === 'right') {
+            ctx.fillRect(x + 5, y + 3 + bob, 2, 2);
+            ctx.fillRect(x + 8, y + 3 + bob, 2, 2);
+        } else {
+            ctx.fillRect(x + 5, y + 3 + bob, 2, 2);
+            ctx.fillRect(x + 9, y + 3 + bob, 2, 2);
+        }
+        
+        ctx.fillStyle = darkColor;
+        if (frame % 2 === 0) {
+            ctx.fillRect(x + 4, y + 14 + bob, 3, 2);
+            ctx.fillRect(x + 9, y + 14 + bob, 3, 2);
+        } else {
+            ctx.fillRect(x + 4, y + 15 + bob, 3, 2);
+            ctx.fillRect(x + 9, y + 13 + bob, 3, 2);
+        }
+    }
+
+    darkenColor(hex, percent) {
+        const num = parseInt(hex.slice(1), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = Math.max((num >> 16) - amt, 0);
+        const G = Math.max((num >> 8 & 0x00FF) - amt, 0);
+        const B = Math.max((num & 0x0000FF) - amt, 0);
+        return `#${(1 << 24 | R << 16 | G << 8 | B).toString(16).slice(1)}`;
     }
 
     renderUI(ctx) {
