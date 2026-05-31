@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="重装机兵H5版 - 经典FC游戏的现代网页复刻">
+    <meta name="theme-color" content="#1A252F">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>重装机兵H5</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="mobile-controls" class="hidden">
+            <div id="joystick-zone">
+                <div id="joystick-base">
+                    <div id="joystick-thumb"></div>
+                </div>
+            </div>
+            <div id="button-zone">
+                <button id="btn-cancel" class="control-btn">取消</button>
+                <button id="btn-confirm" class="control-btn">确认</button>
+            </div>
+        </div>
+        <div id="loading-screen">
+            <div class="loading-content">
+                <h1 class="game-title">重装机兵</h1>
+                <p class="subtitle">METAL MAX - H5版</p>
+                <div class="loading-bar">
+                    <div class="loading-progress" id="loading-progress"></div>
+                </div>
+                <p class="loading-text" id="loading-text">加载中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/core/Game.js"></script>
+</body>
+</html>
