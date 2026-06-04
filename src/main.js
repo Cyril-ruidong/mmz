@@ -1,7 +1,7 @@
 import './style.css'
-import { createScene } from './scene.js'
-import { createPlayer, updatePlayer, getPlayerBoundingBox } from './player.js'
-import { spawnCrystal, updateCrystals, getCrystalBoundingBox, collectCrystal, getActiveCrystals } from './crystals.js'
+import { createGameCanvas, clearCanvas, drawGrid, drawStarfield } from './scene.js'
+import { createPlayer, updatePlayer, drawPlayer, getPlayerBounds } from './player.js'
+import { spawnCrystal, updateCrystals, drawCrystals, getCrystalBounds, collectCrystal, getActiveCrystals } from './crystals.js'
 import { checkPlayerCrystalCollision } from './collision.js'
 import { updateScore, hideGameTip } from './ui.js'
 
@@ -9,20 +9,19 @@ const INITIAL_CRYSTALS = 5
 const CRYSTAL_RESPAWN_DELAY = 500
 
 const container = document.getElementById('game-container')
-const { scene, camera, renderer } = createScene(container)
+const { canvas, ctx } = createGameCanvas(container)
 
-const player = createPlayer(scene)
+const player = createPlayer(ctx)
 
-const mouse = { x: 0, z: 0 }
-let isPointerLocked = false
+const mouse = { x: 0.5, y: 0.5 }
 
 function onMouseMove(event) {
   if (event.touches) {
-    mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1
-    mouse.z = -(event.touches[0].clientY / window.innerHeight) * 2 + 1
+    mouse.x = event.touches[0].clientX / window.innerWidth
+    mouse.y = event.touches[0].clientY / window.innerHeight
   } else {
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1
-    mouse.z = -(event.clientY / window.innerHeight) * 2 + 1
+    mouse.x = event.clientX / window.innerWidth
+    mouse.y = event.clientY / window.innerHeight
   }
 }
 
@@ -35,17 +34,17 @@ document.addEventListener('touchstart', onTouchStart, { passive: true })
 document.addEventListener('touchmove', onMouseMove, { passive: true })
 
 for (let i = 0; i < INITIAL_CRYSTALS; i++) {
-  spawnCrystal(scene, 18, [])
+  spawnCrystal(canvas.width, canvas.height, [])
 }
 
 function checkCollisions() {
-  const playerBox = getPlayerBoundingBox(player)
+  const playerBox = getPlayerBounds(player)
   const activeCrystals = getActiveCrystals()
 
   for (const crystal of activeCrystals) {
-    if (!crystal.visible) continue
+    if (crystal.collected) continue
 
-    const crystalBox = getCrystalBoundingBox(crystal)
+    const crystalBox = getCrystalBounds(crystal)
 
     if (checkPlayerCrystalCollision(playerBox, crystalBox)) {
       collectCrystal(crystal)
@@ -53,45 +52,33 @@ function checkCollisions() {
 
       setTimeout(() => {
         const activePositions = getActiveCrystals().map(c => ({
-          x: c.position.x,
-          z: c.position.z
+          x: c.x,
+          y: c.y
         }))
-        spawnCrystal(scene, 18, activePositions)
+        spawnCrystal(canvas.width, canvas.height, activePositions)
       }, CRYSTAL_RESPAWN_DELAY)
     }
   }
 }
 
-function updateCamera() {
-  const targetX = player.mesh.position.x * 0.3
-  const targetZ = player.mesh.position.z * 0.3
-
-  camera.position.x += (targetX - camera.position.x) * 0.05
-  camera.position.z += (15 + targetZ - camera.position.z) * 0.05
-
-  camera.lookAt(
-    player.mesh.position.x * 0.5,
-    0,
-    player.mesh.position.z * 0.5
-  )
-}
-
-let hideTipTimeout = setTimeout(() => {
-  hideGameTip()
-}, 5000)
-
-let lastTime = 0
 function animate(currentTime) {
   requestAnimationFrame(animate)
 
-  const time = currentTime * 0.001
+  clearCanvas(ctx, canvas.width, canvas.height)
+  drawGrid(ctx, canvas.width, canvas.height)
+  drawStarfield(ctx, canvas.width, canvas.height, currentTime)
 
-  updatePlayer(player, mouse.x, mouse.z)
-  updateCrystals(getActiveCrystals(), time)
+  updatePlayer(player, mouse.x, mouse.y, canvas.width, canvas.height)
+  updateCrystals(getActiveCrystals(), currentTime, canvas.height)
+
   checkCollisions()
-  updateCamera()
 
-  renderer.render(scene, camera)
+  drawCrystals(ctx, getActiveCrystals())
+  drawPlayer(ctx, player)
 }
+
+setTimeout(() => {
+  hideGameTip()
+}, 5000)
 
 animate(0)

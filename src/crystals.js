@@ -1,46 +1,27 @@
-import * as THREE from 'three'
-
-const crystalGeometry = new THREE.OctahedronGeometry(0.6, 0)
-const crystalMaterial = new THREE.MeshStandardMaterial({
-  color: 0xffd700,
-  emissive: 0xffd700,
-  emissiveIntensity: 0.5,
-  metalness: 1,
-  roughness: 0.1,
-  transparent: true,
-  opacity: 0.9
-})
-
 const crystals = []
 const crystalPool = []
 const POOL_SIZE = 20
 
-for (let i = 0; i < POOL_SIZE; i++) {
-  const crystal = new THREE.Mesh(crystalGeometry, crystalMaterial.clone())
-  crystal.visible = false
-  crystalPool.push(crystal)
-}
+export function spawnCrystal(canvasWidth, canvasHeight, excludePositions = []) {
+  const crystal = crystalPool.length < POOL_SIZE
+    ? { collected: false, rotation: 0 }
+    : crystalPool.find(c => c.collected)
 
-export function spawnCrystal(scene, bounds = 18, excludePositions = []) {
-  let crystal = crystalPool.find(c => !c.visible)
-
-  if (!crystal) {
-    crystal = new THREE.Mesh(crystalGeometry, crystalMaterial.clone())
-    crystalPool.push(crystal)
-  }
+  if (!crystal) return null
 
   let validPosition = false
-  let x, z
+  let x, y
   let attempts = 0
+  const margin = 50
 
   while (!validPosition && attempts < 50) {
-    x = (Math.random() - 0.5) * 2 * bounds
-    z = (Math.random() - 0.5) * 2 * bounds
+    x = margin + Math.random() * (canvasWidth - margin * 2)
+    y = margin + Math.random() * (canvasHeight - margin * 2)
 
     validPosition = true
     for (const pos of excludePositions) {
-      const dist = Math.sqrt((x - pos.x) ** 2 + (z - pos.z) ** 2)
-      if (dist < 3) {
+      const dist = Math.sqrt((x - pos.x) ** 2 + (y - pos.y) ** 2)
+      if (dist < 60) {
         validPosition = false
         break
       }
@@ -48,47 +29,76 @@ export function spawnCrystal(scene, bounds = 18, excludePositions = []) {
     attempts++
   }
 
-  crystal.position.set(x, 1 + Math.random() * 2, z)
-  crystal.visible = true
-  crystal.userData.baseY = crystal.position.y
-  crystal.userData.rotationSpeed = 0.02 + Math.random() * 0.03
-  crystal.userData.floatSpeed = 1 + Math.random() * 0.5
-  crystal.userData.floatOffset = Math.random() * Math.PI * 2
+  crystal.x = x
+  crystal.y = y
+  crystal.size = 20 + Math.random() * 10
+  crystal.rotation = Math.random() * Math.PI * 2
+  crystal.rotationSpeed = 0.03 + Math.random() * 0.02
+  crystal.floatPhase = Math.random() * Math.PI * 2
+  crystal.floatSpeed = 2 + Math.random()
+  crystal.collected = false
+  crystal.baseY = y
 
-  if (!scene.children.includes(crystal)) {
-    scene.add(crystal)
+  if (!crystalPool.includes(crystal)) {
+    crystalPool.push(crystal)
+  }
+  if (!crystals.includes(crystal)) {
+    crystals.push(crystal)
   }
 
-  crystals.push(crystal)
   return crystal
 }
 
-export function updateCrystals(crystals, time) {
+export function updateCrystals(crystals, time, canvasHeight) {
   for (const crystal of crystals) {
-    if (!crystal.visible) continue
+    if (crystal.collected) continue
 
-    crystal.rotation.y += crystal.userData.rotationSpeed
-    crystal.rotation.x += crystal.userData.rotationSpeed * 0.5
-
-    crystal.position.y = crystal.userData.baseY +
-      Math.sin(time * crystal.userData.floatSpeed + crystal.userData.floatOffset) * 0.3
+    crystal.rotation += crystal.rotationSpeed
+    crystal.y = crystal.baseY + Math.sin(time * 0.003 * crystal.floatSpeed + crystal.floatPhase) * 10
   }
 }
 
-export function getCrystalBoundingBox(crystal) {
-  const size = 1.2
+export function drawCrystals(ctx, crystals) {
+  for (const crystal of crystals) {
+    if (crystal.collected) continue
+
+    ctx.save()
+    ctx.translate(crystal.x, crystal.y)
+    ctx.rotate(crystal.rotation)
+
+    ctx.shadowColor = '#ffd700'
+    ctx.shadowBlur = 15
+
+    ctx.fillStyle = '#ffd700'
+    ctx.beginPath()
+    ctx.moveTo(0, -crystal.size)
+    ctx.lineTo(crystal.size * 0.7, 0)
+    ctx.lineTo(0, crystal.size)
+    ctx.lineTo(-crystal.size * 0.7, 0)
+    ctx.closePath()
+    ctx.fill()
+
+    ctx.strokeStyle = '#ffed4a'
+    ctx.lineWidth = 2
+    ctx.stroke()
+
+    ctx.shadowBlur = 0
+    ctx.restore()
+  }
+}
+
+export function getCrystalBounds(crystal) {
+  const size = crystal.size * 1.5
   return {
-    minX: crystal.position.x - size / 2,
-    maxX: crystal.position.x + size / 2,
-    minZ: crystal.position.z - size / 2,
-    maxZ: crystal.position.z + size / 2,
-    minY: crystal.position.y - size / 2,
-    maxY: crystal.position.y + size / 2
+    x: crystal.x - size / 2,
+    y: crystal.y - size / 2,
+    width: size,
+    height: size
   }
 }
 
 export function collectCrystal(crystal) {
-  crystal.visible = false
+  crystal.collected = true
   const index = crystals.indexOf(crystal)
   if (index > -1) {
     crystals.splice(index, 1)
@@ -96,5 +106,5 @@ export function collectCrystal(crystal) {
 }
 
 export function getActiveCrystals() {
-  return crystals.filter(c => c.visible)
+  return crystals.filter(c => !c.collected)
 }

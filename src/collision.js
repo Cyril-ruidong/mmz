@@ -1,22 +1,18 @@
 export function checkAABBCollision(box1, box2) {
   return (
-    box1.minX <= box2.maxX &&
-    box1.maxX >= box2.minX &&
-    box1.minZ <= box2.maxZ &&
-    box1.maxZ >= box2.minZ &&
-    box1.minY <= box2.maxY &&
-    box1.maxY >= box2.minY
+    box1.x < box2.x + box2.width &&
+    box1.x + box1.width > box2.x &&
+    box1.y < box2.y + box2.height &&
+    box1.y + box1.height > box2.y
   )
 }
 
 export function checkPlayerCrystalCollision(playerBox, crystalBox) {
   const expandedBox = {
-    minX: playerBox.minX - 0.3,
-    maxX: playerBox.maxX + 0.3,
-    minZ: playerBox.minZ - 0.3,
-    maxZ: playerBox.maxZ + 0.3,
-    minY: playerBox.minY - 0.3,
-    maxY: playerBox.maxY + 0.3
+    x: playerBox.x - 10,
+    y: playerBox.y - 10,
+    width: playerBox.width + 20,
+    height: playerBox.height + 20
   }
 
   return checkAABBCollision(expandedBox, crystalBox)
