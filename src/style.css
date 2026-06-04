@@ -8,8 +8,7 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  font-family: 'Orbitron', sans-serif;
-  background: #1a0a2e;
+  background: #2a2a2a;
 }
 
 #game-container {
@@ -36,62 +35,50 @@ html, body {
 
 #score-display {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 16px;
+  right: 16px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 4px;
+  gap: 2px;
 }
 
 .score-label {
   font-size: 12px;
-  color: #00f5ff;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 0 0 10px #00f5ff, 0 0 20px #00f5ff;
+  color: #ffffff;
+  font-family: monospace;
+  text-shadow: 2px 2px 0 #000000;
 }
 
 #score-value {
-  font-size: 48px;
-  font-weight: 900;
-  color: #ff2d95;
-  text-shadow: 0 0 10px #ff2d95, 0 0 30px #ff2d95, 0 0 50px #ff2d95;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.8; }
+  font-size: 32px;
+  color: #f8f800;
+  font-family: monospace;
+  font-weight: bold;
+  text-shadow: 2px 2px 0 #000000;
 }
 
 #game-tip {
   position: absolute;
-  bottom: 32px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 14px;
-  color: #00f5ff;
-  text-shadow: 0 0 10px #00f5ff;
-  letter-spacing: 1px;
+  color: #ffffff;
+  font-family: monospace;
+  text-shadow: 2px 2px 0 #000000;
   text-align: center;
-  opacity: 0.8;
-  animation: fadeInOut 3s ease-in-out infinite;
-}
-
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.9; }
+  opacity: 0.9;
 }
 
 @media (max-width: 768px) {
   #score-display {
-    top: 16px;
-    right: 16px;
+    top: 12px;
+    right: 12px;
   }
 
   #score-value {
-    font-size: 36px;
+    font-size: 24px;
   }
 
   .score-label {
@@ -100,7 +87,7 @@ html, body {
 
   #game-tip {
     font-size: 12px;
-    bottom: 20px;
+    bottom: 16px;
     padding: 0 16px;
   }
 }

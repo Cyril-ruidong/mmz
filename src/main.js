@@ -1,5 +1,5 @@
 import './style.css'
-import { createGameCanvas, drawMetalslugCity } from './scene.js'
+import { createGameCanvas, drawFCMetalslugMap } from './scene.js'
 import { createPlayer, updatePlayer, drawPlayer, getPlayerBounds } from './player.js'
 import { spawnCrystal, updateCrystals, drawCrystals, getCrystalBounds, collectCrystal, getActiveCrystals } from './crystals.js'
 import { checkPlayerCrystalCollision } from './collision.js'
@@ -64,7 +64,7 @@ function checkCollisions() {
 function animate(currentTime) {
   requestAnimationFrame(animate)
 
-  drawMetalslugCity(ctx, canvas.width, canvas.height, currentTime)
+  drawFCMetalslugMap(ctx, canvas.width, canvas.height, currentTime)
 
   updatePlayer(player, mouse.x, mouse.y, canvas.width, canvas.height)
   updateCrystals(getActiveCrystals(), currentTime, canvas.height)

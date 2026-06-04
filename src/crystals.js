@@ -12,7 +12,7 @@ export function spawnCrystal(canvasWidth, canvasHeight, excludePositions = []) {
   let validPosition = false
   let x, y
   let attempts = 0
-  const margin = 50
+  const margin = 40
 
   while (!validPosition && attempts < 50) {
     x = margin + Math.random() * (canvasWidth - margin * 2)
@@ -21,7 +21,7 @@ export function spawnCrystal(canvasWidth, canvasHeight, excludePositions = []) {
     validPosition = true
     for (const pos of excludePositions) {
       const dist = Math.sqrt((x - pos.x) ** 2 + (y - pos.y) ** 2)
-      if (dist < 60) {
+      if (dist < 50) {
         validPosition = false
         break
       }
@@ -31,11 +31,9 @@ export function spawnCrystal(canvasWidth, canvasHeight, excludePositions = []) {
 
   crystal.x = x
   crystal.y = y
-  crystal.size = 20 + Math.random() * 10
-  crystal.rotation = Math.random() * Math.PI * 2
-  crystal.rotationSpeed = 0.03 + Math.random() * 0.02
+  crystal.size = 12
+  crystal.rotation = 0
   crystal.floatPhase = Math.random() * Math.PI * 2
-  crystal.floatSpeed = 2 + Math.random()
   crystal.collected = false
   crystal.baseY = y
 
@@ -53,8 +51,8 @@ export function updateCrystals(crystals, time, canvasHeight) {
   for (const crystal of crystals) {
     if (crystal.collected) continue
 
-    crystal.rotation += crystal.rotationSpeed
-    crystal.y = crystal.baseY + Math.sin(time * 0.003 * crystal.floatSpeed + crystal.floatPhase) * 10
+    crystal.rotation += 0.05
+    crystal.y = crystal.baseY + Math.sin(time * 0.004 + crystal.floatPhase) * 3
   }
 }
 
@@ -62,38 +60,36 @@ export function drawCrystals(ctx, crystals) {
   for (const crystal of crystals) {
     if (crystal.collected) continue
 
+    const x = crystal.x
+    const y = crystal.y
+    const s = crystal.size
+
     ctx.save()
-    ctx.translate(crystal.x, crystal.y)
-    ctx.rotate(crystal.rotation)
 
-    ctx.shadowColor = '#ffd700'
-    ctx.shadowBlur = 15
+    ctx.fillStyle = '#c4a02a'
+    ctx.fillRect(x - s / 2, y - s / 2, s, s)
 
-    ctx.fillStyle = '#ffd700'
-    ctx.beginPath()
-    ctx.moveTo(0, -crystal.size)
-    ctx.lineTo(crystal.size * 0.7, 0)
-    ctx.lineTo(0, crystal.size)
-    ctx.lineTo(-crystal.size * 0.7, 0)
-    ctx.closePath()
-    ctx.fill()
+    ctx.fillStyle = '#e4c04a'
+    ctx.fillRect(x - s / 2, y - s / 2, s, 3)
+    ctx.fillRect(x - s / 2, y - s / 2, 3, s)
 
-    ctx.strokeStyle = '#ffed4a'
-    ctx.lineWidth = 2
-    ctx.stroke()
+    ctx.fillStyle = '#8a701a'
+    ctx.fillRect(x + s / 2 - 3, y - s / 2, 3, s)
+    ctx.fillRect(x - s / 2, y + s / 2 - 3, s, 3)
 
-    ctx.shadowBlur = 0
+    ctx.fillStyle = '#f4d05a'
+    ctx.fillRect(x - 2, y - 2, 4, 4)
+
     ctx.restore()
   }
 }
 
 export function getCrystalBounds(crystal) {
-  const size = crystal.size * 1.5
   return {
-    x: crystal.x - size / 2,
-    y: crystal.y - size / 2,
-    width: size,
-    height: size
+    x: crystal.x - crystal.size / 2,
+    y: crystal.y - crystal.size / 2,
+    width: crystal.size,
+    height: crystal.size
   }
 }
 

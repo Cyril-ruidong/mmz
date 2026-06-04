@@ -23,115 +23,133 @@ function drawPixelRect(ctx, x, y, w, h, color) {
   ctx.fillRect(Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
 }
 
-export function drawMetalslugCity(ctx, width, height, time) {
-  const pixelSize = 4
-  const horizonY = height * 0.5
+const FC_COLORS = {
+  grass1: '#4a8c23',
+  grass2: '#3a6c18',
+  dirt1: '#c4a06a',
+  dirt2: '#a08050',
+  water1: '#4a7cc4',
+  water2: '#3a6ca0',
+  wall1: '#8c8c8c',
+  wall2: '#6c6c6c',
+  roof1: '#c44a4a',
+  roof2: '#a03a3a',
+  tree1: '#2a5a1a',
+  tree2: '#4a9a2a',
+  road1: '#a09080',
+  road2: '#807060',
+  sky: '#8ab4f8',
+  cloud: '#ffffff'
+}
 
-  for (let y = 0; y < height; y += pixelSize) {
-    for (let x = 0; x < width; x += pixelSize) {
-      const noise = Math.sin(x * 0.1 + y * 0.1 + time * 0.0005) * 0.5 + 0.5
-      const r = 45 + noise * 20
-      const g = 35 + noise * 15
-      const b = 28 + noise * 10
-      ctx.fillStyle = `rgb(${r},${g},${b})`
-      ctx.fillRect(x, y, pixelSize, pixelSize)
-    }
+export function drawFCMetalslugMap(ctx, width, height, time) {
+  const tileSize = 16
+  const gridW = Math.ceil(width / tileSize) + 2
+  const gridH = Math.ceil(height / tileSize) + 2
+
+  const seed = 12345
+  function random(x, y) {
+    return Math.sin(seed + x * 123.456 + y * 789.012) * 0.5 + 0.5
   }
 
-  const groundY = horizonY + 20
-  for (let y = groundY; y < height; y += pixelSize) {
-    for (let x = 0; x < width; x += pixelSize) {
-      const shade = ((x + y) % 20 < 10) ? 0 : 8
-      ctx.fillStyle = `rgb(${60 + shade}, ${50 + shade}, ${40 + shade})`
-      ctx.fillRect(x, y, pixelSize, pixelSize)
-    }
-  }
+  for (let gy = 0; gy < gridH; gy++) {
+    for (let gx = 0; gx < gridW; gx++) {
+      const x = gx * tileSize
+      const y = gy * tileSize
+      const r = random(gx, gy)
 
-  const ruins = [
-    { x: 0.05, w: 0.12, h: 0.25, damaged: true },
-    { x: 0.2, w: 0.08, h: 0.18, damaged: false },
-    { x: 0.35, w: 0.15, h: 0.3, damaged: true },
-    { x: 0.55, w: 0.1, h: 0.22, damaged: false },
-    { x: 0.7, w: 0.18, h: 0.28, damaged: true },
-    { x: 0.88, w: 0.1, h: 0.2, damaged: false }
-  ]
+      let baseColor
+      if (r < 0.7) {
+        baseColor = r < 0.35 ? FC_COLORS.grass1 : FC_COLORS.grass2
+      } else if (r < 0.85) {
+        baseColor = r < 0.775 ? FC_COLORS.dirt1 : FC_COLORS.dirt2
+      } else {
+        baseColor = r < 0.925 ? FC_COLORS.water1 : FC_COLORS.water2
+      }
 
-  for (const ruin of ruins) {
-    const bx = width * ruin.x
-    const bw = width * ruin.w
-    const bh = height * ruin.h
-    const by = groundY - bh
+      drawPixelRect(ctx, x, y, tileSize, tileSize, baseColor)
 
-    const baseColor = ruin.damaged ? '#4a4035' : '#5a5045'
-    drawPixelRect(ctx, bx, by, bw, bh, baseColor)
-
-    drawPixelRect(ctx, bx, by, bw, pixelSize, '#3a3530')
-
-    for (let wy = by + pixelSize * 2; wy < groundY - pixelSize * 2; wy += pixelSize * 8) {
-      for (let wx = bx + pixelSize * 2; wx < bx + bw - pixelSize * 4; wx += pixelSize * 6) {
-        if (Math.random() > 0.3) {
-          drawPixelRect(ctx, wx, wy, pixelSize * 3, pixelSize * 4, '#2a2520')
-        }
+      if (r < 0.7 && random(gx + 100, gy + 100) < 0.08) {
+        drawPixelRect(ctx, x + 4, y + 6, 2, 6, FC_COLORS.tree1)
+        drawPixelRect(ctx, x + 6, y + 4, 2, 8, FC_COLORS.tree1)
+        drawPixelRect(ctx, x + 8, y + 6, 2, 6, FC_COLORS.tree1)
+        drawPixelRect(ctx, x + 3, y + 2, 4, 4, FC_COLORS.tree2)
+        drawPixelRect(ctx, x + 7, y + 2, 4, 4, FC_COLORS.tree2)
+        drawPixelRect(ctx, x + 5, y, 2, 4, FC_COLORS.tree2)
       }
     }
+  }
 
-    if (ruin.damaged) {
-      const crackX = bx + bw * 0.3
-      const crackY = by + bh * 0.2
-      drawPixelRect(ctx, crackX, crackY, pixelSize, pixelSize * 15, '#2a2520')
-      drawPixelRect(ctx, crackX + pixelSize * 2, crackY + pixelSize * 5, pixelSize, pixelSize * 8, '#2a2520')
-      drawPixelRect(ctx, crackX - pixelSize * 2, crackY + pixelSize * 8, pixelSize, pixelSize * 6, '#2a2520')
+  const roadY = Math.floor(height / tileSize / 2) * tileSize
+  for (let x = 0; x < width; x += tileSize) {
+    const roadColor = (x / tileSize) % 2 === 0 ? FC_COLORS.road1 : FC_COLORS.road2
+    drawPixelRect(ctx, x, roadY - tileSize, tileSize, tileSize * 2, roadColor)
+    drawPixelRect(ctx, x, roadY + tileSize, tileSize, tileSize * 2, roadColor)
+  }
+
+  const buildings = [
+    { x: 0.15, y: 0.25, w: 3, h: 3 },
+    { x: 0.35, y: 0.2, w: 4, h: 4 },
+    { x: 0.6, y: 0.28, w: 3, h: 3 },
+    { x: 0.8, y: 0.22, w: 2, h: 3 },
+    { x: 0.12, y: 0.6, w: 4, h: 3 },
+    { x: 0.45, y: 0.65, w: 3, h: 4 },
+    { x: 0.7, y: 0.58, w: 2, h: 3 },
+    { x: 0.88, y: 0.62, w: 3, h: 3 }
+  ]
+
+  for (const b of buildings) {
+    const bx = width * b.x
+    const by = height * b.y
+    const bw = b.w * tileSize
+    const bh = b.h * tileSize
+
+    drawPixelRect(ctx, bx, by, bw, bh, FC_COLORS.wall1)
+    drawPixelRect(ctx, bx + 2, by + 2, bw - 4, bh - 4, FC_COLORS.wall2)
+    drawPixelRect(ctx, bx, by, bw, tileSize / 2, FC_COLORS.roof1)
+    drawPixelRect(ctx, bx + tileSize / 2, by - tileSize / 2, bw - tileSize, tileSize / 2, FC_COLORS.roof2)
+
+    for (let wy = by + tileSize; wy < by + bh - tileSize; wy += tileSize) {
+      for (let wx = bx + tileSize / 2; wx < bx + bw - tileSize / 2; wx += tileSize) {
+        drawPixelRect(ctx, wx + 2, wy + 2, 6, 6, '#4a6a8a')
+        drawPixelRect(ctx, wx + 3, wy + 3, 4, 4, '#6a8aaa')
+      }
     }
   }
 
-  for (let i = 0; i < 8; i++) {
-    const tx = width * (0.1 + i * 0.12)
-    const th = pixelSize * (8 + Math.sin(i * 2.5) * 3)
-    const ty = groundY - th
+  const treePositions = [
+    { x: 0.08, y: 0.15 },
+    { x: 0.25, y: 0.1 },
+    { x: 0.48, y: 0.12 },
+    { x: 0.7, y: 0.15 },
+    { x: 0.92, y: 0.1 },
+    { x: 0.05, y: 0.45 },
+    { x: 0.3, y: 0.48 },
+    { x: 0.55, y: 0.42 },
+    { x: 0.78, y: 0.46 },
+    { x: 0.08, y: 0.78 },
+    { x: 0.35, y: 0.82 },
+    { x: 0.62, y: 0.78 },
+    { x: 0.85, y: 0.85 }
+  ]
 
-    drawPixelRect(ctx, tx, ty, pixelSize * 2, th, '#5a4a3a')
-    drawPixelRect(ctx, tx - pixelSize * 2, ty - pixelSize * 2, pixelSize * 6, pixelSize * 3, '#4a4035')
+  for (const t of treePositions) {
+    const tx = width * t.x
+    const ty = height * t.y
+
+    drawPixelRect(ctx, tx + 8, ty + 12, 4, 8, '#6a4a2a')
+    drawPixelRect(ctx, tx + 4, ty + 2, 12, 12, FC_COLORS.tree2)
+    drawPixelRect(ctx, tx + 6, ty, 8, 4, FC_COLORS.tree1)
+    drawPixelRect(ctx, tx + 2, ty + 6, 4, 4, FC_COLORS.tree1)
+    drawPixelRect(ctx, tx + 14, ty + 6, 4, 4, FC_COLORS.tree1)
   }
 
-  for (let i = 0; i < 5; i++) {
-    const sx = width * (0.15 + i * 0.18)
-    const sy = horizonY + 40 + (i % 2) * 20
-    const sw = pixelSize * (3 + i % 2)
-    const sh = pixelSize * (2 + i % 3)
+  for (let i = 0; i < 12; i++) {
+    const px = (0.05 + i * 0.08) * width
+    const py = roadY - 24 + (i % 2) * 48
 
-    drawPixelRect(ctx, sx, sy, sw, sh, '#3a3530')
+    drawPixelRect(ctx, px, py, 8, 20, '#4a4a4a')
+    drawPixelRect(ctx, px + 2, py - 4, 4, 6, '#6a6a6a')
+    drawPixelRect(ctx, px - 2, py - 6, 12, 4, '#aaaaaa')
   }
-
-  const barrelX = width * 0.75
-  const barrelY = groundY - pixelSize * 6
-  drawPixelRect(ctx, barrelX, barrelY, pixelSize * 4, pixelSize * 6, '#4a4540')
-  drawPixelRect(ctx, barrelX - pixelSize, barrelY - pixelSize * 2, pixelSize * 6, pixelSize * 2, '#5a5550')
-
-  for (let i = 0; i < 3; i++) {
-    const px = width * (0.25 + i * 0.25)
-    const py = groundY - pixelSize * 12
-
-    drawPixelRect(ctx, px, py, pixelSize * 8, pixelSize * 12, '#4a5550')
-    drawPixelRect(ctx, px + pixelSize * 2, py - pixelSize * 4, pixelSize * 4, pixelSize * 4, '#3a4540')
-  }
-
-  const cloudOffset = (time * 0.01) % width
-  for (let i = 0; i < 4; i++) {
-    const cx = ((i * 0.3 + cloudOffset / width) % 1) * width
-    const cy = height * (0.08 + i * 0.03)
-
-    ctx.fillStyle = 'rgba(80, 70, 60, 0.5)'
-    ctx.beginPath()
-    ctx.arc(cx, cy, 20 + i * 5, 0, Math.PI * 2)
-    ctx.arc(cx + 15, cy - 5, 15 + i * 3, 0, Math.PI * 2)
-    ctx.arc(cx + 30, cy, 18 + i * 4, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  const horizonGradient = ctx.createLinearGradient(0, horizonY - 60, 0, horizonY + 20)
-  horizonGradient.addColorStop(0, 'rgba(90, 70, 50, 0)')
-  horizonGradient.addColorStop(0.5, 'rgba(70, 55, 40, 0.3)')
-  horizonGradient.addColorStop(1, 'rgba(50, 40, 30, 0.5)')
-  ctx.fillStyle = horizonGradient
-  ctx.fillRect(0, horizonY - 60, width, 80)
 }
