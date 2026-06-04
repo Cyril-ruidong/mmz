@@ -1,5 +1,5 @@
 import './style.css'
-import { createGameCanvas, clearCanvas, drawGrid, drawStarfield } from './scene.js'
+import { createGameCanvas, drawCityBackground } from './scene.js'
 import { createPlayer, updatePlayer, drawPlayer, getPlayerBounds } from './player.js'
 import { spawnCrystal, updateCrystals, drawCrystals, getCrystalBounds, collectCrystal, getActiveCrystals } from './crystals.js'
 import { checkPlayerCrystalCollision } from './collision.js'
@@ -64,9 +64,7 @@ function checkCollisions() {
 function animate(currentTime) {
   requestAnimationFrame(animate)
 
-  clearCanvas(ctx, canvas.width, canvas.height)
-  drawGrid(ctx, canvas.width, canvas.height)
-  drawStarfield(ctx, canvas.width, canvas.height, currentTime)
+  drawCityBackground(ctx, canvas.width, canvas.height, currentTime)
 
   updatePlayer(player, mouse.x, mouse.y, canvas.width, canvas.height)
   updateCrystals(getActiveCrystals(), currentTime, canvas.height)
