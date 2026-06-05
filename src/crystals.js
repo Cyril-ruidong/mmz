@@ -1,4 +1,4 @@
-import { drawCoinSprite } from './scene.js'
+import { drawCoinSprite, onCollect } from './scene.js'
 
 const crystals = []
 const crystalPool = []
@@ -33,7 +33,7 @@ export function spawnCrystal(canvasWidth, canvasHeight, excludePositions = []) {
 
   crystal.x = x
   crystal.y = y
-  crystal.size = 16
+  crystal.size = 18
   crystal.floatPhase = Math.random() * Math.PI * 2
   crystal.collected = false
   crystal.baseY = y
@@ -52,15 +52,15 @@ export function updateCrystals(crystals, time, canvasHeight) {
   for (const crystal of crystals) {
     if (crystal.collected) continue
 
-    crystal.y = crystal.baseY + Math.sin(time * 0.004 + crystal.floatPhase) * 4
+    crystal.y = crystal.baseY + Math.sin(time * 0.004 + crystal.floatPhase) * 5
   }
 }
 
-export function drawCrystals(ctx, crystals) {
+export function drawCrystals(ctx, crystals, time) {
   for (const crystal of crystals) {
     if (crystal.collected) continue
 
-    drawCoinSprite(ctx, crystal.x, crystal.y)
+    drawCoinSprite(ctx, crystal.x, crystal.y, time)
   }
 }
 
@@ -74,6 +74,7 @@ export function getCrystalBounds(crystal) {
 }
 
 export function collectCrystal(crystal) {
+  onCollect(crystal.x, crystal.y)
   crystal.collected = true
   const index = crystals.indexOf(crystal)
   if (index > -1) {

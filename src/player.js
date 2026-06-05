@@ -7,8 +7,7 @@ export function createPlayer(ctx) {
     size: 32,
     targetX: ctx.canvas.width / 2,
     targetY: ctx.canvas.height / 2,
-    speed: 0.12,
-    direction: 'up'
+    speed: 0.12
   }
 }
 
@@ -21,16 +20,10 @@ export function updatePlayer(player, mouseX, mouseY, canvasWidth, canvasHeight) 
 
   player.x += dx * player.speed
   player.y += dy * player.speed
-
-  if (Math.abs(dx) > Math.abs(dy)) {
-    player.direction = dx > 0 ? 'right' : 'left'
-  } else {
-    player.direction = dy > 0 ? 'down' : 'up'
-  }
 }
 
 export function drawPlayer(ctx, player) {
-  drawTankSprite(ctx, player.x, player.y, player.direction)
+  drawTankSprite(ctx, player.x, player.y)
 }
 
 export function getPlayerBounds(player) {

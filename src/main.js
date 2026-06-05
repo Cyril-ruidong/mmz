@@ -5,8 +5,8 @@ import { spawnCrystal, updateCrystals, drawCrystals, getCrystalBounds, collectCr
 import { checkPlayerCrystalCollision } from './collision.js'
 import { updateScore, hideGameTip } from './ui.js'
 
-const INITIAL_CRYSTALS = 5
-const CRYSTAL_RESPAWN_DELAY = 500
+const INITIAL_CRYSTALS = 6
+const CRYSTAL_RESPAWN_DELAY = 600
 
 const container = document.getElementById('game-container')
 const { canvas, ctx } = createGameCanvas(container)
@@ -71,7 +71,7 @@ function animate(currentTime) {
 
   checkCollisions()
 
-  drawCrystals(ctx, getActiveCrystals())
+  drawCrystals(ctx, getActiveCrystals(), currentTime)
   drawPlayer(ctx, player)
 }
 
