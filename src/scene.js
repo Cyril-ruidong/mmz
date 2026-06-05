@@ -5,12 +5,14 @@ export function createGameCanvas(container) {
   container.appendChild(canvas)
 
   const ctx = canvas.getContext('2d')
-  ctx.imageSmoothingEnabled = false
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
 
   function resize() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
-    ctx.imageSmoothingEnabled = false
+    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingQuality = 'high'
   }
 
   window.addEventListener('resize', resize)
@@ -26,8 +28,19 @@ function createTileCanvas(width, height) {
   canvas.width = width
   canvas.height = height
   const ctx = canvas.getContext('2d')
-  ctx.imageSmoothingEnabled = false
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
   return { canvas, ctx }
+}
+
+function drawGradientRect(ctx, x, y, w, h, color1, color2, vertical = true) {
+  const gradient = vertical
+    ? ctx.createLinearGradient(x, y, x, y + h)
+    : ctx.createLinearGradient(x, y, x + w, y)
+  gradient.addColorStop(0, color1)
+  gradient.addColorStop(1, color2)
+  ctx.fillStyle = gradient
+  ctx.fillRect(x, y, w, h)
 }
 
 function drawGrassTile(variant) {
@@ -36,35 +49,35 @@ function drawGrassTile(variant) {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  const baseColors = ['#3d7a1e', '#4a8c23', '#428420']
-  ctx.fillStyle = baseColors[variant % 3]
-  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#5a9a30', '#3a7a18')
 
-  const seed = variant * 1000
-  for (let i = 0; i < 12; i++) {
-    const x = ((seed + i * 127) % TILE_SIZE)
-    const y = ((seed + i * 251) % TILE_SIZE)
-    ctx.fillStyle = '#2a5a10'
-    ctx.fillRect(x, y, 1, 2)
-    ctx.fillRect(x + 1, y + 1, 1, 1)
+  ctx.fillStyle = '#4a8a26'
+  for (let i = 0; i < 20; i++) {
+    const x = (variant * 100 + i * 127) % TILE_SIZE
+    const y = (variant * 200 + i * 251) % TILE_SIZE
+    ctx.beginPath()
+    ctx.moveTo(x, y + 4)
+    ctx.lineTo(x + 1, y)
+    ctx.lineTo(x + 2, y + 4)
+    ctx.fill()
   }
 
-  for (let i = 0; i < 6; i++) {
-    const x = ((seed + i * 313) % TILE_SIZE)
-    const y = ((seed + i * 419) % TILE_SIZE)
-    ctx.fillStyle = '#5a9c30'
-    ctx.fillRect(x, y, 1, 1)
+  ctx.fillStyle = '#6aaa40'
+  for (let i = 0; i < 8; i++) {
+    const x = (variant * 150 + i * 173) % (TILE_SIZE - 4) + 2
+    const y = (variant * 250 + i * 311) % (TILE_SIZE - 6) + 3
+    ctx.fillRect(x, y, 2, 3)
   }
 
   if (variant % 5 === 0) {
-    const flowerColors = ['#ff69b4', '#ffd700', '#ff6347', '#7fffd4']
-    const color = flowerColors[variant % 4]
-    const x = (seed % 24) + 4
-    const y = (seed % 24) + 4
-    ctx.fillStyle = color
-    ctx.fillRect(x, y, 2, 2)
-    ctx.fillStyle = '#228b22'
-    ctx.fillRect(x, y + 2, 1, 2)
+    ctx.fillStyle = '#ff69b4'
+    ctx.beginPath()
+    ctx.arc(16, 16, 3, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#ff1493'
+    ctx.beginPath()
+    ctx.arc(16, 16, 1.5, 0, Math.PI * 2)
+    ctx.fill()
   }
 
   tileCache.set(key, canvas)
@@ -77,25 +90,20 @@ function drawDirtTile(variant) {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  const baseColors = ['#b89058', '#c4a06a', '#ad8050']
-  ctx.fillStyle = baseColors[variant % 3]
-  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#c4a06a', '#a08050')
 
-  const seed = variant * 1500
-  for (let i = 0; i < 8; i++) {
-    const x = ((seed + i * 173) % TILE_SIZE)
-    const y = ((seed + i * 289) % TILE_SIZE)
-    const w = 2 + (i % 3)
-    const h = 1 + (i % 2)
-    ctx.fillStyle = '#8a7040'
-    ctx.fillRect(x, y, w, h)
+  ctx.fillStyle = '#b49060'
+  for (let i = 0; i < 10; i++) {
+    const x = (variant * 100 + i * 137) % TILE_SIZE
+    const y = (variant * 200 + i * 271) % TILE_SIZE
+    ctx.fillRect(x, y, 3, 2)
   }
 
-  for (let i = 0; i < 4; i++) {
-    const x = ((seed + i * 397) % TILE_SIZE)
-    const y = ((seed + i * 457) % TILE_SIZE)
-    ctx.fillStyle = '#d4b880'
-    ctx.fillRect(x, y, 1, 1)
+  ctx.fillStyle = '#d4b080'
+  for (let i = 0; i < 5; i++) {
+    const x = (variant * 150 + i * 193) % TILE_SIZE
+    const y = (variant * 250 + i * 331) % TILE_SIZE
+    ctx.fillRect(x, y, 2, 1)
   }
 
   tileCache.set(key, canvas)
@@ -103,36 +111,30 @@ function drawDirtTile(variant) {
 }
 
 function drawWaterTile(time, variant) {
-  const key = 'water_' + Math.floor(time / 150) + '_' + variant
+  const key = 'water_' + Math.floor(time / 200) + '_' + variant
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  const waveOffset = ((time + variant * 100) % 500) / 500
+  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#5a8cb8', '#3a6c98')
 
-  ctx.fillStyle = '#3a6c90'
-  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+  const waveOffset = ((time + variant * 100) % 600) / 600
 
-  ctx.fillStyle = '#2a5c80'
-  for (let y = 0; y < TILE_SIZE; y += 3) {
+  ctx.fillStyle = 'rgba(100, 160, 220, 0.3)'
+  for (let y = 0; y < TILE_SIZE; y += 4) {
     const waveX = Math.sin((y + waveOffset * TILE_SIZE) * 0.4) * 3
-    ctx.fillRect(waveX + 1, y, 5, 2)
-    ctx.fillRect(waveX + 10, y + 1, 5, 2)
-    ctx.fillRect(waveX + 20, y, 5, 2)
+    ctx.beginPath()
+    ctx.ellipse(waveX + 8, y + 2, 6, 2, 0, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.ellipse(waveX + 22, y + 3, 5, 2, 0, 0, Math.PI * 2)
+    ctx.fill()
   }
 
-  ctx.fillStyle = '#4a7ca0'
-  for (let y = 1; y < TILE_SIZE; y += 4) {
-    const waveX = Math.sin((y + waveOffset * TILE_SIZE + 50) * 0.35) * 2
-    ctx.fillRect(waveX + 6, y, 3, 1)
-    ctx.fillRect(waveX + 17, y + 2, 3, 1)
-  }
-
-  ctx.fillStyle = '#5a8cb0'
-  ctx.globalAlpha = 0.6 + Math.sin(time * 0.003 + variant) * 0.2
-  ctx.fillRect(8, 12, 2, 1)
-  ctx.fillRect(20, 6, 1, 1)
-  ctx.globalAlpha = 1
+  ctx.fillStyle = 'rgba(150, 200, 255, 0.4)'
+  ctx.fillRect(6, 8, 3, 2)
+  ctx.fillRect(20, 14, 2, 2)
+  ctx.fillRect(12, 22, 2, 2)
 
   tileCache.set(key, canvas)
   return canvas
@@ -144,23 +146,23 @@ function drawRoadTile() {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  ctx.fillStyle = '#7a6a5a'
-  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#9a8a7a', '#7a6a5a')
 
-  ctx.fillStyle = '#5a4a3a'
-  for (let i = 0; i < 6; i++) {
-    const x = (i * 5 + 3) % TILE_SIZE
-    const y = (i * 7 + 8) % TILE_SIZE
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  for (let i = 0; i < 8; i++) {
+    const x = (i * 7 + 2) % TILE_SIZE
+    const y = (i * 11 + 5) % TILE_SIZE
     ctx.fillRect(x, y, 2, 2)
   }
 
-  ctx.fillStyle = '#d4d0c0'
+  ctx.fillStyle = '#d8d4c8'
   ctx.fillRect(15, 0, 2, TILE_SIZE)
-  ctx.fillStyle = '#e8e4d4'
+  ctx.fillStyle = '#f0ece0'
   ctx.fillRect(15, 0, 1, TILE_SIZE)
 
-  ctx.fillStyle = '#6a5a4a'
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
   ctx.fillRect(0, 0, TILE_SIZE, 2)
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
   ctx.fillRect(0, TILE_SIZE - 2, TILE_SIZE, 2)
 
   tileCache.set(key, canvas)
@@ -168,56 +170,47 @@ function drawRoadTile() {
 }
 
 function drawBuildingTile(type, time) {
-  const key = 'building_' + type + '_' + Math.floor(time / 1000)
+  const key = 'building_' + type + '_' + Math.floor(time / 2000)
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE * 4, TILE_SIZE * 4)
 
-  ctx.fillStyle = '#8a8a8a'
-  ctx.fillRect(0, 0, TILE_SIZE * 4, TILE_SIZE * 4)
+  drawGradientRect(ctx, 0, 0, TILE_SIZE * 4, TILE_SIZE * 4, '#9a9a9a', '#7a7a7a)
 
-  ctx.fillStyle = '#7a7a7a'
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
   for (let y = 4; y < TILE_SIZE * 4; y += 16) {
     ctx.fillRect(0, y, TILE_SIZE * 4, 3)
   }
 
-  ctx.fillStyle = '#6a6a6a'
-  ctx.fillRect(0, 0, TILE_SIZE * 4, 6)
+  drawGradientRect(ctx, 0, 0, TILE_SIZE * 4, 8, '#c44a3a', '#a03a2a')
 
-  ctx.fillStyle = '#c44a3a'
-  ctx.fillRect(6, 0, TILE_SIZE * 4 - 12, 12)
-
-  ctx.fillStyle = '#a03a2a'
-  ctx.fillRect(12, 6, TILE_SIZE * 4 - 24, 6)
-
-  ctx.fillStyle = '#2a2a2a'
-  ctx.fillRect(0, TILE_SIZE * 4 - 12, TILE_SIZE * 4, 12)
   ctx.fillStyle = '#1a1a1a'
-  ctx.fillRect(TILE_SIZE * 2 - 10, TILE_SIZE * 4 - 24, 20, 24)
+  ctx.fillRect(TILE_SIZE * 2 - 12, TILE_SIZE * 4 - 28, 24, 28)
+  ctx.fillStyle = '#2a2a2a'
+  ctx.fillRect(TILE_SIZE * 2 - 10, TILE_SIZE * 4 - 26, 20, 24)
 
   const windowLit = type === 'lit'
-  const flicker = Math.sin(time * 0.005) * 0.3 + 0.7
+  const flicker = Math.sin(time * 0.003) * 0.2 + 0.8
 
-  for (let wy = 18; wy < TILE_SIZE * 4 - 20; wy += 14) {
-    for (let wx = 10; wx < TILE_SIZE * 4 - 10; wx += 14) {
-      const isLit = windowLit && Math.sin(wx * 0.3 + wy * 0.2 + time * 0.002) > -0.3
-      
-      if (isLit) {
-        const intensity = 0.7 + Math.sin(wx + time * 0.003) * 0.3
-        ctx.fillStyle = `rgba(248, 248, 100, ${intensity * flicker})`
+  for (let wy = 18; wy < TILE_SIZE * 4 - 24; wy += 14) {
+    for (let wx = 10; wx < TILE_SIZE * 4 - 14; wx += 14) {
+      if (windowLit) {
+        const intensity = 0.7 + Math.sin(wx + time * 0.002) * 0.3
+        ctx.fillStyle = `rgba(255, 240, 150, ${intensity * flicker})`
         ctx.beginPath()
-        ctx.arc(wx + 5, wy + 5, 10, 0, Math.PI * 2)
+        ctx.arc(wx + 5, wy + 5, 8, 0, Math.PI * 2)
         ctx.fill()
         
-        ctx.fillStyle = '#f8f864'
+        const gradient = ctx.createRadialGradient(wx + 5, wy + 5, 0, wx + 5, wy + 5, 8)
+        gradient.addColorStop(0, 'rgba(255, 255, 200, 0.8)')
+        gradient.addColorStop(1, 'rgba(255, 200, 100, 0)')
+        ctx.fillStyle = gradient
+        ctx.fillRect(wx - 3, wy - 3, 16, 16)
+        
+        ctx.fillStyle = '#fff8c0'
         ctx.fillRect(wx, wy, 10, 10)
-        ctx.fillStyle = '#f8f8a0'
-        ctx.fillRect(wx + 2, wy + 2, 6, 6)
       } else {
-        ctx.fillStyle = '#3a5a70'
-        ctx.fillRect(wx, wy, 10, 10)
-        ctx.fillStyle = '#2a4a60'
-        ctx.fillRect(wx + 2, wy + 2, 6, 6)
+        drawGradientRect(ctx, wx, wy, 10, 10, '#4a6a80', '#3a5a70')
       }
     }
   }
@@ -232,39 +225,38 @@ function drawTreeTile(variant) {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  const baseColors = ['#3d7a1e', '#4a8c23', '#428420']
-  ctx.fillStyle = baseColors[variant % 3]
-  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
+  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#5a9a30', '#3a7a18')
 
   ctx.fillStyle = '#5a3a1a'
-  ctx.fillRect(13, 18, 6, 14)
+  ctx.fillRect(14, 20, 5, 12)
   ctx.fillStyle = '#6a4a2a'
-  ctx.fillRect(14, 18, 2, 14)
+  ctx.fillRect(15, 20, 3, 12)
 
-  ctx.fillStyle = '#1a4a10'
-  ctx.beginPath()
-  ctx.arc(16, 12, 12, 0, Math.PI * 2)
-  ctx.fill()
+  const trunkGradient = ctx.createLinearGradient(14, 20, 19, 32)
+  trunkGradient.addColorStop(0, '#6a4a2a')
+  trunkGradient.addColorStop(0.5, '#5a3a1a')
+  trunkGradient.addColorStop(1, '#4a2a0a')
+  ctx.fillStyle = trunkGradient
+  ctx.fillRect(14, 20, 5, 12)
 
-  ctx.fillStyle = '#2a5a1a'
+  const leafGradient = ctx.createRadialGradient(16, 12, 2, 16, 12, 14)
+  leafGradient.addColorStop(0, '#6aaa40')
+  leafGradient.addColorStop(0.5, '#4a8a28')
+  leafGradient.addColorStop(1, '#2a5a10')
+  ctx.fillStyle = leafGradient
   ctx.beginPath()
-  ctx.arc(12, 14, 7, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(20, 14, 7, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(16, 8, 6, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillStyle = '#3a6a2a'
-  ctx.beginPath()
-  ctx.arc(16, 12, 5, 0, Math.PI * 2)
+  ctx.arc(16, 12, 13, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#4a7a3a'
+  ctx.fillStyle = '#7aba50'
   ctx.beginPath()
-  ctx.arc(14, 10, 3, 0, Math.PI * 2)
+  ctx.arc(12, 10, 6, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(20, 10, 6, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(16, 6, 5, 0, Math.PI * 2)
   ctx.fill()
 
   tileCache.set(key, canvas)
@@ -277,72 +269,158 @@ function drawTankTile() {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  ctx.fillStyle = '#3a3a3a'
+  const bodyGradient = ctx.createLinearGradient(3, 8, 29, 24)
+  bodyGradient.addColorStop(0, '#5a7a4a')
+  bodyGradient.addColorStop(0.5, '#4a6a3a')
+  bodyGradient.addColorStop(1, '#3a5a2a')
+  ctx.fillStyle = bodyGradient
   ctx.fillRect(3, 8, 26, 16)
-  ctx.fillStyle = '#2a2a2a'
+
+  ctx.fillStyle = '#3a5a2a'
   ctx.fillRect(3, 8, 26, 2)
+  ctx.fillStyle = '#5a7a4a'
   ctx.fillRect(3, 22, 26, 2)
 
-  ctx.fillStyle = '#5a7a4a'
-  ctx.fillRect(5, 10, 22, 12)
-
-  ctx.fillStyle = '#3a5a3a'
-  ctx.fillRect(5, 10, 22, 2)
-  ctx.fillRect(5, 20, 22, 2)
-
-  ctx.fillStyle = '#4a6a4a'
+  const turretGradient = ctx.createRadialGradient(16, 16, 2, 16, 16, 8)
+  turretGradient.addColorStop(0, '#6a8a5a')
+  turretGradient.addColorStop(1, '#4a6a3a')
+  ctx.fillStyle = turretGradient
   ctx.fillRect(9, 12, 14, 8)
 
-  ctx.fillStyle = '#5a7a5a'
-  ctx.fillRect(11, 14, 10, 4)
-
   ctx.fillStyle = '#4a6a4a'
-  ctx.fillRect(14, 6, 4, 20)
-  ctx.fillStyle = '#3a5a4a'
-  ctx.fillRect(14, 2, 4, 6)
-
-  ctx.fillStyle = '#6a8a6a'
-  ctx.fillRect(15, 7, 2, 10)
+  ctx.fillRect(14, 4, 4, 22)
 
   ctx.fillStyle = '#3a5a3a'
-  ctx.fillRect(5, 10, 2, 12)
-  ctx.fillRect(25, 10, 2, 12)
+  ctx.fillRect(14, 0, 4, 6)
+
+  ctx.fillStyle = '#6a8a6a'
+  ctx.fillRect(15, 6, 2, 12)
 
   tileCache.set(key, canvas)
   return canvas
+}
+
+function drawNPCTankTile(color) {
+  const key = 'npc_tank_' + color
+  if (tileCache.has(key)) return tileCache.get(key)
+
+  const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
+
+  const bodyGradient = ctx.createLinearGradient(3, 8, 29, 24)
+  bodyGradient.addColorStop(0, color)
+  bodyGradient.addColorStop(0.5, shadeColor(color, -20))
+  bodyGradient.addColorStop(1, shadeColor(color, -40))
+  ctx.fillStyle = bodyGradient
+  ctx.fillRect(3, 8, 26, 16)
+
+  ctx.fillStyle = shadeColor(color, -30)
+  ctx.fillRect(3, 8, 26, 2)
+  ctx.fillStyle = shadeColor(color, 10)
+  ctx.fillRect(3, 22, 26, 2)
+
+  ctx.fillStyle = shadeColor(color, 10)
+  ctx.fillRect(9, 12, 14, 8)
+
+  ctx.fillStyle = shadeColor(color, -20)
+  ctx.fillRect(14, 4, 4, 22)
+
+  ctx.fillStyle = shadeColor(color, -40)
+  ctx.fillRect(14, 0, 4, 6)
+
+  tileCache.set(key, canvas)
+  return canvas
+}
+
+function drawNPCHumanTile(variant) {
+  const key = 'npc_human_' + variant
+  if (tileCache.has(key)) return tileCache.get(key)
+
+  const { canvas, ctx } = createTileCanvas(24, 32)
+
+  const skinColors = ['#f5d0b0', '#e5c0a0', '#d5b090', '#c5a080']
+  const clothColors = ['#4a6a9a', '#6a5a8a', '#5a7a6a', '#8a6a5a', '#7a5a6a']
+  const pantsColors = ['#3a4a5a', '#4a3a3a', '#5a4a3a', '#3a3a4a']
+
+  const skin = skinColors[variant % 4]
+  const cloth = clothColors[Math.floor(variant / 4) % 5]
+  const pants = pantsColors[Math.floor(variant / 8) % 4]
+
+  ctx.fillStyle = pants
+  ctx.fillRect(8, 20, 8, 12)
+
+  ctx.fillStyle = shadeColor(pants, -20)
+  ctx.fillRect(8, 28, 8, 4)
+
+  ctx.fillStyle = cloth
+  ctx.fillRect(6, 10, 12, 12)
+
+  ctx.fillStyle = shadeColor(cloth, -20)
+  ctx.fillRect(6, 10, 12, 3)
+
+  ctx.fillStyle = skin
+  ctx.beginPath()
+  ctx.arc(12, 6, 5, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.fillStyle = shadeColor(skin, -20)
+  ctx.beginPath()
+  ctx.arc(12, 3, 5, Math.PI, Math.PI * 2)
+  ctx.fill()
+
+  ctx.fillStyle = '#2a2a2a'
+  ctx.fillRect(10, 2, 1.5, 3)
+  ctx.fillRect(12.5, 2, 1.5, 3)
+
+  ctx.fillStyle = '#1a1a1a'
+  ctx.fillRect(10, 7, 2, 1)
+  ctx.fillRect(12, 7, 2, 1)
+
+  ctx.fillStyle = skin
+  ctx.fillRect(4, 12, 3, 6)
+  ctx.fillRect(17, 12, 3, 6)
+
+  tileCache.set(key, canvas)
+  return canvas
+}
+
+function shadeColor(color, percent) {
+  const num = parseInt(color.replace('#', ''), 16)
+  const amt = Math.round(2.55 * percent)
+  const R = (num >> 16) + amt
+  const G = (num >> 8 & 0x00FF) + amt
+  const B = (num & 0x0000FF) + amt
+  return '#' + (0x1000000 +
+    (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+    (B < 255 ? B < 1 ? 0 : B : 255)
+  ).toString(16).slice(1)
 }
 
 function drawCoinTile(time) {
   const key = 'coin_' + Math.floor(time / 200)
   if (tileCache.has(key)) return tileCache.get(key)
 
-  const { canvas, ctx } = createTileCanvas(18, 18)
+  const { canvas, ctx } = createTileCanvas(20, 20)
 
   const spin = Math.sin(time * 0.008)
   const width = 6 + Math.abs(spin) * 6
 
-  ctx.fillStyle = '#a0801a'
+  const gradient = ctx.createRadialGradient(10, 10, 0, 10, 10, 8)
+  gradient.addColorStop(0, '#f0d060')
+  gradient.addColorStop(0.7, '#c0a030')
+  gradient.addColorStop(1, '#a08020')
+  ctx.fillStyle = gradient
   ctx.beginPath()
-  ctx.ellipse(9, 9, width, 6, 0, 0, Math.PI * 2)
+  ctx.ellipse(10, 10, width, 7, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#c0a02a'
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
   ctx.beginPath()
-  ctx.ellipse(9, 9, width - 1, 5, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillStyle = '#e0c04a'
-  ctx.beginPath()
-  ctx.ellipse(9, 8, width - 2, 4, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillStyle = '#f0d06a'
-  ctx.beginPath()
-  ctx.ellipse(8, 7, 2, 1.5, 0, 0, Math.PI * 2)
+  ctx.ellipse(10 - width * 0.2, 10 - 2, width * 0.4, 3, 0, 0, Math.PI * 2)
   ctx.fill()
 
   ctx.fillStyle = '#806010'
-  ctx.fillRect(8, 4, 2, 10)
+  ctx.fillRect(9, 4, 2, 12)
 
   tileCache.set(key, canvas)
   return canvas
@@ -352,117 +430,37 @@ function drawLampPostTile(time) {
   const key = 'lamp_' + Math.floor(time / 500)
   if (tileCache.has(key)) return tileCache.get(key)
 
-  const { canvas, ctx } = createTileCanvas(20, 40)
+  const { canvas, ctx } = createTileCanvas(20, 44)
 
-  ctx.fillStyle = '#3a3a3a'
-  ctx.fillRect(8, 10, 4, 30)
+  const poleGradient = ctx.createLinearGradient(9, 10, 11, 44)
+  poleGradient.addColorStop(0, '#6a6a6a')
+  poleGradient.addColorStop(1, '#3a3a3a')
+  ctx.fillStyle = poleGradient
+  ctx.fillRect(9, 10, 3, 34)
 
   ctx.fillStyle = '#5a5a5a'
   ctx.fillRect(6, 8, 8, 4)
 
-  ctx.fillStyle = '#7a7a7a'
-  ctx.fillRect(4, 6, 12, 4)
+  const flicker = 0.8 + Math.sin(time * 0.006) * 0.2
 
-  const flicker = 0.7 + Math.sin(time * 0.008) * 0.3
-  ctx.fillStyle = `rgba(255, 255, 100, ${flicker * 0.4})`
+  const glowGradient = ctx.createRadialGradient(10, 6, 0, 10, 6, 20)
+  glowGradient.addColorStop(0, `rgba(255, 255, 180, ${flicker * 0.6})`)
+  glowGradient.addColorStop(0.5, `rgba(255, 255, 100, ${flicker * 0.2})`)
+  glowGradient.addColorStop(1, 'rgba(255, 200, 50, 0)')
+  ctx.fillStyle = glowGradient
   ctx.beginPath()
-  ctx.arc(10, 6, 14, 0, Math.PI * 2)
+  ctx.arc(10, 6, 20, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = `rgba(255, 255, 150, ${flicker})`
+  ctx.fillStyle = '#fff8c0'
   ctx.beginPath()
-  ctx.arc(10, 6, 6, 0, Math.PI * 2)
+  ctx.arc(10, 6, 5, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#f8f8c0'
+  ctx.fillStyle = '#ffffd0'
   ctx.beginPath()
-  ctx.arc(10, 6, 4, 0, Math.PI * 2)
+  ctx.arc(10, 6, 3, 0, Math.PI * 2)
   ctx.fill()
-
-  tileCache.set(key, canvas)
-  return canvas
-}
-
-function drawRockTile(size) {
-  const key = 'rock_' + size
-  if (tileCache.has(key)) return tileCache.get(key)
-
-  const { canvas, ctx } = createTileCanvas(size, size)
-
-  const s = size
-  ctx.fillStyle = '#6a6a6a'
-  ctx.beginPath()
-  ctx.moveTo(s * 0.2, s * 0.8)
-  ctx.lineTo(s * 0.1, s * 0.5)
-  ctx.lineTo(s * 0.3, s * 0.2)
-  ctx.lineTo(s * 0.7, s * 0.15)
-  ctx.lineTo(s * 0.9, s * 0.4)
-  ctx.lineTo(s * 0.85, s * 0.8)
-  ctx.closePath()
-  ctx.fill()
-
-  ctx.fillStyle = '#8a8a8a'
-  ctx.beginPath()
-  ctx.moveTo(s * 0.3, s * 0.2)
-  ctx.lineTo(s * 0.7, s * 0.15)
-  ctx.lineTo(s * 0.6, s * 0.4)
-  ctx.lineTo(s * 0.35, s * 0.45)
-  ctx.closePath()
-  ctx.fill()
-
-  ctx.fillStyle = '#4a4a4a'
-  ctx.beginPath()
-  ctx.moveTo(s * 0.6, s * 0.8)
-  ctx.lineTo(s * 0.85, s * 0.8)
-  ctx.lineTo(s * 0.9, s * 0.4)
-  ctx.lineTo(s * 0.7, s * 0.5)
-  ctx.closePath()
-  ctx.fill()
-
-  tileCache.set(key, canvas)
-  return canvas
-}
-
-function drawFlowerTile(type) {
-  const key = 'flower_' + type
-  if (tileCache.has(key)) return tileCache.get(key)
-
-  const { canvas, ctx } = createTileCanvas(16, 16)
-
-  const colors = {
-    0: { petal: '#ff69b4', center: '#ffd700' },
-    1: { petal: '#ffd700', center: '#ff8c00' },
-    2: { petal: '#ff6347', center: '#ffff00' },
-    3: { petal: '#7fffd4', center: '#ffffff' },
-    4: { petal: '#9370db', center: '#fffacd' }
-  }
-
-  const c = colors[type % 5]
-
-  ctx.fillStyle = c.petal
-  ctx.beginPath()
-  ctx.arc(8, 6, 3, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(5, 8, 3, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(11, 8, 3, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(6, 11, 3, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(10, 11, 3, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillStyle = c.center
-  ctx.beginPath()
-  ctx.arc(8, 9, 2.5, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillStyle = '#228b22'
-  ctx.fillRect(7, 12, 2, 4)
 
   tileCache.set(key, canvas)
   return canvas
@@ -473,11 +471,11 @@ const particles = []
 function createParticle(x, y, type) {
   particles.push({
     x, y,
-    vx: (Math.random() - 0.5) * 2,
-    vy: -Math.random() * 2 - 1,
+    vx: (Math.random() - 0.5) * 3,
+    vy: -Math.random() * 3 - 1,
     life: 1,
     type,
-    size: 2 + Math.random() * 3
+    size: 2 + Math.random() * 4
   })
 }
 
@@ -486,7 +484,8 @@ function updateParticles() {
     const p = particles[i]
     p.x += p.vx
     p.y += p.vy
-    p.life -= 0.02
+    p.vy += 0.1
+    p.life -= 0.025
     if (p.life <= 0) {
       particles.splice(i, 1)
     }
@@ -498,12 +497,13 @@ function drawParticles(ctx) {
     ctx.globalAlpha = p.life
     if (p.type === 'sparkle') {
       ctx.fillStyle = '#ffff88'
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+      ctx.fill()
     } else if (p.type === 'dust') {
-      ctx.fillStyle = '#a0a080'
-    } else {
-      ctx.fillStyle = '#ffffff'
+      ctx.fillStyle = '#a09080'
+      ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size)
     }
-    ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size)
   }
   ctx.globalAlpha = 1
 }
@@ -511,10 +511,87 @@ function drawParticles(ctx) {
 let lastCollectTime = 0
 
 export function onCollect(x, y) {
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 20; i++) {
     createParticle(x, y, 'sparkle')
   }
   lastCollectTime = Date.now()
+}
+
+const npcs = []
+
+export function createNPCs(count) {
+  npcs.length = 0
+  const types = ['tank_green', 'tank_red', 'tank_blue', 'human']
+  const colors = ['#4a7a4a', '#9a4a4a', '#4a6a9a', 'human']
+
+  for (let i = 0; i < count; i++) {
+    const typeIndex = i % types.length
+    npcs.push({
+      x: Math.random() * 800 + 100,
+      y: Math.random() * 400 + 100,
+      vx: (Math.random() - 0.5) * 2,
+      vy: (Math.random() - 0.5) * 2,
+      type: types[typeIndex],
+      color: colors[typeIndex],
+      direction: Math.random() * Math.PI * 2,
+      speed: 0.5 + Math.random() * 1,
+      changeTimer: 0,
+      variant: i
+    })
+  }
+}
+
+export function updateNPCs(width, height, time) {
+  const roadY = height / 2
+  const margin = 50
+
+  for (const npc of npcs) {
+    npc.changeTimer--
+    if (npc.changeTimer <= 0) {
+      npc.vx = (Math.random() - 0.5) * 2
+      npc.vy = (Math.random() - 0.5) * 2
+      npc.changeTimer = 100 + Math.random() * 200
+    }
+
+    if (npc.type === 'human') {
+      npc.x += npc.vx * 0.5
+      npc.y += npc.vy * 0.5
+    } else {
+      npc.x += npc.vx
+      npc.y += npc.vy
+    }
+
+    if (npc.x < margin) { npc.x = margin; npc.vx *= -1 }
+    if (npc.x > width - margin) { npc.x = width - margin; npc.vx *= -1 }
+    if (npc.y < margin) { npc.y = margin; npc.vy *= -1 }
+    if (npc.y > height - margin) { npc.y = height - margin; npc.vy *= -1 }
+
+    if (Math.abs(npc.vx) > 0.1 || Math.abs(npc.vy) > 0.1) {
+      npc.direction = Math.atan2(npc.vy, npc.vx)
+    }
+  }
+}
+
+export function drawNPCs(ctx, time) {
+  for (const npc of npcs) {
+    if (npc.type === 'human') {
+      const humanTile = drawNPCHumanTile(npc.variant)
+      ctx.save()
+      ctx.translate(npc.x, npc.y)
+      if (npc.vx < 0) {
+        ctx.scale(-1, 1)
+      }
+      ctx.drawImage(humanTile, -12, -16)
+      ctx.restore()
+    } else {
+      const tankTile = drawNPCTankTile(npc.color)
+      ctx.save()
+      ctx.translate(npc.x, npc.y)
+      ctx.rotate(npc.direction + Math.PI / 2)
+      ctx.drawImage(tankTile, -16, -16)
+      ctx.restore()
+    }
+  }
 }
 
 export function drawFCMetalslugMap(ctx, width, height, time) {
@@ -572,8 +649,15 @@ export function drawFCMetalslugMap(ctx, width, height, time) {
     ctx.drawImage(buildingTile, bx, by)
   }
 
+  for (let i = 0; i < 16; i++) {
+    const px = (0.03 + i * 0.062) * width
+    const py = roadY - TILE_SIZE * 1.5 + (i % 2) * TILE_SIZE * 3
+    const lampTile = drawLampPostTile(time)
+    ctx.drawImage(lampTile, px, py)
+  }
+
   const treePositions = []
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 15; i++) {
     treePositions.push({
       x: (0.05 + (i % 5) * 0.2 + Math.sin(i * 123) * 0.02),
       y: (0.08 + Math.floor(i / 5) * 0.22 + Math.cos(i * 234) * 0.02),
@@ -590,38 +674,12 @@ export function drawFCMetalslugMap(ctx, width, height, time) {
     }
   }
 
-  for (let i = 0; i < 16; i++) {
-    const px = (0.03 + i * 0.062) * width
-    const py = roadY - TILE_SIZE * 1.5 + (i % 2) * TILE_SIZE * 3
-    const lampTile = drawLampPostTile(time)
-    ctx.drawImage(lampTile, px, py)
-  }
-
-  for (let i = 0; i < 8; i++) {
-    const rx = (0.15 + i * 0.11) * width
-    const ry = (0.35 + (i % 3) * 0.12) * height
-    if (Math.abs(ry - roadY) > TILE_SIZE) {
-      const size = 16 + (i % 3) * 8
-      const rockTile = drawRockTile(size)
-      ctx.drawImage(rockTile, rx, ry)
-    }
-  }
-
-  for (let i = 0; i < 25; i++) {
-    const fx = (0.02 + (i * 0.041) % 0.95) * width
-    const fy = (0.05 + (i * 0.037) % 0.4 + (i % 2) * 0.4) * height
-    if (Math.abs(fy - roadY) > TILE_SIZE * 1.5) {
-      const flowerTile = drawFlowerTile(i)
-      ctx.drawImage(flowerTile, fx, fy)
-    }
-  }
-
   updateParticles()
   drawParticles(ctx)
 
-  if (Date.now() - lastCollectTime < 100) {
-    const flashAlpha = 1 - (Date.now() - lastCollectTime) / 100
-    ctx.fillStyle = `rgba(255, 255, 200, ${flashAlpha * 0.3})`
+  if (Date.now() - lastCollectTime < 150) {
+    const flashAlpha = 1 - (Date.now() - lastCollectTime) / 150
+    ctx.fillStyle = `rgba(255, 255, 220, ${flashAlpha * 0.4})`
     ctx.fillRect(0, 0, width, height)
   }
 }
@@ -630,20 +688,22 @@ export function drawTankSprite(ctx, x, y) {
   const tankTile = drawTankTile()
   ctx.drawImage(tankTile, x - TILE_SIZE / 2, y - TILE_SIZE / 2)
 
-  if (Math.random() > 0.95) {
-    createParticle(x + 4, y - 12, 'dust')
-    createParticle(x - 4, y - 12, 'dust')
+  if (Math.random() > 0.92) {
+    createParticle(x + (Math.random() - 0.5) * 10, y - 8, 'dust')
   }
 }
 
 export function drawCoinSprite(ctx, x, y, time) {
   const coinTile = drawCoinTile(time)
-  ctx.drawImage(coinTile, x - 9, y - 9)
+  ctx.drawImage(coinTile, x - 10, y - 10)
 
   ctx.globalAlpha = 0.15 + Math.sin(time * 0.005) * 0.1
-  ctx.fillStyle = '#ffff00'
+  const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 16)
+  glowGradient.addColorStop(0, 'rgba(255, 255, 100, 0.6)')
+  glowGradient.addColorStop(1, 'rgba(255, 255, 50, 0)')
+  ctx.fillStyle = glowGradient
   ctx.beginPath()
-  ctx.arc(x, y, 14, 0, Math.PI * 2)
+  ctx.arc(x, y, 16, 0, Math.PI * 2)
   ctx.fill()
   ctx.globalAlpha = 1
 }

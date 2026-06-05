@@ -1,17 +1,19 @@
 import './style.css'
-import { createGameCanvas, drawFCMetalslugMap } from './scene.js'
+import { createGameCanvas, drawFCMetalslugMap, createNPCs, updateNPCs, drawNPCs } from './scene.js'
 import { createPlayer, updatePlayer, drawPlayer, getPlayerBounds } from './player.js'
 import { spawnCrystal, updateCrystals, drawCrystals, getCrystalBounds, collectCrystal, getActiveCrystals } from './crystals.js'
 import { checkPlayerCrystalCollision } from './collision.js'
 import { updateScore, hideGameTip } from './ui.js'
 
 const INITIAL_CRYSTALS = 6
+const NPC_COUNT = 6
 const CRYSTAL_RESPAWN_DELAY = 600
 
 const container = document.getElementById('game-container')
 const { canvas, ctx } = createGameCanvas(container)
 
 const player = createPlayer(ctx)
+createNPCs(NPC_COUNT)
 
 const mouse = { x: 0.5, y: 0.5 }
 
@@ -65,6 +67,9 @@ function animate(currentTime) {
   requestAnimationFrame(animate)
 
   drawFCMetalslugMap(ctx, canvas.width, canvas.height, currentTime)
+
+  updateNPCs(canvas.width, canvas.height, currentTime)
+  drawNPCs(ctx, currentTime)
 
   updatePlayer(player, mouse.x, mouse.y, canvas.width, canvas.height)
   updateCrystals(getActiveCrystals(), currentTime, canvas.height)
