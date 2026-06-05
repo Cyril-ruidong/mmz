@@ -267,34 +267,70 @@ function drawTankTile() {
   const key = 'tank'
   if (tileCache.has(key)) return tileCache.get(key)
 
-  const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
+  const { canvas, ctx } = createTileCanvas(64, 48)
 
-  const bodyGradient = ctx.createLinearGradient(3, 8, 29, 24)
-  bodyGradient.addColorStop(0, '#5a7a4a')
-  bodyGradient.addColorStop(0.5, '#4a6a3a')
-  bodyGradient.addColorStop(1, '#3a5a2a')
+  // 红狼坦克 - 红色主色调
+  // 车身
+  const bodyGradient = ctx.createLinearGradient(8, 12, 56, 36)
+  bodyGradient.addColorStop(0, '#c42c2c')
+  bodyGradient.addColorStop(0.5, '#a41c1c')
+  bodyGradient.addColorStop(1, '#7a0f0f')
   ctx.fillStyle = bodyGradient
-  ctx.fillRect(3, 8, 26, 16)
+  ctx.fillRect(8, 12, 48, 24)
 
-  ctx.fillStyle = '#3a5a2a'
-  ctx.fillRect(3, 8, 26, 2)
-  ctx.fillStyle = '#5a7a4a'
-  ctx.fillRect(3, 22, 26, 2)
+  // 车身边缘高光
+  ctx.fillStyle = '#e84c4c'
+  ctx.fillRect(10, 12, 44, 3)
+  ctx.fillStyle = '#4a0a0a'
+  ctx.fillRect(10, 33, 44, 3)
 
-  const turretGradient = ctx.createRadialGradient(16, 16, 2, 16, 16, 8)
-  turretGradient.addColorStop(0, '#6a8a5a')
-  turretGradient.addColorStop(1, '#4a6a3a')
-  ctx.fillStyle = turretGradient
-  ctx.fillRect(9, 12, 14, 8)
+  // 炮塔
+  ctx.fillStyle = '#b42424'
+  ctx.beginPath()
+  ctx.ellipse(32, 24, 14, 12, 0, 0, Math.PI * 2)
+  ctx.fill()
 
-  ctx.fillStyle = '#4a6a4a'
-  ctx.fillRect(14, 4, 4, 22)
+  // 炮塔高光
+  ctx.fillStyle = '#d44444'
+  ctx.beginPath()
+  ctx.ellipse(30, 22, 8, 7, -0.3, 0, Math.PI * 2)
+  ctx.fill()
 
-  ctx.fillStyle = '#3a5a3a'
-  ctx.fillRect(14, 0, 4, 6)
+  // 炮管
+  ctx.fillStyle = '#9a1a1a'
+  ctx.fillRect(42, 20, 18, 8)
+  ctx.fillStyle = '#7a0f0f'
+  ctx.fillRect(42, 20, 18, 3)
 
-  ctx.fillStyle = '#6a8a6a'
-  ctx.fillRect(15, 6, 2, 12)
+  // 炮口
+  ctx.fillStyle = '#2a0505'
+  ctx.fillRect(57, 21, 3, 6)
+
+  // 履带
+  ctx.fillStyle = '#3a3a3a'
+  ctx.fillRect(4, 18, 56, 14)
+  ctx.fillStyle = '#2a2a2a'
+  ctx.fillRect(4, 18, 56, 4)
+  ctx.fillRect(4, 28, 56, 4)
+
+  // 履带纹理
+  ctx.fillStyle = '#1a1a1a'
+  for (let i = 0; i < 10; i++) {
+    ctx.fillRect(8 + i * 5, 19, 2, 3)
+    ctx.fillRect(8 + i * 5, 29, 2, 3)
+  }
+
+  // 车身装甲细节
+  ctx.fillStyle = '#6a0a0a'
+  ctx.fillRect(14, 16, 4, 8)
+  ctx.fillRect(28, 14, 8, 12)
+  ctx.fillRect(44, 16, 4, 8)
+
+  // 观察窗
+  ctx.fillStyle = '#5a8ac4'
+  ctx.fillRect(30, 16, 4, 4)
+  ctx.fillStyle = '#7abae4'
+  ctx.fillRect(31, 17, 2, 2)
 
   tileCache.set(key, canvas)
   return canvas
@@ -304,28 +340,28 @@ function drawNPCTankTile(color) {
   const key = 'npc_tank_' + color
   if (tileCache.has(key)) return tileCache.get(key)
 
-  const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
+  const { canvas, ctx } = createTileCanvas(48, 36)
 
-  const bodyGradient = ctx.createLinearGradient(3, 8, 29, 24)
+  const bodyGradient = ctx.createLinearGradient(4, 8, 44, 28)
   bodyGradient.addColorStop(0, color)
   bodyGradient.addColorStop(0.5, shadeColor(color, -20))
   bodyGradient.addColorStop(1, shadeColor(color, -40))
   ctx.fillStyle = bodyGradient
-  ctx.fillRect(3, 8, 26, 16)
+  ctx.fillRect(4, 8, 40, 20)
 
   ctx.fillStyle = shadeColor(color, -30)
-  ctx.fillRect(3, 8, 26, 2)
+  ctx.fillRect(4, 8, 40, 3)
   ctx.fillStyle = shadeColor(color, 10)
-  ctx.fillRect(3, 22, 26, 2)
+  ctx.fillRect(4, 25, 40, 3)
 
   ctx.fillStyle = shadeColor(color, 10)
-  ctx.fillRect(9, 12, 14, 8)
+  ctx.fillRect(12, 10, 24, 14)
 
   ctx.fillStyle = shadeColor(color, -20)
-  ctx.fillRect(14, 4, 4, 22)
+  ctx.fillRect(20, 4, 6, 22)
 
   ctx.fillStyle = shadeColor(color, -40)
-  ctx.fillRect(14, 0, 4, 6)
+  ctx.fillRect(20, 0, 6, 6)
 
   tileCache.set(key, canvas)
   return canvas
@@ -684,12 +720,19 @@ export function drawFCMetalslugMap(ctx, width, height, time) {
   }
 }
 
-export function drawTankSprite(ctx, x, y) {
+export function drawTankSprite(ctx, x, y, isInTank) {
   const tankTile = drawTankTile()
-  ctx.drawImage(tankTile, x - TILE_SIZE / 2, y - TILE_SIZE / 2)
+  if (isInTank) {
+    ctx.drawImage(tankTile, x - 32, y - 24)
+  } else {
+    // 画出坦克（空车）
+    ctx.globalAlpha = 0.7
+    ctx.drawImage(tankTile, x - 32, y - 24)
+    ctx.globalAlpha = 1
+  }
 
-  if (Math.random() > 0.92) {
-    createParticle(x + (Math.random() - 0.5) * 10, y - 8, 'dust')
+  if (isInTank && Math.random() > 0.92) {
+    createParticle(x + (Math.random() - 0.5) * 20, y - 16, 'dust')
   }
 }
 
