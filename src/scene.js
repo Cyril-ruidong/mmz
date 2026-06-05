@@ -175,7 +175,7 @@ function drawBuildingTile(type, time) {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE * 4, TILE_SIZE * 4)
 
-  drawGradientRect(ctx, 0, 0, TILE_SIZE * 4, TILE_SIZE * 4, '#9a9a9a', '#7a7a7a)
+  drawGradientRect(ctx, 0, 0, TILE_SIZE * 4, TILE_SIZE * 4, '#9a9a9a', '#7a7a7a')
 
   ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
   for (let y = 4; y < TILE_SIZE * 4; y += 16) {
