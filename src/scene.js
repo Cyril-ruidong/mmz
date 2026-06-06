@@ -367,7 +367,38 @@ function drawNPCTankTile(color) {
   return canvas
 }
 
-function drawNPCHumanTile(variant) {
+export function drawTankSprite(ctx, x, y, isInTank) {
+  const tankTile = drawTankTile()
+  if (isInTank) {
+    ctx.drawImage(tankTile, x - 32, y - 24)
+  } else {
+    // 画出坦克（空车）
+    ctx.globalAlpha = 0.7
+    ctx.drawImage(tankTile, x - 32, y - 24)
+    ctx.globalAlpha = 1
+  }
+
+  if (isInTank && Math.random() > 0.92) {
+    createParticle(x + (Math.random() - 0.5) * 20, y - 16, 'dust')
+  }
+}
+
+export function drawCoinSprite(ctx, x, y, time) {
+  const coinTile = drawCoinTile(time)
+  ctx.drawImage(coinTile, x - 10, y - 10)
+
+  ctx.globalAlpha = 0.15 + Math.sin(time * 0.005) * 0.1
+  const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 16)
+  glowGradient.addColorStop(0, 'rgba(255, 255, 100, 0.6)')
+  glowGradient.addColorStop(1, 'rgba(255, 255, 50, 0)')
+  ctx.fillStyle = glowGradient
+  ctx.beginPath()
+  ctx.arc(x, y, 16, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalAlpha = 1
+}
+
+export function drawNPCHumanTile(variant) {
   const key = 'npc_human_' + variant
   if (tileCache.has(key)) return tileCache.get(key)
 
@@ -718,35 +749,4 @@ export function drawFCMetalslugMap(ctx, width, height, time) {
     ctx.fillStyle = `rgba(255, 255, 220, ${flashAlpha * 0.4})`
     ctx.fillRect(0, 0, width, height)
   }
-}
-
-export function drawTankSprite(ctx, x, y, isInTank) {
-  const tankTile = drawTankTile()
-  if (isInTank) {
-    ctx.drawImage(tankTile, x - 32, y - 24)
-  } else {
-    // 画出坦克（空车）
-    ctx.globalAlpha = 0.7
-    ctx.drawImage(tankTile, x - 32, y - 24)
-    ctx.globalAlpha = 1
-  }
-
-  if (isInTank && Math.random() > 0.92) {
-    createParticle(x + (Math.random() - 0.5) * 20, y - 16, 'dust')
-  }
-}
-
-export function drawCoinSprite(ctx, x, y, time) {
-  const coinTile = drawCoinTile(time)
-  ctx.drawImage(coinTile, x - 10, y - 10)
-
-  ctx.globalAlpha = 0.15 + Math.sin(time * 0.005) * 0.1
-  const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 16)
-  glowGradient.addColorStop(0, 'rgba(255, 255, 100, 0.6)')
-  glowGradient.addColorStop(1, 'rgba(255, 255, 50, 0)')
-  ctx.fillStyle = glowGradient
-  ctx.beginPath()
-  ctx.arc(x, y, 16, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.globalAlpha = 1
 }
