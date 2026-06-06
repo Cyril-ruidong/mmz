@@ -127,7 +127,7 @@ function animate(currentTime) {
     drawNPCs(ctx, currentTime)
 
     if (!player.isInTank) {
-      drawTankSprite(ctx, player.tankX, player.tankY, false)
+      drawTankSprite(ctx, player.tankX, player.tankY, false, player.direction || 0)
     }
   }
 
@@ -139,7 +139,7 @@ function animate(currentTime) {
   drawCrystals(ctx, getActiveCrystals(), currentTime)
   
   if (player.isInTank) {
-    drawTankSprite(ctx, player.x, player.y, true)
+    drawTankSprite(ctx, player.x, player.y, true, player.direction || 0)
   }
   
   drawPlayer(ctx, player)

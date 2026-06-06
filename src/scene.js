@@ -448,140 +448,12 @@ function drawTankTile() {
   const key = 'tank_detailed'
   if (tileCache.has(key)) return tileCache.get(key)
 
-  const { canvas, ctx } = createTileCanvas(64, 48)
+  const { canvas, ctx } = createTileCanvas(256, 32)
+  ctx.imageSmoothingEnabled = false
 
-  // 车身阴影
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'
-  ctx.beginPath()
-  ctx.ellipse(32, 42, 28, 4, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 履带底色
-  const trackGrad = ctx.createLinearGradient(4, 16, 60, 32)
-  trackGrad.addColorStop(0, '#3a3a3a')
-  trackGrad.addColorStop(0.5, '#4a4a4a')
-  trackGrad.addColorStop(1, '#3a3a3a')
-  ctx.fillStyle = trackGrad
-  ctx.fillRect(4, 16, 56, 16)
-
-  // 履带边缘
-  ctx.fillStyle = '#2a2a2a'
-  ctx.fillRect(4, 16, 56, 4)
-  ctx.fillRect(4, 28, 56, 4)
-
-  // 履带纹理（负重轮）
-  ctx.fillStyle = '#4a4a4a'
-  for (let i = 0; i < 7; i++) {
-    ctx.beginPath()
-    ctx.arc(10 + i * 8, 24, 5, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.fillStyle = '#3a3a3a'
-    ctx.beginPath()
-    ctx.arc(10 + i * 8, 24, 3, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.fillStyle = '#4a4a4a'
+  for (let i = 0; i < 8; i++) {
+    drawPixelTank(ctx, i * 32, 4, i, '#d84a4a', 1)
   }
-
-  // 主动轮
-  ctx.fillStyle = '#5a5a5a'
-  ctx.beginPath()
-  ctx.arc(8, 24, 7, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.fillStyle = '#3a3a3a'
-  ctx.beginPath()
-  ctx.arc(8, 24, 4, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 诱导轮
-  ctx.fillStyle = '#5a5a5a'
-  ctx.beginPath()
-  ctx.arc(56, 24, 6, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 车身主体
-  const bodyGrad = ctx.createLinearGradient(8, 10, 56, 38)
-  bodyGrad.addColorStop(0, '#d85c5c')
-  bodyGrad.addColorStop(0.3, '#c42c2c')
-  bodyGrad.addColorStop(0.7, '#a41c1c')
-  bodyGrad.addColorStop(1, '#8a1010')
-  ctx.fillStyle = bodyGrad
-  ctx.fillRect(8, 10, 48, 24)
-
-  // 车身高光
-  ctx.fillStyle = '#e86c6c'
-  ctx.fillRect(10, 10, 44, 3)
-  ctx.fillRect(10, 10, 3, 22)
-
-  // 车身阴影
-  ctx.fillStyle = '#7a0a0a'
-  ctx.fillRect(10, 31, 44, 3)
-  ctx.fillRect(53, 10, 3, 24)
-
-  // 装甲板
-  ctx.fillStyle = '#6a0a0a'
-  ctx.fillRect(14, 14, 6, 12)
-  ctx.fillRect(28, 12, 10, 16)
-  ctx.fillRect(44, 14, 6, 12)
-
-  // 装甲高光
-  ctx.fillStyle = '#8a1a1a'
-  ctx.fillRect(14, 14, 6, 2)
-  ctx.fillRect(28, 12, 10, 2)
-  ctx.fillRect(44, 14, 6, 2)
-
-  // 观察窗
-  ctx.fillStyle = '#2a4a6a'
-  ctx.fillRect(30, 15, 6, 6)
-  ctx.fillStyle = '#5a8ab4'
-  ctx.fillRect(31, 16, 4, 4)
-  ctx.fillStyle = '#8abae4'
-  ctx.fillRect(32, 17, 2, 2)
-
-  // 炮塔底座
-  ctx.fillStyle = '#b42424'
-  ctx.beginPath()
-  ctx.ellipse(32, 22, 16, 14, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 炮塔渐变
-  const turretGrad = ctx.createRadialGradient(30, 20, 2, 32, 22, 16)
-  turretGrad.addColorStop(0, '#d44444')
-  turretGrad.addColorStop(0.7, '#b42424')
-  turretGrad.addColorStop(1, '#8a1a1a')
-  ctx.fillStyle = turretGrad
-  ctx.beginPath()
-  ctx.ellipse(32, 22, 14, 12, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 炮塔高光
-  ctx.fillStyle = '#e86464'
-  ctx.beginPath()
-  ctx.ellipse(30, 20, 8, 6, -0.3, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 炮管
-  const barrelGrad = ctx.createLinearGradient(42, 18, 60, 30)
-  barrelGrad.addColorStop(0, '#a41c1c')
-  barrelGrad.addColorStop(0.5, '#9a1a1a')
-  barrelGrad.addColorStop(1, '#7a0f0f')
-  ctx.fillStyle = barrelGrad
-  ctx.fillRect(42, 18, 20, 10)
-
-  // 炮管高光
-  ctx.fillStyle = '#c42c2c'
-  ctx.fillRect(42, 18, 20, 3)
-
-  // 炮口
-  ctx.fillStyle = '#2a0505'
-  ctx.fillRect(59, 19, 4, 8)
-  ctx.fillStyle = '#1a0303'
-  ctx.fillRect(60, 20, 2, 6)
-
-  // 排气口
-  ctx.fillStyle = '#4a4a4a'
-  ctx.fillRect(18, 26, 4, 4)
-  ctx.fillStyle = '#3a3a3a'
-  ctx.fillRect(19, 27, 2, 2)
 
   tileCache.set(key, canvas)
   return canvas
@@ -591,62 +463,12 @@ function drawNPCTankTile(color) {
   const key = 'npc_tank_detailed_' + color
   if (tileCache.has(key)) return tileCache.get(key)
 
-  const { canvas, ctx } = createTileCanvas(48, 36)
+  const { canvas, ctx } = createTileCanvas(256, 32)
+  ctx.imageSmoothingEnabled = false
 
-  // 阴影
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
-  ctx.beginPath()
-  ctx.ellipse(24, 32, 20, 3, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 履带
-  const trackGrad = ctx.createLinearGradient(4, 10, 44, 26)
-  trackGrad.addColorStop(0, shadeColor(color, -40))
-  trackGrad.addColorStop(0.5, shadeColor(color, -20))
-  trackGrad.addColorStop(1, shadeColor(color, -40))
-  ctx.fillStyle = trackGrad
-  ctx.fillRect(4, 10, 40, 16)
-
-  ctx.fillStyle = shadeColor(color, -50)
-  ctx.fillRect(4, 10, 40, 3)
-  ctx.fillRect(4, 23, 40, 3)
-
-  // 履带轮
-  for (let i = 0; i < 5; i++) {
-    ctx.fillStyle = shadeColor(color, -30)
-    ctx.beginPath()
-    ctx.arc(8 + i * 8, 18, 4, 0, Math.PI * 2)
-    ctx.fill()
+  for (let i = 0; i < 8; i++) {
+    drawPixelTank(ctx, i * 32, 4, i, color, 1)
   }
-
-  // 车身
-  const bodyGrad = ctx.createLinearGradient(4, 6, 44, 26)
-  bodyGrad.addColorStop(0, shadeColor(color, 20))
-  bodyGrad.addColorStop(0.5, color)
-  bodyGrad.addColorStop(1, shadeColor(color, -30))
-  ctx.fillStyle = bodyGrad
-  ctx.fillRect(4, 6, 40, 18)
-
-  // 高光边
-  ctx.fillStyle = shadeColor(color, 30)
-  ctx.fillRect(4, 6, 38, 2)
-
-  // 炮塔
-  ctx.fillStyle = shadeColor(color, 10)
-  ctx.beginPath()
-  ctx.ellipse(24, 14, 12, 10, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillStyle = shadeColor(color, 25)
-  ctx.beginPath()
-  ctx.ellipse(23, 13, 7, 6, -0.3, 0, Math.PI * 2)
-  ctx.fill()
-
-  // 炮管
-  ctx.fillStyle = shadeColor(color, -20)
-  ctx.fillRect(32, 10, 12, 6)
-  ctx.fillStyle = shadeColor(color, -35)
-  ctx.fillRect(32, 10, 12, 2)
 
   tileCache.set(key, canvas)
   return canvas
@@ -735,6 +557,251 @@ function shadeColor(color, percent) {
     (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
     (B < 255 ? B < 1 ? 0 : B : 255)
   ).toString(16).slice(1)
+}
+
+function getDirectionIndex(angle) {
+  const normalized = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2)
+  const octant = Math.floor((normalized + Math.PI / 8) / (Math.PI / 4)) % 8
+  return octant
+}
+
+function drawPixelTank(ctx, x, y, direction, color, scale = 1) {
+  const dir = direction % 8
+  const tankWidth = 32 * scale
+  const tankHeight = 24 * scale
+
+  ctx.save()
+  ctx.translate(x, y)
+
+  const baseColor = color || '#d84a4a'
+  const lightColor = shadeColor(baseColor, 20)
+  const darkColor = shadeColor(baseColor, -20)
+  const darkerColor = shadeColor(baseColor, -40)
+  const trackColor = '#3a3a3a'
+  const trackLight = '#4a4a4a'
+  const gunColor = shadeColor(baseColor, -10)
+
+  const drawPixel = (px, py, pc) => {
+    ctx.fillStyle = pc
+    ctx.fillRect(px * scale, py * scale, scale, scale)
+  }
+
+  if (dir === 0) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(4, 4 + i * 2, trackColor)
+      drawPixel(5, 4 + i * 2, trackColor)
+      drawPixel(6, 4 + i * 2, trackLight)
+      drawPixel(7, 4 + i * 2, trackLight)
+      drawPixel(24, 4 + i * 2, trackColor)
+      drawPixel(25, 4 + i * 2, trackColor)
+      drawPixel(26, 4 + i * 2, trackLight)
+      drawPixel(27, 4 + i * 2, trackLight)
+    }
+    for (let y = 8; y < 20; y++) {
+      for (let x = 8; x < 24; x++) {
+        if (x === 8 || x === 23 || y === 8 || y === 19) {
+          drawPixel(x, y, darkColor)
+        } else {
+          drawPixel(x, y, baseColor)
+        }
+      }
+    }
+    for (let y = 10; y < 16; y++) {
+      for (let x = 12; x < 20; x++) {
+        if (x === 12 || x === 19 || y === 10 || y === 15) {
+          drawPixel(x, y, lightColor)
+        } else {
+          drawPixel(x, y, baseColor)
+        }
+      }
+    }
+    drawPixel(15, 4, gunColor)
+    drawPixel(16, 4, gunColor)
+    drawPixel(15, 5, gunColor)
+    drawPixel(16, 5, gunColor)
+    drawPixel(15, 6, gunColor)
+    drawPixel(16, 6, gunColor)
+    drawPixel(15, 7, gunColor)
+    drawPixel(16, 7, gunColor)
+  } else if (dir === 1) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(8 + i, 2, trackColor)
+      drawPixel(9 + i, 3, trackColor)
+      drawPixel(18 + i, 2, trackLight)
+      drawPixel(19 + i, 3, trackLight)
+    }
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 10 - i; j++) {
+        drawPixel(10 + i + j, 6 + i, baseColor)
+        drawPixel(10 + j, 6 + i, baseColor)
+      }
+    }
+    drawPixel(22, 0, gunColor)
+    drawPixel(23, 0, gunColor)
+    drawPixel(24, 1, gunColor)
+    drawPixel(25, 1, gunColor)
+  } else if (dir === 2) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(4 + i * 2, 4, trackColor)
+      drawPixel(4 + i * 2, 5, trackColor)
+      drawPixel(4 + i * 2, 6, trackLight)
+      drawPixel(4 + i * 2, 7, trackLight)
+    }
+    for (let x = 8; x < 24; x++) {
+      for (let y = 8; y < 16; y++) {
+        if (x === 8 || x === 23 || y === 8 || y === 15) {
+          drawPixel(x, y, darkColor)
+        } else {
+          drawPixel(x, y, baseColor)
+        }
+      }
+    }
+    drawPixel(24, 11, gunColor)
+    drawPixel(25, 11, gunColor)
+    drawPixel(26, 11, gunColor)
+    drawPixel(27, 11, gunColor)
+    drawPixel(24, 12, gunColor)
+    drawPixel(25, 12, gunColor)
+  } else if (dir === 3) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(8 + i, 20, trackColor)
+      drawPixel(9 + i, 21, trackColor)
+      drawPixel(18 + i, 20, trackLight)
+      drawPixel(19 + i, 21, trackLight)
+    }
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 10 - i; j++) {
+        drawPixel(10 + i + j, 18 - i, baseColor)
+        drawPixel(10 + j, 18 - i, baseColor)
+      }
+    }
+    drawPixel(22, 22, gunColor)
+    drawPixel(23, 22, gunColor)
+    drawPixel(24, 23, gunColor)
+    drawPixel(25, 23, gunColor)
+  } else if (dir === 4) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(4, 4 + i * 2, trackColor)
+      drawPixel(5, 4 + i * 2, trackColor)
+      drawPixel(6, 4 + i * 2, trackLight)
+      drawPixel(7, 4 + i * 2, trackLight)
+      drawPixel(24, 4 + i * 2, trackColor)
+      drawPixel(25, 4 + i * 2, trackColor)
+      drawPixel(26, 4 + i * 2, trackLight)
+      drawPixel(27, 4 + i * 2, trackLight)
+    }
+    for (let y = 4; y < 16; y++) {
+      for (let x = 8; x < 24; x++) {
+        if (x === 8 || x === 23 || y === 4 || y === 15) {
+          drawPixel(x, y, darkColor)
+        } else {
+          drawPixel(x, y, baseColor)
+        }
+      }
+    }
+    for (let y = 6; y < 12; y++) {
+      for (let x = 12; x < 20; x++) {
+        if (x === 12 || x === 19 || y === 6 || y === 11) {
+          drawPixel(x, y, lightColor)
+        } else {
+          drawPixel(x, y, baseColor)
+        }
+      }
+    }
+    drawPixel(15, 16, gunColor)
+    drawPixel(16, 16, gunColor)
+    drawPixel(15, 17, gunColor)
+    drawPixel(16, 17, gunColor)
+    drawPixel(15, 18, gunColor)
+    drawPixel(16, 18, gunColor)
+    drawPixel(15, 19, gunColor)
+    drawPixel(16, 19, gunColor)
+  } else if (dir === 5) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(4 + i, 20, trackColor)
+      drawPixel(5 + i, 21, trackColor)
+      drawPixel(4 + i, 20, trackLight)
+      drawPixel(5 + i, 21, trackLight)
+    }
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 10 - i; j++) {
+        drawPixel(10 - i + j, 18 - i, baseColor)
+        drawPixel(10 + j, 18 - i, baseColor)
+      }
+    }
+    drawPixel(6, 22, gunColor)
+    drawPixel(7, 22, gunColor)
+    drawPixel(4, 23, gunColor)
+    drawPixel(5, 23, gunColor)
+  } else if (dir === 6) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(4 + i * 2, 16, trackColor)
+      drawPixel(4 + i * 2, 17, trackColor)
+      drawPixel(4 + i * 2, 18, trackLight)
+      drawPixel(4 + i * 2, 19, trackLight)
+    }
+    for (let x = 8; x < 24; x++) {
+      for (let y = 8; y < 16; y++) {
+        if (x === 8 || x === 23 || y === 8 || y === 15) {
+          drawPixel(x, y, darkColor)
+        } else {
+          drawPixel(x, y, baseColor)
+        }
+      }
+    }
+    drawPixel(0, 11, gunColor)
+    drawPixel(1, 11, gunColor)
+    drawPixel(2, 11, gunColor)
+    drawPixel(3, 11, gunColor)
+    drawPixel(4, 11, gunColor)
+    drawPixel(5, 11, gunColor)
+  } else if (dir === 7) {
+    for (let i = 0; i < 8; i++) {
+      drawPixel(4 + i, 2, trackColor)
+      drawPixel(5 + i, 3, trackColor)
+      drawPixel(4 + i, 2, trackLight)
+      drawPixel(5 + i, 3, trackLight)
+    }
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 10 - i; j++) {
+        drawPixel(10 - i + j, 6 + i, baseColor)
+        drawPixel(10 + j, 6 + i, baseColor)
+      }
+    }
+    drawPixel(6, 0, gunColor)
+    drawPixel(7, 0, gunColor)
+    drawPixel(4, 1, gunColor)
+    drawPixel(5, 1, gunColor)
+  }
+
+  ctx.restore()
+}
+
+function drawDirectionalTank(ctx, x, y, angle, color) {
+  const dir = getDirectionIndex(angle)
+  drawPixelTank(ctx, x - 16, y - 12, dir, color, 2)
+}
+
+const directionalTankCache = new Map()
+
+function drawDirectionalTankTile(color = '#d84a4a') {
+  const cacheKey = 'directional_tank_' + color
+  if (directionalTankCache.has(cacheKey)) {
+    return directionalTankCache.get(cacheKey)
+  }
+
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 32
+  const ctx = canvas.getContext('2d')
+  ctx.imageSmoothingEnabled = false
+
+  for (let i = 0; i < 8; i++) {
+    drawPixelTank(ctx, i * 32, 4, i, color, 1)
+  }
+
+  directionalTankCache.set(cacheKey, canvas)
+  return canvas
 }
 
 function drawCoinTile(time) {
@@ -964,13 +1031,8 @@ export function updateNPCs(width, height, time, buildings) {
 export function drawNPCs(ctx, time) {
   for (const npc of npcs) {
     if (npc.type === 'red_wolf') {
-      // 红狼：红色坦克
-      const tankTile = drawTankTile()
-      ctx.save()
-      ctx.translate(npc.x, npc.y)
-      ctx.rotate(npc.direction + Math.PI / 2)
-      ctx.drawImage(tankTile, -32, -24)
-      ctx.restore()
+      // 红狼：红色坦克（使用 8 方向渲染）
+      drawDirectionalTank(ctx, npc.x, npc.y, npc.direction, '#d84a4a')
     } else if (npc.type === 'human' || npc.type === 'townsfolk' || npc.type === 'bar_drinker') {
       // 人类 NPC
       const humanTile = drawNPCHumanTile(npc.variant)
@@ -983,13 +1045,8 @@ export function drawNPCs(ctx, time) {
       ctx.drawImage(humanTile, -12, -16)
       ctx.restore()
     } else {
-      // 其他类型（保持兼容）
-      const tankTile = drawNPCTankTile(npc.color)
-      ctx.save()
-      ctx.translate(npc.x, npc.y)
-      ctx.rotate(npc.direction + Math.PI / 2)
-      ctx.drawImage(tankTile, -16, -16)
-      ctx.restore()
+      // 其他类型坦克（使用 8 方向渲染）
+      drawDirectionalTank(ctx, npc.x, npc.y, npc.direction, npc.color)
     }
   }
 }
@@ -1558,13 +1615,12 @@ export function drawDetailedTownMap(ctx, width, height, time, buildings) {
   }
 }
 
-export function drawTankSprite(ctx, x, y, isInTank) {
-  const tankTile = drawTankTile()
+export function drawTankSprite(ctx, x, y, isInTank, direction = 0) {
   if (isInTank) {
-    ctx.drawImage(tankTile, x - 32, y - 24)
+    drawDirectionalTank(ctx, x, y, direction, '#d84a4a')
   } else {
     ctx.globalAlpha = 0.6
-    ctx.drawImage(tankTile, x - 32, y - 24)
+    drawDirectionalTank(ctx, x, y, direction, '#d84a4a')
     ctx.globalAlpha = 1
   }
 
