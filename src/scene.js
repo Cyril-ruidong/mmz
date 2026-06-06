@@ -29,8 +29,7 @@ export function createGameCanvas(container) {
 }
 
 export function drawScene(ctx, width, height, time) {
-  ctx.fillStyle = FC_COLORS.BG;
-  ctx.fillRect(0, 0, width, height);
+  PixelSprites.drawPixelRect(ctx, 0, 0, width, height, FC_COLORS.BG);
   
   const map = sceneManager.getCurrentMap();
   const tileSize = getTileSize();
@@ -58,26 +57,20 @@ export function drawEntranceHints(ctx, map, tileSize, scale, offsetX, offsetY) {
   ctx.save();
   ctx.translate(offsetX, offsetY);
   ctx.scale(scale, scale);
+  ctx.imageSmoothingEnabled = false;
   
   for (const entrance of map.entrances) {
     const x = entrance.x * tileSize + tileSize / 2;
     const y = entrance.y * tileSize - 4;
     
-    ctx.fillStyle = FC_COLORS.WHITE;
-    ctx.font = '8px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('▶', x, y);
+    PixelSprites.drawText(ctx, '▶', x - 4, y, 1, FC_COLORS.WHITE);
   }
   
   ctx.restore();
 }
 
 export function drawControlsHint(ctx, width, height) {
-  ctx.fillStyle = FC_COLORS.WHITE;
-  ctx.font = '12px monospace';
-  ctx.textAlign = 'left';
-  
-  const lines = [
+  const hints = [
     'FC METAL MAX STYLE',
     '-----------------',
     'Arrow Keys: Move',
@@ -85,7 +78,9 @@ export function drawControlsHint(ctx, width, height) {
     'ESC/X: Cancel'
   ];
   
-  lines.forEach((line, i) => {
-    ctx.fillText(line, 10, 20 + i * 14);
-  });
+  let y = 20;
+  for (const hint of hints) {
+    PixelSprites.drawText(ctx, hint, 10, y, 1, FC_COLORS.WHITE);
+    y += 14;
+  }
 }

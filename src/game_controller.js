@@ -22,11 +22,11 @@ class GameController {
       <div class="controller-body">
         <div class="dpad-section">
           <div class="dpad">
-            <button class="dpad-btn up" data-key="up">▲</button>
-            <button class="dpad-btn left" data-key="left">◀</button>
+            <button class="dpad-btn up" data-key="up"></button>
+            <button class="dpad-btn left" data-key="left"></button>
             <button class="dpad-btn center"></button>
-            <button class="dpad-btn right" data-key="right">▶</button>
-            <button class="dpad-btn down" data-key="down">▼</button>
+            <button class="dpad-btn right" data-key="right"></button>
+            <button class="dpad-btn down" data-key="down"></button>
           </div>
         </div>
         
@@ -34,9 +34,11 @@ class GameController {
           <div class="select-start-row">
             <div class="btn-group">
               <button class="mini-btn" data-key="select">SELECT</button>
+              <span class="btn-label">SELECT</span>
             </div>
             <div class="btn-group">
               <button class="mini-btn" data-key="start">START</button>
+              <span class="btn-label">START</span>
             </div>
           </div>
         </div>
@@ -44,6 +46,7 @@ class GameController {
         <div class="ab-section">
           <div class="ab-btns">
             <button class="ab-btn b-btn" data-key="b">B</button>
+            <div class="ab-spacer"></div>
             <button class="ab-btn a-btn" data-key="a">A</button>
           </div>
         </div>
@@ -75,89 +78,45 @@ class GameController {
       btn.addEventListener('mousedown', handleStart);
       btn.addEventListener('mouseup', handleEnd);
       btn.addEventListener('mouseleave', handleEnd);
-      btn.addEventListener('touchstart', handleStart);
-      btn.addEventListener('touchend', handleEnd);
+      btn.addEventListener('touchstart', handleStart, { passive: false });
+      btn.addEventListener('touchend', handleEnd, { passive: false });
+      btn.addEventListener('touchcancel', handleEnd, { passive: false });
     });
   }
 
   setupKeyboardEvents() {
-    document.addEventListener('keydown', (e) => {
-      switch(e.key.toLowerCase()) {
-        case 'w':
-        case 'arrowup':
-          this.keys.up = true;
-          break;
-        case 's':
-        case 'arrowdown':
-          this.keys.down = true;
-          break;
-        case 'a':
-        case 'arrowleft':
-          this.keys.left = true;
-          break;
-        case 'd':
-        case 'arrowright':
-          this.keys.right = true;
-          break;
-        case 'z':
-        case 'j':
-          this.keys.a = true;
-          break;
-        case 'x':
-        case 'k':
-          this.keys.b = true;
-          break;
-        case 'shift':
-        case 'c':
-          this.keys.select = true;
-          break;
-        case 'enter':
-        case ' ':
-        case 'v':
-          this.keys.start = true;
-          break;
+    const keyMap = {
+      'w': 'up',
+      'arrowup': 'up',
+      's': 'down',
+      'arrowdown': 'down',
+      'a': 'left',
+      'arrowleft': 'left',
+      'd': 'right',
+      'arrowright': 'right',
+      'z': 'a',
+      'j': 'a',
+      'x': 'b',
+      'k': 'b',
+      'shift': 'select',
+      'c': 'select',
+      'enter': 'start',
+      ' ': 'start',
+      'v': 'start'
+    };
+
+    const handleKey = (e, isPressed) => {
+      const key = e.key.toLowerCase();
+      const mappedKey = keyMap[key];
+      if (mappedKey) {
+        e.preventDefault();
+        this.keys[mappedKey] = isPressed;
+        this.triggerCallback();
       }
-      this.triggerCallback();
-    });
-    
-    document.addEventListener('keyup', (e) => {
-      switch(e.key.toLowerCase()) {
-        case 'w':
-        case 'arrowup':
-          this.keys.up = false;
-          break;
-        case 's':
-        case 'arrowdown':
-          this.keys.down = false;
-          break;
-        case 'a':
-        case 'arrowleft':
-          this.keys.left = false;
-          break;
-        case 'd':
-        case 'arrowright':
-          this.keys.right = false;
-          break;
-        case 'z':
-        case 'j':
-          this.keys.a = false;
-          break;
-        case 'x':
-        case 'k':
-          this.keys.b = false;
-          break;
-        case 'shift':
-        case 'c':
-          this.keys.select = false;
-          break;
-        case 'enter':
-        case ' ':
-        case 'v':
-          this.keys.start = false;
-          break;
-      }
-      this.triggerCallback();
-    });
+    };
+
+    document.addEventListener('keydown', (e) => handleKey(e, true));
+    document.addEventListener('keyup', (e) => handleKey(e, false));
   }
 
   onInput(callback) {

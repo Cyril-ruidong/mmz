@@ -1,3 +1,5 @@
+import PixelSprites from './pixel_sprites.js';
+
 const TILE_SIZE = 16;
 
 const FC_COLORS = {
@@ -23,121 +25,258 @@ const TILES = {
   FENCE: 9
 };
 
-function drawPixelRect(ctx, x, y, w, h, color) {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
-}
+const TileSprites = {
+  tileSize: TILE_SIZE,
+  colors: FC_COLORS,
 
-function drawFCTile(ctx, type, x, y, time = 0) {
-  ctx.imageSmoothingEnabled = false;
-  
-  switch (type) {
-    case TILES.GRASS:
-      drawGrass(ctx, x, y);
-      break;
-    case TILES.DIRT:
-      drawDirt(ctx, x, y);
-      break;
-    case TILES.WATER:
-      drawWater(ctx, x, y, time);
-      break;
-    case TILES.ROAD:
-      drawRoad(ctx, x, y);
-      break;
-    case TILES.WALL:
-      drawWall(ctx, x, y);
-      break;
-    case TILES.FLOOR:
-      drawFloor(ctx, x, y);
-      break;
-    case TILES.DOOR:
-      drawDoor(ctx, x, y);
-      break;
-    case TILES.ROOF:
-      drawRoof(ctx, x, y);
-      break;
-    case TILES.TREE:
-      drawTreeTile(ctx, x, y);
-      break;
-    case TILES.FENCE:
-      drawFence(ctx, x, y);
-      break;
-    default:
-      drawGrass(ctx, x, y);
+  drawGrass(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGBGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGBGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGBGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG',
+      'GGGGGGGGGGGGGGGG'
+    ], x, y, 1, { G: FC_COLORS.GRASS, B: FC_COLORS.BG });
+  },
+
+  drawDirt(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS'
+    ], x, y, 1, { S: FC_COLORS.ROAD });
+  },
+
+  drawWater(ctx, x, y, time) {
+    const wave = time % 2 === 0 ? 'W' : 'w';
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW',
+      'WWWWWWWWWWWWWWWW'
+    ], x, y, 1, { W: FC_COLORS.WATER, w: FC_COLORS.WATER });
+  },
+
+  drawRoad(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS'
+    ], x, y, 1, { S: FC_COLORS.ROAD });
+  },
+
+  drawWall(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'SSSSSSSSSSSSSSSS',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'SSSSSSSSSSSSSSSS',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'SSSSSSSSSSSSSSSS',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'SSSSSSSSSSSSSSSS',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'SSSSSSSSSSSSSSSS',
+      'BBBBBBBBBBBBBBBB'
+    ], x, y, 1, { B: FC_COLORS.BUILDING, S: FC_COLORS.ROAD });
+  },
+
+  drawFloor(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSBBBBBBSSSSSSSS',
+      'SSBBBBBBSSSSSSSS',
+      'SSBBBBBBSSSSSSSS',
+      'SSBBBBBBSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSBBBBSS',
+      'SSSSSSSSSSBBBBSS',
+      'SSSSSSSSSSBBBBSS',
+      'SSSSSSSSSSBBBBSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS'
+    ], x, y, 1, { S: FC_COLORS.ROAD, B: FC_COLORS.BUILDING });
+  },
+
+  drawDoor(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBKKKKKBBBBBBB',
+      'BBBBKKKKKBBBBBBB',
+      'BBBBKKKKKBBBBBBB',
+      'BBBBKKKKKBBBBBBB',
+      'BBBBKKKKKBBBBBBB',
+      'BBBBKKKKKBBBBBBB',
+      'BBBBKKKKKBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB'
+    ], x, y, 1, { B: FC_COLORS.BUILDING, K: FC_COLORS.BLACK });
+  },
+
+  drawRoof(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB',
+      'BBBBBBBBBBBBBBBB'
+    ], x, y, 1, { B: FC_COLORS.BUILDING });
+  },
+
+  drawTree(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      '      GGGG      ',
+      '     GGGGGG     ',
+      '    GGGGGGGG    ',
+      '   GGGGGGGGGG   ',
+      '  GGGGGGGGGGGG  ',
+      ' GGGGGGGGGGGGGG ',
+      'GGGGGGGGGGGGGGGG',
+      ' GGGGGGGGGGGGGG ',
+      '  GGGGGGGGGGGG  ',
+      '      TTTT      ',
+      '      TTTT      ',
+      '      TTTT      ',
+      '      TTTT      ',
+      '      TTTT      ',
+      '      TTTT      ',
+      '      TTTT      '
+    ], x, y, 1, { G: FC_COLORS.GRASS, T: FC_COLORS.BUILDING });
+  },
+
+  drawFence(ctx, x, y) {
+    PixelSprites.drawSpriteFromGrid(ctx, [
+      'SSSSSSSSSSSSSSSS',
+      'SBBSSBBSSBBSSBB',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SBBSSBBSSBBSSBB',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SBBSSBBSSBBSSBB',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SBBSSBBSSBBSSBB',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS',
+      'SBBSSBBSSBBSSBB',
+      'SSSSSSSSSSSSSSSS',
+      'SSSSSSSSSSSSSSSS'
+    ], x, y, 1, { S: FC_COLORS.BG, B: FC_COLORS.BUILDING });
+  },
+
+  drawTile(ctx, tileType, x, y, time) {
+    switch (tileType) {
+      case TILES.GRASS:
+        this.drawGrass(ctx, x, y);
+        break;
+      case TILES.DIRT:
+        this.drawDirt(ctx, x, y);
+        break;
+      case TILES.WATER:
+        this.drawWater(ctx, x, y, time);
+        break;
+      case TILES.ROAD:
+        this.drawRoad(ctx, x, y);
+        break;
+      case TILES.WALL:
+        this.drawWall(ctx, x, y);
+        break;
+      case TILES.FLOOR:
+        this.drawFloor(ctx, x, y);
+        break;
+      case TILES.DOOR:
+        this.drawDoor(ctx, x, y);
+        break;
+      case TILES.ROOF:
+        this.drawRoof(ctx, x, y);
+        break;
+      case TILES.TREE:
+        this.drawTree(ctx, x, y);
+        break;
+      case TILES.FENCE:
+        this.drawFence(ctx, x, y);
+        break;
+      default:
+        this.drawGrass(ctx, x, y);
+    }
   }
-}
-
-function drawGrass(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.GRASS);
-  drawPixelRect(ctx, x + 2, y + 2, 2, 2, FC_COLORS.BG);
-  drawPixelRect(ctx, x + 10, y + 6, 2, 2, FC_COLORS.BG);
-  drawPixelRect(ctx, x + 6, y + 12, 2, 2, FC_COLORS.BG);
-}
-
-function drawDirt(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x + 4, y + 4, 4, 4, FC_COLORS.ROAD);
-  drawPixelRect(ctx, x + 10, y + 10, 4, 4, FC_COLORS.ROAD);
-}
-
-function drawWater(ctx, x, y, time) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.WATER);
-  const wave = Math.floor(time / 20) % 2;
-  if (wave === 0) {
-    drawPixelRect(ctx, x + 2, y + 4, 12, 2, FC_COLORS.BG);
-    drawPixelRect(ctx, x + 4, y + 10, 8, 2, FC_COLORS.BG);
-  } else {
-    drawPixelRect(ctx, x + 4, y + 6, 8, 2, FC_COLORS.BG);
-    drawPixelRect(ctx, x + 2, y + 12, 12, 2, FC_COLORS.BG);
-  }
-}
-
-function drawRoad(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.ROAD);
-  drawPixelRect(ctx, x + 2, y + 2, 4, 4, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x + 10, y + 10, 4, 4, FC_COLORS.BUILDING);
-}
-
-function drawWall(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x, y, TILE_SIZE, 2, FC_COLORS.ROAD);
-  drawPixelRect(ctx, x, y + 8, TILE_SIZE, 2, FC_COLORS.ROAD);
-  drawPixelRect(ctx, x, y, 2, TILE_SIZE, FC_COLORS.ROAD);
-  drawPixelRect(ctx, x + 8, y, 2, TILE_SIZE, FC_COLORS.ROAD);
-}
-
-function drawFloor(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.ROAD);
-  drawPixelRect(ctx, x + 2, y + 2, 6, 6, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x + 10, y + 10, 6, 6, FC_COLORS.BUILDING);
-}
-
-function drawDoor(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x + 4, y + 2, 8, 12, FC_COLORS.BLACK);
-  drawPixelRect(ctx, x + 10, y + 8, 2, 2, FC_COLORS.ROAD);
-}
-
-function drawRoof(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x + 2, y + 2, 4, 4, FC_COLORS.ROAD);
-  drawPixelRect(ctx, x + 10, y + 10, 4, 4, FC_COLORS.ROAD);
-}
-
-function drawTreeTile(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.GRASS);
-  drawPixelRect(ctx, x + 4, y + 2, 8, 8, FC_COLORS.GRASS);
-  drawPixelRect(ctx, x + 6, y + 10, 4, 6, FC_COLORS.BUILDING);
-}
-
-function drawFence(ctx, x, y) {
-  drawPixelRect(ctx, x, y, TILE_SIZE, TILE_SIZE, FC_COLORS.GRASS);
-  drawPixelRect(ctx, x + 2, y, 2, TILE_SIZE, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x + 7, y, 2, TILE_SIZE, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x + 12, y, 2, TILE_SIZE, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x, y + 4, TILE_SIZE, 2, FC_COLORS.BUILDING);
-  drawPixelRect(ctx, x, y + 10, TILE_SIZE, 2, FC_COLORS.BUILDING);
-}
+};
 
 function renderTilemap(ctx, map, time, offsetX = 0, offsetY = 0) {
   ctx.imageSmoothingEnabled = false;
@@ -145,7 +284,7 @@ function renderTilemap(ctx, map, time, offsetX = 0, offsetY = 0) {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const tileType = tiles[y * width + x];
-      drawFCTile(ctx, tileType, x * TILE_SIZE + offsetX, y * TILE_SIZE + offsetY, time);
+      TileSprites.drawTile(ctx, tileType, x * TILE_SIZE + offsetX, y * TILE_SIZE + offsetY, time);
     }
   }
 }
