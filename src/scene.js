@@ -927,13 +927,35 @@ export function createNPCs(count, canvasWidth, canvasHeight, buildings) {
   }
 }
 
-export function updateNPCs(width, height, time) {
+export function updateNPCs(width, height, time, buildings) {
   for (const npc of npcs) {
+    // 定期随机改变方向（类似 FC 重装机兵风格）
+    npc.changeTimer += 1
+    if (npc.changeTimer > 60 + Math.random() * 60) {
+      npc.changeTimer = 0
+      npc.direction = Math.random() * Math.PI * 2
+      npc.speed = 0.3 + Math.random() * 0.5
+    }
+
+    // 简单移动
+    const vx = Math.cos(npc.direction) * npc.speed
+    const vy = Math.sin(npc.direction) * npc.speed
+    npc.x += vx
+    npc.y += vy
+
+    // 边界检查
+    if (npc.x < 50 || npc.x > width - 50) {
+      npc.direction = Math.PI - npc.direction
+      npc.x = Math.max(50, Math.min(width - 50, npc.x))
+    }
+    if (npc.y < 50 || npc.y > height - 50) {
+      npc.direction = -npc.direction
+      npc.y = Math.max(50, Math.min(height - 50, npc.y))
+    }
+
+    // 如果有 pathfinder，更新障碍物信息
     if (npc.pathfinder) {
-      npc.pathfinder.update()
-      npc.x = npc.pathfinder.x
-      npc.y = npc.pathfinder.y
-      npc.direction = npc.pathfinder.getDirection()
+      npc.pathfinder.update(buildings, width, height)
     }
   }
 }
@@ -944,7 +966,8 @@ export function drawNPCs(ctx, time) {
       const humanTile = drawNPCHumanTile(npc.variant)
       ctx.save()
       ctx.translate(npc.x, npc.y)
-      if (npc.vx < 0) {
+      // 根据 direction 判断朝向（右方向为 0，左方向为 PI）
+      if (Math.cos(npc.direction) < 0) {
         ctx.scale(-1, 1)
       }
       ctx.drawImage(humanTile, -12, -16)

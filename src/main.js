@@ -123,7 +123,7 @@ function animate(currentTime) {
   drawScene(ctx, currentScene, canvas.width, canvas.height, currentTime)
 
   if (!currentScene.isInterior) {
-    updateNPCs(canvas.width, canvas.height, currentTime)
+    updateNPCs(canvas.width, canvas.height, currentTime, currentScene.buildings)
     drawNPCs(ctx, currentTime)
 
     if (!player.isInTank) {
