@@ -269,8 +269,6 @@ function drawTankTile() {
 
   const { canvas, ctx } = createTileCanvas(64, 48)
 
-  // 红狼坦克 - 红色主色调
-  // 车身
   const bodyGradient = ctx.createLinearGradient(8, 12, 56, 36)
   bodyGradient.addColorStop(0, '#c42c2c')
   bodyGradient.addColorStop(0.5, '#a41c1c')
@@ -278,55 +276,46 @@ function drawTankTile() {
   ctx.fillStyle = bodyGradient
   ctx.fillRect(8, 12, 48, 24)
 
-  // 车身边缘高光
   ctx.fillStyle = '#e84c4c'
   ctx.fillRect(10, 12, 44, 3)
   ctx.fillStyle = '#4a0a0a'
   ctx.fillRect(10, 33, 44, 3)
 
-  // 炮塔
   ctx.fillStyle = '#b42424'
   ctx.beginPath()
   ctx.ellipse(32, 24, 14, 12, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  // 炮塔高光
   ctx.fillStyle = '#d44444'
   ctx.beginPath()
   ctx.ellipse(30, 22, 8, 7, -0.3, 0, Math.PI * 2)
   ctx.fill()
 
-  // 炮管
   ctx.fillStyle = '#9a1a1a'
   ctx.fillRect(42, 20, 18, 8)
   ctx.fillStyle = '#7a0f0f'
   ctx.fillRect(42, 20, 18, 3)
 
-  // 炮口
   ctx.fillStyle = '#2a0505'
   ctx.fillRect(57, 21, 3, 6)
 
-  // 履带
   ctx.fillStyle = '#3a3a3a'
   ctx.fillRect(4, 18, 56, 14)
   ctx.fillStyle = '#2a2a2a'
   ctx.fillRect(4, 18, 56, 4)
   ctx.fillRect(4, 28, 56, 4)
 
-  // 履带纹理
   ctx.fillStyle = '#1a1a1a'
   for (let i = 0; i < 10; i++) {
     ctx.fillRect(8 + i * 5, 19, 2, 3)
     ctx.fillRect(8 + i * 5, 29, 2, 3)
   }
 
-  // 车身装甲细节
   ctx.fillStyle = '#6a0a0a'
   ctx.fillRect(14, 16, 4, 8)
   ctx.fillRect(28, 14, 8, 12)
   ctx.fillRect(44, 16, 4, 8)
 
-  // 观察窗
   ctx.fillStyle = '#5a8ac4'
   ctx.fillRect(30, 16, 4, 4)
   ctx.fillStyle = '#7abae4'
@@ -365,37 +354,6 @@ function drawNPCTankTile(color) {
 
   tileCache.set(key, canvas)
   return canvas
-}
-
-export function drawTankSprite(ctx, x, y, isInTank) {
-  const tankTile = drawTankTile()
-  if (isInTank) {
-    ctx.drawImage(tankTile, x - 32, y - 24)
-  } else {
-    // 画出坦克（空车）
-    ctx.globalAlpha = 0.7
-    ctx.drawImage(tankTile, x - 32, y - 24)
-    ctx.globalAlpha = 1
-  }
-
-  if (isInTank && Math.random() > 0.92) {
-    createParticle(x + (Math.random() - 0.5) * 20, y - 16, 'dust')
-  }
-}
-
-export function drawCoinSprite(ctx, x, y, time) {
-  const coinTile = drawCoinTile(time)
-  ctx.drawImage(coinTile, x - 10, y - 10)
-
-  ctx.globalAlpha = 0.15 + Math.sin(time * 0.005) * 0.1
-  const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 16)
-  glowGradient.addColorStop(0, 'rgba(255, 255, 100, 0.6)')
-  glowGradient.addColorStop(1, 'rgba(255, 255, 50, 0)')
-  ctx.fillStyle = glowGradient
-  ctx.beginPath()
-  ctx.arc(x, y, 16, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.globalAlpha = 1
 }
 
 export function drawNPCHumanTile(variant) {
@@ -609,7 +567,6 @@ export function createNPCs(count) {
 }
 
 export function updateNPCs(width, height, time) {
-  const roadY = height / 2
   const margin = 50
 
   for (const npc of npcs) {
@@ -661,7 +618,268 @@ export function drawNPCs(ctx, time) {
   }
 }
 
-export function drawFCMetalslugMap(ctx, width, height, time) {
+function drawInteriorFloor(ctx, width, height) {
+  const { canvas, ctx: floorCtx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
+  
+  drawGradientRect(floorCtx, 0, 0, TILE_SIZE, TILE_SIZE, '#3a3020', '#2a2015')
+  
+  floorCtx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  for (let i = 0; i < 4; i++) {
+    floorCtx.fillRect(0, i * 8, TILE_SIZE, 1)
+  }
+  
+  const tile = canvas
+  
+  const gridW = Math.ceil(width / TILE_SIZE) + 1
+  const gridH = Math.ceil(height / TILE_SIZE) + 1
+  
+  for (let gy = 0; gy < gridH; gy++) {
+    for (let gx = 0; gx < gridW; gx++) {
+      ctx.drawImage(tile, gx * TILE_SIZE, gy * TILE_SIZE)
+    }
+  }
+}
+
+function drawInteriorItem(ctx, item, x, y, time) {
+  const itemX = x * ctx.canvas.width
+  const itemY = y * ctx.canvas.height
+  
+  ctx.save()
+  ctx.translate(itemX, itemY)
+  
+  switch (item.type) {
+    case 'table':
+      ctx.fillStyle = '#5a4030'
+      ctx.fillRect(-30, -15, 60, 30)
+      ctx.fillStyle = '#4a3020'
+      ctx.fillRect(-30, -15, 60, 5)
+      ctx.fillStyle = '#6a5040'
+      ctx.fillRect(-28, -10, 56, 3)
+      break
+      
+    case 'bed':
+      ctx.fillStyle = '#4a3a30'
+      ctx.fillRect(-25, -20, 50, 40)
+      ctx.fillStyle = '#6a5a50'
+      ctx.fillRect(-23, -18, 46, 20)
+      ctx.fillStyle = '#7a6a60'
+      ctx.fillRect(-20, -15, 40, 15)
+      break
+      
+    case 'lamp':
+      ctx.fillStyle = '#4a4a40'
+      ctx.fillRect(-3, -25, 6, 25)
+      ctx.fillStyle = '#ffff88'
+      ctx.beginPath()
+      ctx.arc(0, -30, 10, 0, Math.PI * 2)
+      ctx.fill()
+      const glowGrad = ctx.createRadialGradient(0, -30, 0, 0, -30, 40)
+      glowGrad.addColorStop(0, 'rgba(255, 255, 150, 0.3)')
+      glowGrad.addColorStop(1, 'rgba(255, 255, 100, 0)')
+      ctx.fillStyle = glowGrad
+      ctx.beginPath()
+      ctx.arc(0, -30, 40, 0, Math.PI * 2)
+      ctx.fill()
+      break
+      
+    case 'counter':
+      ctx.fillStyle = '#5a4a3a'
+      ctx.fillRect(-40, -15, 80, 30)
+      ctx.fillStyle = '#4a3a2a'
+      ctx.fillRect(-40, -15, 80, 8)
+      ctx.fillStyle = '#6a5a4a'
+      ctx.fillRect(-38, -7, 76, 4)
+      break
+      
+    case 'shelf':
+      ctx.fillStyle = '#5a4535'
+      ctx.fillRect(-30, -40, 60, 80)
+      ctx.fillStyle = '#4a3525'
+      ctx.fillRect(-30, -40, 60, 5)
+      ctx.fillRect(-30, 0, 60, 5)
+      ctx.fillRect(-30, 35, 60, 5)
+      ctx.fillStyle = '#8a7a6a'
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(-25, -35 + i * 35, 50, 8)
+      }
+      break
+      
+    case 'crate':
+      ctx.fillStyle = '#6a5a40'
+      ctx.fillRect(-20, -20, 40, 40)
+      ctx.fillStyle = '#5a4a30'
+      ctx.fillRect(-20, -20, 40, 5)
+      ctx.fillRect(-20, 15, 40, 5)
+      ctx.fillRect(-2, -20, 4, 40)
+      ctx.fillRect(-20, -2, 40, 4)
+      break
+      
+    case 'workbench':
+      ctx.fillStyle = '#4a4a4a'
+      ctx.fillRect(-35, -12, 70, 24)
+      ctx.fillStyle = '#3a3a3a'
+      ctx.fillRect(-35, -12, 70, 6)
+      ctx.fillStyle = '#5a5a5a'
+      ctx.fillRect(-33, -6, 66, 3)
+      break
+      
+    case 'oil_barrel':
+      ctx.fillStyle = '#3a5a3a'
+      ctx.beginPath()
+      ctx.ellipse(0, -15, 15, 8, 0, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillRect(-15, -15, 30, 30)
+      ctx.fillStyle = '#4a6a4a'
+      ctx.fillRect(-15, -15, 30, 5)
+      ctx.fillStyle = '#2a4a2a'
+      ctx.fillRect(-15, 10, 30, 5)
+      break
+      
+    case 'parts':
+      ctx.fillStyle = '#5a5a5a'
+      for (let i = 0; i < 5; i++) {
+        ctx.beginPath()
+        ctx.arc(-20 + i * 10, Math.sin(i) * 5, 5, 0, Math.PI * 2)
+        ctx.fill()
+      }
+      break
+      
+    case 'weapon_rack':
+      ctx.fillStyle = '#4a3a2a'
+      ctx.fillRect(-35, -50, 70, 100)
+      ctx.fillStyle = '#5a4a3a'
+      ctx.fillRect(-33, -48, 66, 96)
+      ctx.fillStyle = '#6a6a6a'
+      for (let i = 0; i < 4; i++) {
+        ctx.fillRect(-30, -45 + i * 24, 60, 6)
+      }
+      ctx.fillStyle = '#8a8a8a'
+      ctx.fillRect(-25, -40, 50, 4)
+      break
+      
+    case 'ammo_crate':
+      ctx.fillStyle = '#5a6a4a'
+      ctx.fillRect(-25, -20, 50, 40)
+      ctx.fillStyle = '#4a5a3a'
+      ctx.fillRect(-25, -20, 50, 6)
+      ctx.fillStyle = '#6a7a5a'
+      ctx.fillRect(-23, -14, 46, 34)
+      break
+      
+    case 'display_case':
+      ctx.fillStyle = '#3a3a4a'
+      ctx.fillRect(-30, -35, 60, 70)
+      ctx.fillStyle = 'rgba(100, 150, 200, 0.2)'
+      ctx.fillRect(-28, -33, 56, 66)
+      ctx.fillStyle = '#8a8a9a'
+      ctx.fillRect(-28, -33, 56, 3)
+      break
+      
+    case 'radar':
+      ctx.fillStyle = '#2a3a4a'
+      ctx.beginPath()
+      ctx.ellipse(0, 0, 40, 30, 0, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = '#3a4a5a'
+      ctx.beginPath()
+      ctx.ellipse(0, 0, 35, 25, 0, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.strokeStyle = '#5a8aaa'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.ellipse(0, 0, 30, 20, 0, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(0, -25)
+      ctx.lineTo(0, 25)
+      ctx.moveTo(-35, 0)
+      ctx.lineTo(35, 0)
+      ctx.stroke()
+      const sweepAngle = (time * 0.003) % (Math.PI * 2)
+      ctx.strokeStyle = 'rgba(100, 200, 100, 0.6)'
+      ctx.beginPath()
+      ctx.moveTo(0, 0)
+      ctx.lineTo(Math.cos(sweepAngle) * 30, Math.sin(sweepAngle) * 20)
+      ctx.stroke()
+      break
+      
+    case 'console':
+      ctx.fillStyle = '#3a4a5a'
+      ctx.fillRect(-30, -20, 60, 40)
+      ctx.fillStyle = '#2a3a4a'
+      ctx.fillRect(-28, -18, 56, 36)
+      ctx.fillStyle = '#4a6a8a'
+      ctx.fillRect(-25, -15, 20, 10)
+      ctx.fillRect(5, -15, 20, 10)
+      break
+      
+    case 'map_table':
+      ctx.fillStyle = '#5a5040'
+      ctx.fillRect(-40, -25, 80, 50)
+      ctx.fillStyle = '#4a4030'
+      ctx.fillRect(-40, -25, 80, 8)
+      ctx.fillStyle = '#6a6050'
+      ctx.fillRect(-38, -17, 76, 40)
+      ctx.fillStyle = '#3a5a7a'
+      ctx.beginPath()
+      ctx.ellipse(0, 5, 30, 15, 0, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = '#2a4a6a'
+      ctx.beginPath()
+      ctx.ellipse(0, 5, 25, 10, 0, 0, Math.PI * 2)
+      ctx.fill()
+      break
+  }
+  
+  ctx.restore()
+}
+
+function drawExitZone(ctx, scene, width, height) {
+  if (!scene.exitPosition) return
+  
+  const exitX = scene.exitPosition.x * width
+  const exitY = scene.exitPosition.y * height
+  
+  ctx.fillStyle = 'rgba(100, 200, 100, 0.3)'
+  ctx.beginPath()
+  ctx.arc(exitX, exitY, 30, 0, Math.PI * 2)
+  ctx.fill()
+  
+  ctx.strokeStyle = 'rgba(100, 200, 100, 0.6)'
+  ctx.lineWidth = 3
+  ctx.setLineDash([5, 5])
+  ctx.beginPath()
+  ctx.arc(exitX, exitY, 35, 0, Math.PI * 2)
+  ctx.stroke()
+  ctx.setLineDash([])
+  
+  ctx.fillStyle = '#ffffff'
+  ctx.font = '14px Courier New'
+  ctx.textAlign = 'center'
+  ctx.fillText('出口', exitX, exitY - 45)
+}
+
+function drawInteriorScene(ctx, scene, width, height, time) {
+  drawInteriorFloor(ctx, width, height)
+  
+  if (scene.items) {
+    for (const item of scene.items) {
+      drawInteriorItem(ctx, item, item.x, item.y, time)
+    }
+  }
+  
+  drawExitZone(ctx, scene, width, height)
+}
+
+export function drawScene(ctx, currentScene, width, height, time) {
+  if (currentScene.isInterior) {
+    drawInteriorScene(ctx, currentScene, width, height, time)
+  } else {
+    drawFCMetalslugMap(ctx, width, height, time, currentScene.buildings)
+  }
+}
+
+export function drawFCMetalslugMap(ctx, width, height, time, buildings) {
   const gridW = Math.ceil(width / TILE_SIZE) + 2
   const gridH = Math.ceil(height / TILE_SIZE) + 2
 
@@ -698,22 +916,22 @@ export function drawFCMetalslugMap(ctx, width, height, time) {
     ctx.drawImage(roadTile, x, roadY + TILE_SIZE)
   }
 
-  const buildings = [
-    { x: 0.12, y: 0.22, type: 'lit' },
-    { x: 0.32, y: 0.18, type: 'dark' },
-    { x: 0.58, y: 0.25, type: 'lit' },
-    { x: 0.82, y: 0.20, type: 'lit' },
-    { x: 0.10, y: 0.58, type: 'dark' },
-    { x: 0.42, y: 0.62, type: 'lit' },
-    { x: 0.68, y: 0.56, type: 'dark' },
-    { x: 0.85, y: 0.60, type: 'lit' }
-  ]
+  if (!buildings) return
 
   for (const b of buildings) {
     const bx = width * b.x
     const by = height * b.y
     const buildingTile = drawBuildingTile(b.type, time)
     ctx.drawImage(buildingTile, bx, by)
+    
+    if (b.enterable) {
+      ctx.fillStyle = 'rgba(100, 200, 100, 0.3)'
+      ctx.fillRect(bx + TILE_SIZE * 2 - 10, by + TILE_SIZE * 3 - 15, 20, 15)
+      ctx.fillStyle = '#ffffff'
+      ctx.font = '10px Courier New'
+      ctx.textAlign = 'center'
+      ctx.fillText('入', bx + TILE_SIZE * 2, by + TILE_SIZE * 3 - 5)
+    }
   }
 
   for (let i = 0; i < 16; i++) {
@@ -749,6 +967,36 @@ export function drawFCMetalslugMap(ctx, width, height, time) {
     ctx.fillStyle = `rgba(255, 255, 220, ${flashAlpha * 0.4})`
     ctx.fillRect(0, 0, width, height)
   }
+}
+
+export function drawTankSprite(ctx, x, y, isInTank) {
+  const tankTile = drawTankTile()
+  if (isInTank) {
+    ctx.drawImage(tankTile, x - 32, y - 24)
+  } else {
+    ctx.globalAlpha = 0.7
+    ctx.drawImage(tankTile, x - 32, y - 24)
+    ctx.globalAlpha = 1
+  }
+
+  if (isInTank && Math.random() > 0.92) {
+    createParticle(x + (Math.random() - 0.5) * 20, y - 16, 'dust')
+  }
+}
+
+export function drawCoinSprite(ctx, x, y, time) {
+  const coinTile = drawCoinTile(time)
+  ctx.drawImage(coinTile, x - 10, y - 10)
+
+  ctx.globalAlpha = 0.15 + Math.sin(time * 0.005) * 0.1
+  const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 16)
+  glowGradient.addColorStop(0, 'rgba(255, 255, 100, 0.6)')
+  glowGradient.addColorStop(1, 'rgba(255, 255, 50, 0)')
+  ctx.fillStyle = glowGradient
+  ctx.beginPath()
+  ctx.arc(x, y, 16, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalAlpha = 1
 }
 
 export function getNPCs() {
