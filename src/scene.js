@@ -904,8 +904,9 @@ export function createNPCs(count, canvasWidth, canvasHeight, buildings) {
   initGrid(canvasWidth, canvasHeight)
   updateObstacles(buildings)
   
-  const types = ['tank_green', 'tank_red', 'tank_blue', 'human']
-  const colors = ['#4a7a4a', '#9a4a4a', '#4a6a9a', 'human']
+  // FC 重装机兵原版风格的 NPC 类型
+  const types = ['red_wolf', 'townsfolk', 'bar_drinker', 'human']
+  const colors = ['#d84a4a', '#6a9a6a', '#8a6a4a', 'human']
 
   for (let i = 0; i < count; i++) {
     const typeIndex = i % types.length
@@ -962,7 +963,16 @@ export function updateNPCs(width, height, time, buildings) {
 
 export function drawNPCs(ctx, time) {
   for (const npc of npcs) {
-    if (npc.type === 'human') {
+    if (npc.type === 'red_wolf') {
+      // 红狼：红色坦克
+      const tankTile = drawTankTile()
+      ctx.save()
+      ctx.translate(npc.x, npc.y)
+      ctx.rotate(npc.direction + Math.PI / 2)
+      ctx.drawImage(tankTile, -32, -24)
+      ctx.restore()
+    } else if (npc.type === 'human' || npc.type === 'townsfolk' || npc.type === 'bar_drinker') {
+      // 人类 NPC
       const humanTile = drawNPCHumanTile(npc.variant)
       ctx.save()
       ctx.translate(npc.x, npc.y)
@@ -973,6 +983,7 @@ export function drawNPCs(ctx, time) {
       ctx.drawImage(humanTile, -12, -16)
       ctx.restore()
     } else {
+      // 其他类型（保持兼容）
       const tankTile = drawNPCTankTile(npc.color)
       ctx.save()
       ctx.translate(npc.x, npc.y)

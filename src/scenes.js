@@ -1,81 +1,106 @@
 export const SCENES = {
   town: {
     id: 'town',
-    name: '战后城镇',
+    name: '拉多镇(リオラド)',
     background: '#1a1a2e',
     buildings: [
-      { id: 'house1', x: 0.12, y: 0.22, width: 4, height: 4, name: '民房', enterable: true, interior: 'house_interior' },
-      { id: 'house2', x: 0.32, y: 0.18, width: 4, height: 4, name: '杂货店', enterable: true, interior: 'shop_interior' },
-      { id: 'house3', x: 0.58, y: 0.25, width: 4, height: 4, name: '的车库', enterable: true, interior: 'garage_interior' },
-      { id: 'house4', x: 0.82, y: 0.20, width: 4, height: 4, name: '废弃建筑', enterable: false },
-      { id: 'house5', x: 0.10, y: 0.58, width: 4, height: 4, name: '民的舍', enterable: true, interior: 'house_interior' },
-      { id: 'house6', x: 0.42, y: 0.62, width: 4, height: 4, name: '武器店', enterable: true, interior: 'weapon_shop' },
-      { id: 'house7', x: 0.68, y: 0.56, width: 4, height: 4, name: '废墟', enterable: false },
-      { id: 'house8', x: 0.85, y: 0.60, width: 4, height: 4, name: '指挥中心', enterable: true, interior: 'command_center' }
+      { id: 'home', x: 0.12, y: 0.22, width: 5, height: 4, name: '主角家', enterable: true, interior: 'home_interior' },
+      { id: 'bar', x: 0.35, y: 0.18, width: 4, height: 4, name: '酒吧', enterable: true, interior: 'bar_interior' },
+      { id: 'shop', x: 0.58, y: 0.25, width: 4, height: 4, name: '勇士商店', enterable: true, interior: 'shop_interior' },
+      { id: 'garage', x: 0.80, y: 0.20, width: 5, height: 4, name: '战车修理厂', enterable: true, interior: 'garage_interior' },
+      { id: 'hospital', x: 0.10, y: 0.60, width: 4, height: 4, name: '明奇研究所', enterable: true, interior: 'hospital_interior' },
+      { id: 'hunter_office', x: 0.38, y: 0.62, width: 4, height: 4, name: '勇士办事处', enterable: true, interior: 'hunter_interior' },
+      { id: 'inn', x: 0.62, y: 0.58, width: 4, height: 4, name: '旅店', enterable: true, interior: 'inn_interior' }
     ]
   },
-  house_interior: {
-    id: 'house_interior',
-    name: '民房内部',
+  home_interior: {
+    id: 'home_interior',
+    name: '主角家内部',
     background: '#2a2015',
     isInterior: true,
     floorTiles: true,
     items: [
-      { type: 'table', x: 0.5, y: 0.5 },
-      { type: 'bed', x: 0.3, y: 0.7 },
-      { type: 'lamp', x: 0.7, y: 0.3 }
+      { type: 'table', x: 0.5, y: 0.4 },
+      { type: 'bed', x: 0.3, y: 0.65 },
+      { type: 'bed', x: 0.7, y: 0.65 }
+    ],
+    exitPosition: { x: 0.5, y: 0.9 }
+  },
+  bar_interior: {
+    id: 'bar_interior',
+    name: '酒吧内部',
+    background: '#1a1515',
+    isInterior: true,
+    floorTiles: true,
+    items: [
+      { type: 'counter', x: 0.5, y: 0.3 },
+      { type: 'table', x: 0.3, y: 0.6 },
+      { type: 'table', x: 0.7, y: 0.6 }
     ],
     exitPosition: { x: 0.5, y: 0.9 }
   },
   shop_interior: {
     id: 'shop_interior',
-    name: '杂货店内部',
+    name: '勇士商店内部',
     background: '#1a1a25',
     isInterior: true,
     floorTiles: true,
     items: [
       { type: 'counter', x: 0.5, y: 0.4 },
       { type: 'shelf', x: 0.3, y: 0.6 },
-      { type: 'crate', x: 0.7, y: 0.7 }
+      { type: 'shelf', x: 0.7, y: 0.6 }
     ],
     exitPosition: { x: 0.5, y: 0.9 }
   },
   garage_interior: {
     id: 'garage_interior',
-    name: '车库内部',
-    background: '#1a1515',
+    name: '战车修理厂内部',
+    background: '#252015',
     isInterior: true,
     floorTiles: true,
     items: [
-      { type: 'workbench', x: 0.4, y: 0.5 },
-      { type: 'oil_barrel', x: 0.7, y: 0.6 },
-      { type: 'parts', x: 0.3, y: 0.7 }
+      { type: 'workbench', x: 0.5, y: 0.4 },
+      { type: 'tool_rack', x: 0.3, y: 0.65 },
+      { type: 'oil_barrel', x: 0.7, y: 0.65 }
     ],
     exitPosition: { x: 0.5, y: 0.9 }
   },
-  weapon_shop: {
-    id: 'weapon_shop',
-    name: '武器店内部',
-    background: '#15151a',
+  hospital_interior: {
+    id: 'hospital_interior',
+    name: '明奇研究所内部',
+    background: '#151a20',
     isInterior: true,
     floorTiles: true,
     items: [
-      { type: 'weapon_rack', x: 0.5, y: 0.4 },
-      { type: 'ammo_crate', x: 0.3, y: 0.7 },
-      { type: 'display_case', x: 0.7, y: 0.5 }
+      { type: 'table', x: 0.5, y: 0.35 },
+      { type: 'machine', x: 0.3, y: 0.6 },
+      { type: 'machine', x: 0.7, y: 0.6 }
     ],
     exitPosition: { x: 0.5, y: 0.9 }
   },
-  command_center: {
-    id: 'command_center',
-    name: '指挥中心',
-    background: '#0a1520',
+  hunter_interior: {
+    id: 'hunter_interior',
+    name: '勇士办事处内部',
+    background: '#15201a',
     isInterior: true,
     floorTiles: true,
     items: [
-      { type: 'radar', x: 0.5, y: 0.35 },
-      { type: 'console', x: 0.3, y: 0.6 },
-      { type: 'map_table', x: 0.7, y: 0.5 }
+      { type: 'counter', x: 0.5, y: 0.4 },
+      { type: 'wanted_posters', x: 0.3, y: 0.25 },
+      { type: 'chair', x: 0.7, y: 0.6 }
+    ],
+    exitPosition: { x: 0.5, y: 0.9 }
+  },
+  inn_interior: {
+    id: 'inn_interior',
+    name: '旅店内部',
+    background: '#20151a',
+    isInterior: true,
+    floorTiles: true,
+    items: [
+      { type: 'counter', x: 0.5, y: 0.35 },
+      { type: 'bed', x: 0.3, y: 0.6 },
+      { type: 'bed', x: 0.7, y: 0.6 }
     ],
     exitPosition: { x: 0.5, y: 0.9 }
   }
