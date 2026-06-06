@@ -49,34 +49,72 @@ function drawGrassTile(variant) {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#5a9a30', '#3a7a18')
+  // 多层渐变底色
+  const baseGrad = ctx.createRadialGradient(16, 16, 0, 16, 16, 24)
+  baseGrad.addColorStop(0, '#6aaa40')
+  baseGrad.addColorStop(0.6, '#5a9a30')
+  baseGrad.addColorStop(1, '#4a8a25')
+  ctx.fillStyle = baseGrad
+  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
 
+  // 草地纹理层
   ctx.fillStyle = '#4a8a26'
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 25; i++) {
     const x = (variant * 100 + i * 127) % TILE_SIZE
     const y = (variant * 200 + i * 251) % TILE_SIZE
     ctx.beginPath()
-    ctx.moveTo(x, y + 4)
+    ctx.moveTo(x, y + 5)
     ctx.lineTo(x + 1, y)
-    ctx.lineTo(x + 2, y + 4)
+    ctx.lineTo(x + 2, y + 5)
     ctx.fill()
   }
 
-  ctx.fillStyle = '#6aaa40'
-  for (let i = 0; i < 8; i++) {
+  // 高光草叶
+  ctx.fillStyle = '#7aba50'
+  for (let i = 0; i < 12; i++) {
     const x = (variant * 150 + i * 173) % (TILE_SIZE - 4) + 2
     const y = (variant * 250 + i * 311) % (TILE_SIZE - 6) + 3
     ctx.fillRect(x, y, 2, 3)
+    ctx.fillStyle = '#8aca60'
+    ctx.fillRect(x, y, 1, 2)
+    ctx.fillStyle = '#7aba50'
   }
 
+  // 泥土斑点
+  ctx.fillStyle = 'rgba(90, 60, 30, 0.3)'
+  for (let i = 0; i < 6; i++) {
+    const x = (variant * 300 + i * 97) % TILE_SIZE
+    const y = (variant * 400 + i * 131) % TILE_SIZE
+    ctx.beginPath()
+    ctx.ellipse(x, y, 2, 1.5, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 花朵装饰
   if (variant % 5 === 0) {
+    // 花朵
     ctx.fillStyle = '#ff69b4'
     ctx.beginPath()
-    ctx.arc(16, 16, 3, 0, Math.PI * 2)
+    ctx.arc(14, 14, 4, 0, Math.PI * 2)
     ctx.fill()
     ctx.fillStyle = '#ff1493'
     ctx.beginPath()
-    ctx.arc(16, 16, 1.5, 0, Math.PI * 2)
+    ctx.arc(14, 14, 2, 0, Math.PI * 2)
+    ctx.fill()
+    // 花瓣高光
+    ctx.fillStyle = '#ffb6c1'
+    ctx.beginPath()
+    ctx.arc(13, 13, 1, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 小石子
+  ctx.fillStyle = '#8a8a7a'
+  for (let i = 0; i < 3; i++) {
+    const x = (variant * 200 + i * 67) % TILE_SIZE
+    const y = (variant * 300 + i * 89) % TILE_SIZE
+    ctx.beginPath()
+    ctx.ellipse(x, y, 1.5, 1, 0, 0, Math.PI * 2)
     ctx.fill()
   }
 
@@ -90,20 +128,41 @@ function drawDirtTile(variant) {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#c4a06a', '#a08050')
+  // 沙土渐变
+  const baseGrad = ctx.createRadialGradient(16, 16, 0, 16, 16, 24)
+  baseGrad.addColorStop(0, '#d4b080')
+  baseGrad.addColorStop(0.5, '#c4a06a')
+  baseGrad.addColorStop(1, '#a08050')
+  ctx.fillStyle = baseGrad
+  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
 
+  // 深色纹理
   ctx.fillStyle = '#b49060'
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 15; i++) {
     const x = (variant * 100 + i * 137) % TILE_SIZE
     const y = (variant * 200 + i * 271) % TILE_SIZE
     ctx.fillRect(x, y, 3, 2)
+    ctx.fillStyle = '#a48050'
+    ctx.fillRect(x + 1, y, 1, 1)
+    ctx.fillStyle = '#b49060'
   }
 
-  ctx.fillStyle = '#d4b080'
-  for (let i = 0; i < 5; i++) {
+  // 高光斑点
+  ctx.fillStyle = '#e4c090'
+  for (let i = 0; i < 8; i++) {
     const x = (variant * 150 + i * 193) % TILE_SIZE
     const y = (variant * 250 + i * 331) % TILE_SIZE
     ctx.fillRect(x, y, 2, 1)
+  }
+
+  // 小碎石
+  ctx.fillStyle = '#9a8a70'
+  for (let i = 0; i < 4; i++) {
+    const x = (variant * 250 + i * 73) % TILE_SIZE
+    const y = (variant * 350 + i * 97) % TILE_SIZE
+    ctx.beginPath()
+    ctx.ellipse(x, y, 2, 1.5, 0, 0, Math.PI * 2)
+    ctx.fill()
   }
 
   tileCache.set(key, canvas)
@@ -116,25 +175,38 @@ function drawWaterTile(time, variant) {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#5a8cb8', '#3a6c98')
+  // 水面渐变
+  const waterGrad = ctx.createLinearGradient(0, 0, 0, TILE_SIZE)
+  waterGrad.addColorStop(0, '#6a9cd0')
+  waterGrad.addColorStop(0.5, '#5a8cc0')
+  waterGrad.addColorStop(1, '#4a7cb0')
+  ctx.fillStyle = waterGrad
+  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
 
   const waveOffset = ((time + variant * 100) % 600) / 600
 
-  ctx.fillStyle = 'rgba(100, 160, 220, 0.3)'
+  // 波浪
+  ctx.fillStyle = 'rgba(120, 180, 240, 0.4)'
   for (let y = 0; y < TILE_SIZE; y += 4) {
-    const waveX = Math.sin((y + waveOffset * TILE_SIZE) * 0.4) * 3
+    const waveX = Math.sin((y + waveOffset * TILE_SIZE) * 0.5) * 4
     ctx.beginPath()
-    ctx.ellipse(waveX + 8, y + 2, 6, 2, 0, 0, Math.PI * 2)
+    ctx.ellipse(waveX + 8, y + 2, 7, 2.5, 0, 0, Math.PI * 2)
     ctx.fill()
     ctx.beginPath()
-    ctx.ellipse(waveX + 22, y + 3, 5, 2, 0, 0, Math.PI * 2)
+    ctx.ellipse(waveX + 22, y + 3, 6, 2, 0, 0, Math.PI * 2)
     ctx.fill()
   }
 
-  ctx.fillStyle = 'rgba(150, 200, 255, 0.4)'
+  // 高光点
+  ctx.fillStyle = 'rgba(180, 220, 255, 0.6)'
   ctx.fillRect(6, 8, 3, 2)
   ctx.fillRect(20, 14, 2, 2)
   ctx.fillRect(12, 22, 2, 2)
+  ctx.fillRect(25, 6, 2, 1)
+
+  // 水下阴影
+  ctx.fillStyle = 'rgba(30, 60, 100, 0.2)'
+  ctx.fillRect(0, TILE_SIZE - 4, TILE_SIZE, 4)
 
   tileCache.set(key, canvas)
   return canvas
@@ -146,71 +218,152 @@ function drawRoadTile() {
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
-  drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#9a8a7a', '#7a6a5a')
+  // 路面渐变
+  const roadGrad = ctx.createLinearGradient(0, 0, 0, TILE_SIZE)
+  roadGrad.addColorStop(0, '#a89a8a')
+  roadGrad.addColorStop(0.5, '#9a8a7a')
+  roadGrad.addColorStop(1, '#8a7a6a')
+  ctx.fillStyle = roadGrad
+  ctx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
 
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
-  for (let i = 0; i < 8; i++) {
+  // 路面纹理
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.08)'
+  for (let i = 0; i < 10; i++) {
     const x = (i * 7 + 2) % TILE_SIZE
     const y = (i * 11 + 5) % TILE_SIZE
-    ctx.fillRect(x, y, 2, 2)
+    ctx.fillRect(x, y, 3, 2)
   }
 
-  ctx.fillStyle = '#d8d4c8'
+  // 边缘高光
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'
+  ctx.fillRect(0, 0, TILE_SIZE, 1)
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'
+  ctx.fillRect(0, TILE_SIZE - 2, TILE_SIZE, 2)
+
+  // 道路中线
+  ctx.fillStyle = '#e8e4d8'
   ctx.fillRect(15, 0, 2, TILE_SIZE)
-  ctx.fillStyle = '#f0ece0'
+  ctx.fillStyle = '#f8f4e8'
   ctx.fillRect(15, 0, 1, TILE_SIZE)
 
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'
-  ctx.fillRect(0, 0, TILE_SIZE, 2)
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
-  ctx.fillRect(0, TILE_SIZE - 2, TILE_SIZE, 2)
+  // 斑马纹
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.1)'
+  for (let i = 0; i < 4; i++) {
+    ctx.fillRect(15, i * 8 + 2, 2, 4)
+  }
 
   tileCache.set(key, canvas)
   return canvas
 }
 
-function drawBuildingTile(type, time) {
-  const key = 'building_' + type + '_' + Math.floor(time / 2000)
+function drawDetailedBuildingTile(type, time) {
+  const key = 'building_detailed_' + type + '_' + Math.floor(time / 2000)
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE * 4, TILE_SIZE * 4)
 
-  drawGradientRect(ctx, 0, 0, TILE_SIZE * 4, TILE_SIZE * 4, '#9a9a9a', '#7a7a7a')
+  // 建筑主体渐变
+  const wallGrad = ctx.createLinearGradient(0, 0, TILE_SIZE * 4, 0)
+  wallGrad.addColorStop(0, '#a8a8a8')
+  wallGrad.addColorStop(0.3, '#9a9a9a')
+  wallGrad.addColorStop(0.7, '#8a8a8a')
+  wallGrad.addColorStop(1, '#7a7a7a')
+  ctx.fillStyle = wallGrad
+  ctx.fillRect(0, 0, TILE_SIZE * 4, TILE_SIZE * 4)
 
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
-  for (let y = 4; y < TILE_SIZE * 4; y += 16) {
-    ctx.fillRect(0, y, TILE_SIZE * 4, 3)
+  // 砖块纹理
+  ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)'
+  ctx.lineWidth = 1
+  for (let y = 0; y < TILE_SIZE * 4; y += 8) {
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(TILE_SIZE * 4, y)
+    ctx.stroke()
+  }
+  for (let x = 0; x < TILE_SIZE * 4; x += 16) {
+    const offset = (Math.floor(x / 16) % 2) * 8
+    for (let y = offset; y < TILE_SIZE * 4; y += 16) {
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+      ctx.lineTo(x, y + 8)
+      ctx.stroke()
+    }
   }
 
-  drawGradientRect(ctx, 0, 0, TILE_SIZE * 4, 8, '#c44a3a', '#a03a2a')
+  // 房顶渐变
+  const roofGrad = ctx.createLinearGradient(0, 0, 0, 12)
+  roofGrad.addColorStop(0, '#d85a4a')
+  roofGrad.addColorStop(0.5, '#c44a3a')
+  roofGrad.addColorStop(1, '#a03a2a')
+  ctx.fillStyle = roofGrad
+  ctx.fillRect(0, 0, TILE_SIZE * 4, 12)
 
-  ctx.fillStyle = '#1a1a1a'
-  ctx.fillRect(TILE_SIZE * 2 - 12, TILE_SIZE * 4 - 28, 24, 28)
-  ctx.fillStyle = '#2a2a2a'
-  ctx.fillRect(TILE_SIZE * 2 - 10, TILE_SIZE * 4 - 26, 20, 24)
+  // 房顶瓦片
+  ctx.fillStyle = '#b03a2a'
+  for (let x = 0; x < TILE_SIZE * 4; x += 8) {
+    ctx.beginPath()
+    ctx.moveTo(x, 12)
+    ctx.lineTo(x + 4, 6)
+    ctx.lineTo(x + 8, 12)
+    ctx.fill()
+  }
 
+  // 屋檐
+  ctx.fillStyle = '#8a2a1a'
+  ctx.fillRect(0, 10, TILE_SIZE * 4, 3)
+
+  // 门
+  ctx.fillStyle = '#2a2015'
+  ctx.fillRect(TILE_SIZE * 2 - 14, TILE_SIZE * 4 - 32, 28, 32)
+  ctx.fillStyle = '#3a3025'
+  ctx.fillRect(TILE_SIZE * 2 - 12, TILE_SIZE * 4 - 30, 24, 30)
+  
+  // 门把手
+  ctx.fillStyle = '#c0a030'
+  ctx.beginPath()
+  ctx.arc(TILE_SIZE * 2 + 6, TILE_SIZE * 4 - 16, 2, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 窗户
   const windowLit = type === 'lit'
   const flicker = Math.sin(time * 0.003) * 0.2 + 0.8
 
-  for (let wy = 18; wy < TILE_SIZE * 4 - 24; wy += 14) {
-    for (let wx = 10; wx < TILE_SIZE * 4 - 14; wx += 14) {
+  for (let wy = 20; wy < TILE_SIZE * 4 - 28; wy += 18) {
+    for (let wx = 12; wx < TILE_SIZE * 4 - 16; wx += 20) {
       if (windowLit) {
-        const intensity = 0.7 + Math.sin(wx + time * 0.002) * 0.3
-        ctx.fillStyle = `rgba(255, 240, 150, ${intensity * flicker})`
-        ctx.beginPath()
-        ctx.arc(wx + 5, wy + 5, 8, 0, Math.PI * 2)
-        ctx.fill()
+        // 窗户发光效果
+        const glowGrad = ctx.createRadialGradient(wx + 6, wy + 6, 0, wx + 6, wy + 6, 20)
+        glowGrad.addColorStop(0, 'rgba(255, 245, 180, 0.4)')
+        glowGrad.addColorStop(1, 'rgba(255, 220, 100, 0)')
+        ctx.fillStyle = glowGrad
+        ctx.fillRect(wx - 14, wy - 14, 40, 40)
+
+        // 窗户框架
+        ctx.fillStyle = '#4a4035'
+        ctx.fillRect(wx, wy, 12, 12)
         
-        const gradient = ctx.createRadialGradient(wx + 5, wy + 5, 0, wx + 5, wy + 5, 8)
-        gradient.addColorStop(0, 'rgba(255, 255, 200, 0.8)')
-        gradient.addColorStop(1, 'rgba(255, 200, 100, 0)')
-        ctx.fillStyle = gradient
-        ctx.fillRect(wx - 3, wy - 3, 16, 16)
+        // 窗户玻璃（发光）
+        const intensity = 0.8 + Math.sin(wx + time * 0.002) * 0.2
+        ctx.fillStyle = `rgba(255, 245, 180, ${intensity * flicker})`
+        ctx.fillRect(wx + 1, wy + 1, 10, 10)
         
-        ctx.fillStyle = '#fff8c0'
-        ctx.fillRect(wx, wy, 10, 10)
+        // 窗户高光
+        ctx.fillStyle = 'rgba(255, 255, 220, 0.6)'
+        ctx.fillRect(wx + 1, wy + 1, 4, 4)
+        
+        // 窗框
+        ctx.fillStyle = '#3a3025'
+        ctx.fillRect(wx + 5, wy, 2, 12)
+        ctx.fillRect(wx, wy + 5, 12, 2)
       } else {
-        drawGradientRect(ctx, wx, wy, 10, 10, '#4a6a80', '#3a5a70')
+        // 窗户框架（暗）
+        ctx.fillStyle = '#3a3a40'
+        ctx.fillRect(wx, wy, 12, 12)
+        ctx.fillStyle = '#2a2a30'
+        ctx.fillRect(wx + 1, wy + 1, 10, 10)
+        ctx.fillStyle = '#4a4a50'
+        ctx.fillRect(wx + 5, wy, 2, 12)
+        ctx.fillRect(wx, wy + 5, 12, 2)
       }
     }
   }
@@ -220,43 +373,69 @@ function drawBuildingTile(type, time) {
 }
 
 function drawTreeTile(variant) {
-  const key = 'tree_' + variant
+  const key = 'tree_detailed_' + variant
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
 
+  // 草地底
   drawGradientRect(ctx, 0, 0, TILE_SIZE, TILE_SIZE, '#5a9a30', '#3a7a18')
 
+  // 树干
+  const trunkGrad = ctx.createLinearGradient(14, 18, 19, 32)
+  trunkGrad.addColorStop(0, '#7a5a3a')
+  trunkGrad.addColorStop(0.5, '#6a4a2a')
+  trunkGrad.addColorStop(1, '#5a3a1a')
+  ctx.fillStyle = trunkGrad
+  ctx.fillRect(14, 18, 5, 14)
+
+  // 树干纹理
   ctx.fillStyle = '#5a3a1a'
-  ctx.fillRect(14, 20, 5, 12)
-  ctx.fillStyle = '#6a4a2a'
-  ctx.fillRect(15, 20, 3, 12)
+  ctx.fillRect(15, 20, 1, 10)
+  ctx.fillRect(18, 22, 1, 8)
 
-  const trunkGradient = ctx.createLinearGradient(14, 20, 19, 32)
-  trunkGradient.addColorStop(0, '#6a4a2a')
-  trunkGradient.addColorStop(0.5, '#5a3a1a')
-  trunkGradient.addColorStop(1, '#4a2a0a')
-  ctx.fillStyle = trunkGradient
-  ctx.fillRect(14, 20, 5, 12)
-
-  const leafGradient = ctx.createRadialGradient(16, 12, 2, 16, 12, 14)
-  leafGradient.addColorStop(0, '#6aaa40')
-  leafGradient.addColorStop(0.5, '#4a8a28')
-  leafGradient.addColorStop(1, '#2a5a10')
-  ctx.fillStyle = leafGradient
+  // 树冠阴影
+  ctx.fillStyle = 'rgba(0, 50, 0, 0.3)'
   ctx.beginPath()
-  ctx.arc(16, 12, 13, 0, Math.PI * 2)
+  ctx.ellipse(16, 26, 12, 4, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#7aba50'
+  // 主树冠
+  const leafGrad = ctx.createRadialGradient(16, 10, 2, 16, 10, 14)
+  leafGrad.addColorStop(0, '#7aba50')
+  leafGrad.addColorStop(0.5, '#5a9a30')
+  leafGrad.addColorStop(0.8, '#4a8a25')
+  leafGrad.addColorStop(1, '#3a7a18')
+  ctx.fillStyle = leafGrad
   ctx.beginPath()
-  ctx.arc(12, 10, 6, 0, Math.PI * 2)
+  ctx.arc(16, 10, 13, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 树冠层次
+  ctx.fillStyle = '#6aaa40'
+  ctx.beginPath()
+  ctx.arc(12, 8, 7, 0, Math.PI * 2)
   ctx.fill()
   ctx.beginPath()
-  ctx.arc(20, 10, 6, 0, Math.PI * 2)
+  ctx.arc(20, 8, 7, 0, Math.PI * 2)
   ctx.fill()
   ctx.beginPath()
-  ctx.arc(16, 6, 5, 0, Math.PI * 2)
+  ctx.arc(16, 4, 6, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 树冠高光
+  ctx.fillStyle = '#8aca60'
+  ctx.beginPath()
+  ctx.arc(14, 6, 4, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(18, 10, 3, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 树干截面
+  ctx.fillStyle = '#5a4030'
+  ctx.beginPath()
+  ctx.ellipse(16.5, 18, 3, 1.5, 0, 0, Math.PI * 2)
   ctx.fill()
 
   tileCache.set(key, canvas)
@@ -264,100 +443,215 @@ function drawTreeTile(variant) {
 }
 
 function drawTankTile() {
-  const key = 'tank'
+  const key = 'tank_detailed'
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(64, 48)
 
-  const bodyGradient = ctx.createLinearGradient(8, 12, 56, 36)
-  bodyGradient.addColorStop(0, '#c42c2c')
-  bodyGradient.addColorStop(0.5, '#a41c1c')
-  bodyGradient.addColorStop(1, '#7a0f0f')
-  ctx.fillStyle = bodyGradient
-  ctx.fillRect(8, 12, 48, 24)
-
-  ctx.fillStyle = '#e84c4c'
-  ctx.fillRect(10, 12, 44, 3)
-  ctx.fillStyle = '#4a0a0a'
-  ctx.fillRect(10, 33, 44, 3)
-
-  ctx.fillStyle = '#b42424'
+  // 车身阴影
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'
   ctx.beginPath()
-  ctx.ellipse(32, 24, 14, 12, 0, 0, Math.PI * 2)
+  ctx.ellipse(32, 42, 28, 4, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#d44444'
-  ctx.beginPath()
-  ctx.ellipse(30, 22, 8, 7, -0.3, 0, Math.PI * 2)
-  ctx.fill()
+  // 履带底色
+  const trackGrad = ctx.createLinearGradient(4, 16, 60, 32)
+  trackGrad.addColorStop(0, '#3a3a3a')
+  trackGrad.addColorStop(0.5, '#4a4a4a')
+  trackGrad.addColorStop(1, '#3a3a3a')
+  ctx.fillStyle = trackGrad
+  ctx.fillRect(4, 16, 56, 16)
 
-  ctx.fillStyle = '#9a1a1a'
-  ctx.fillRect(42, 20, 18, 8)
-  ctx.fillStyle = '#7a0f0f'
-  ctx.fillRect(42, 20, 18, 3)
-
-  ctx.fillStyle = '#2a0505'
-  ctx.fillRect(57, 21, 3, 6)
-
-  ctx.fillStyle = '#3a3a3a'
-  ctx.fillRect(4, 18, 56, 14)
+  // 履带边缘
   ctx.fillStyle = '#2a2a2a'
-  ctx.fillRect(4, 18, 56, 4)
+  ctx.fillRect(4, 16, 56, 4)
   ctx.fillRect(4, 28, 56, 4)
 
-  ctx.fillStyle = '#1a1a1a'
-  for (let i = 0; i < 10; i++) {
-    ctx.fillRect(8 + i * 5, 19, 2, 3)
-    ctx.fillRect(8 + i * 5, 29, 2, 3)
+  // 履带纹理（负重轮）
+  ctx.fillStyle = '#4a4a4a'
+  for (let i = 0; i < 7; i++) {
+    ctx.beginPath()
+    ctx.arc(10 + i * 8, 24, 5, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#3a3a3a'
+    ctx.beginPath()
+    ctx.arc(10 + i * 8, 24, 3, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.fillStyle = '#4a4a4a'
   }
 
-  ctx.fillStyle = '#6a0a0a'
-  ctx.fillRect(14, 16, 4, 8)
-  ctx.fillRect(28, 14, 8, 12)
-  ctx.fillRect(44, 16, 4, 8)
+  // 主动轮
+  ctx.fillStyle = '#5a5a5a'
+  ctx.beginPath()
+  ctx.arc(8, 24, 7, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#3a3a3a'
+  ctx.beginPath()
+  ctx.arc(8, 24, 4, 0, Math.PI * 2)
+  ctx.fill()
 
-  ctx.fillStyle = '#5a8ac4'
-  ctx.fillRect(30, 16, 4, 4)
-  ctx.fillStyle = '#7abae4'
-  ctx.fillRect(31, 17, 2, 2)
+  // 诱导轮
+  ctx.fillStyle = '#5a5a5a'
+  ctx.beginPath()
+  ctx.arc(56, 24, 6, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 车身主体
+  const bodyGrad = ctx.createLinearGradient(8, 10, 56, 38)
+  bodyGrad.addColorStop(0, '#d85c5c')
+  bodyGrad.addColorStop(0.3, '#c42c2c')
+  bodyGrad.addColorStop(0.7, '#a41c1c')
+  bodyGrad.addColorStop(1, '#8a1010')
+  ctx.fillStyle = bodyGrad
+  ctx.fillRect(8, 10, 48, 24)
+
+  // 车身高光
+  ctx.fillStyle = '#e86c6c'
+  ctx.fillRect(10, 10, 44, 3)
+  ctx.fillRect(10, 10, 3, 22)
+
+  // 车身阴影
+  ctx.fillStyle = '#7a0a0a'
+  ctx.fillRect(10, 31, 44, 3)
+  ctx.fillRect(53, 10, 3, 24)
+
+  // 装甲板
+  ctx.fillStyle = '#6a0a0a'
+  ctx.fillRect(14, 14, 6, 12)
+  ctx.fillRect(28, 12, 10, 16)
+  ctx.fillRect(44, 14, 6, 12)
+
+  // 装甲高光
+  ctx.fillStyle = '#8a1a1a'
+  ctx.fillRect(14, 14, 6, 2)
+  ctx.fillRect(28, 12, 10, 2)
+  ctx.fillRect(44, 14, 6, 2)
+
+  // 观察窗
+  ctx.fillStyle = '#2a4a6a'
+  ctx.fillRect(30, 15, 6, 6)
+  ctx.fillStyle = '#5a8ab4'
+  ctx.fillRect(31, 16, 4, 4)
+  ctx.fillStyle = '#8abae4'
+  ctx.fillRect(32, 17, 2, 2)
+
+  // 炮塔底座
+  ctx.fillStyle = '#b42424'
+  ctx.beginPath()
+  ctx.ellipse(32, 22, 16, 14, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 炮塔渐变
+  const turretGrad = ctx.createRadialGradient(30, 20, 2, 32, 22, 16)
+  turretGrad.addColorStop(0, '#d44444')
+  turretGrad.addColorStop(0.7, '#b42424')
+  turretGrad.addColorStop(1, '#8a1a1a')
+  ctx.fillStyle = turretGrad
+  ctx.beginPath()
+  ctx.ellipse(32, 22, 14, 12, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 炮塔高光
+  ctx.fillStyle = '#e86464'
+  ctx.beginPath()
+  ctx.ellipse(30, 20, 8, 6, -0.3, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 炮管
+  const barrelGrad = ctx.createLinearGradient(42, 18, 60, 30)
+  barrelGrad.addColorStop(0, '#a41c1c')
+  barrelGrad.addColorStop(0.5, '#9a1a1a')
+  barrelGrad.addColorStop(1, '#7a0f0f')
+  ctx.fillStyle = barrelGrad
+  ctx.fillRect(42, 18, 20, 10)
+
+  // 炮管高光
+  ctx.fillStyle = '#c42c2c'
+  ctx.fillRect(42, 18, 20, 3)
+
+  // 炮口
+  ctx.fillStyle = '#2a0505'
+  ctx.fillRect(59, 19, 4, 8)
+  ctx.fillStyle = '#1a0303'
+  ctx.fillRect(60, 20, 2, 6)
+
+  // 排气口
+  ctx.fillStyle = '#4a4a4a'
+  ctx.fillRect(18, 26, 4, 4)
+  ctx.fillStyle = '#3a3a3a'
+  ctx.fillRect(19, 27, 2, 2)
 
   tileCache.set(key, canvas)
   return canvas
 }
 
 function drawNPCTankTile(color) {
-  const key = 'npc_tank_' + color
+  const key = 'npc_tank_detailed_' + color
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(48, 36)
 
-  const bodyGradient = ctx.createLinearGradient(4, 8, 44, 28)
-  bodyGradient.addColorStop(0, color)
-  bodyGradient.addColorStop(0.5, shadeColor(color, -20))
-  bodyGradient.addColorStop(1, shadeColor(color, -40))
-  ctx.fillStyle = bodyGradient
-  ctx.fillRect(4, 8, 40, 20)
+  // 阴影
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'
+  ctx.beginPath()
+  ctx.ellipse(24, 32, 20, 3, 0, 0, Math.PI * 2)
+  ctx.fill()
 
-  ctx.fillStyle = shadeColor(color, -30)
-  ctx.fillRect(4, 8, 40, 3)
+  // 履带
+  const trackGrad = ctx.createLinearGradient(4, 10, 44, 26)
+  trackGrad.addColorStop(0, shadeColor(color, -40))
+  trackGrad.addColorStop(0.5, shadeColor(color, -20))
+  trackGrad.addColorStop(1, shadeColor(color, -40))
+  ctx.fillStyle = trackGrad
+  ctx.fillRect(4, 10, 40, 16)
+
+  ctx.fillStyle = shadeColor(color, -50)
+  ctx.fillRect(4, 10, 40, 3)
+  ctx.fillRect(4, 23, 40, 3)
+
+  // 履带轮
+  for (let i = 0; i < 5; i++) {
+    ctx.fillStyle = shadeColor(color, -30)
+    ctx.beginPath()
+    ctx.arc(8 + i * 8, 18, 4, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // 车身
+  const bodyGrad = ctx.createLinearGradient(4, 6, 44, 26)
+  bodyGrad.addColorStop(0, shadeColor(color, 20))
+  bodyGrad.addColorStop(0.5, color)
+  bodyGrad.addColorStop(1, shadeColor(color, -30))
+  ctx.fillStyle = bodyGrad
+  ctx.fillRect(4, 6, 40, 18)
+
+  // 高光边
+  ctx.fillStyle = shadeColor(color, 30)
+  ctx.fillRect(4, 6, 38, 2)
+
+  // 炮塔
   ctx.fillStyle = shadeColor(color, 10)
-  ctx.fillRect(4, 25, 40, 3)
+  ctx.beginPath()
+  ctx.ellipse(24, 14, 12, 10, 0, 0, Math.PI * 2)
+  ctx.fill()
 
-  ctx.fillStyle = shadeColor(color, 10)
-  ctx.fillRect(12, 10, 24, 14)
+  ctx.fillStyle = shadeColor(color, 25)
+  ctx.beginPath()
+  ctx.ellipse(23, 13, 7, 6, -0.3, 0, Math.PI * 2)
+  ctx.fill()
 
+  // 炮管
   ctx.fillStyle = shadeColor(color, -20)
-  ctx.fillRect(20, 4, 6, 22)
-
-  ctx.fillStyle = shadeColor(color, -40)
-  ctx.fillRect(20, 0, 6, 6)
+  ctx.fillRect(32, 10, 12, 6)
+  ctx.fillStyle = shadeColor(color, -35)
+  ctx.fillRect(32, 10, 12, 2)
 
   tileCache.set(key, canvas)
   return canvas
 }
 
 export function drawNPCHumanTile(variant) {
-  const key = 'npc_human_' + variant
+  const key = 'npc_human_detailed_' + variant
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(24, 32)
@@ -370,45 +664,65 @@ export function drawNPCHumanTile(variant) {
   const cloth = clothColors[Math.floor(variant / 4) % 5]
   const pants = pantsColors[Math.floor(variant / 8) % 4]
 
-  ctx.fillStyle = pants
-  ctx.fillRect(8, 20, 8, 12)
+  // 阴影
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
+  ctx.beginPath()
+  ctx.ellipse(12, 30, 6, 2, 0, 0, Math.PI * 2)
+  ctx.fill()
 
-  ctx.fillStyle = shadeColor(pants, -20)
+  // 裤子
+  ctx.fillStyle = pants
+  ctx.fillRect(8, 18, 8, 14)
+  ctx.fillStyle = shadeColor(pants, -15)
+  ctx.fillRect(8, 18, 8, 2)
+  ctx.fillStyle = shadeColor(pants, 10)
   ctx.fillRect(8, 28, 8, 4)
 
+  // 上衣
   ctx.fillStyle = cloth
-  ctx.fillRect(6, 10, 12, 12)
+  ctx.fillRect(6, 10, 12, 10)
+  ctx.fillStyle = shadeColor(cloth, -15)
+  ctx.fillRect(6, 10, 12, 2)
+  ctx.fillStyle = shadeColor(cloth, 15)
+  ctx.fillRect(6, 16, 12, 4)
 
-  ctx.fillStyle = shadeColor(cloth, -20)
-  ctx.fillRect(6, 10, 12, 3)
-
+  // 头
   ctx.fillStyle = skin
   ctx.beginPath()
   ctx.arc(12, 6, 5, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = shadeColor(skin, -20)
+  // 头发
+  ctx.fillStyle = shadeColor(skin, -25)
   ctx.beginPath()
   ctx.arc(12, 3, 5, Math.PI, Math.PI * 2)
   ctx.fill()
 
+  // 眼睛
   ctx.fillStyle = '#2a2a2a'
-  ctx.fillRect(10, 2, 1.5, 3)
-  ctx.fillRect(12.5, 2, 1.5, 3)
+  ctx.fillRect(10, 5, 1.5, 2)
+  ctx.fillRect(12.5, 5, 1.5, 2)
 
-  ctx.fillStyle = '#1a1a1a'
-  ctx.fillRect(10, 7, 2, 1)
-  ctx.fillRect(12, 7, 2, 1)
+  // 嘴巴
+  ctx.fillStyle = shadeColor(skin, -20)
+  ctx.fillRect(11, 8, 2, 1)
 
+  // 手臂
   ctx.fillStyle = skin
-  ctx.fillRect(4, 12, 3, 6)
-  ctx.fillRect(17, 12, 3, 6)
+  ctx.fillRect(4, 11, 3, 7)
+  ctx.fillRect(17, 11, 3, 7)
+
+  // 鞋子
+  ctx.fillStyle = '#3a3a3a'
+  ctx.fillRect(7, 28, 4, 4)
+  ctx.fillRect(13, 28, 4, 4)
 
   tileCache.set(key, canvas)
   return canvas
 }
 
 function shadeColor(color, percent) {
+  if (color === 'human') return '#888888'
   const num = parseInt(color.replace('#', ''), 16)
   const amt = Math.round(2.55 * percent)
   const R = (num >> 16) + amt
@@ -422,69 +736,101 @@ function shadeColor(color, percent) {
 }
 
 function drawCoinTile(time) {
-  const key = 'coin_' + Math.floor(time / 200)
+  const key = 'coin_detailed_' + Math.floor(time / 200)
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(20, 20)
 
   const spin = Math.sin(time * 0.008)
-  const width = 6 + Math.abs(spin) * 6
+  const width = 5 + Math.abs(spin) * 7
 
-  const gradient = ctx.createRadialGradient(10, 10, 0, 10, 10, 8)
-  gradient.addColorStop(0, '#f0d060')
-  gradient.addColorStop(0.7, '#c0a030')
-  gradient.addColorStop(1, '#a08020')
-  ctx.fillStyle = gradient
+  // 硬币阴影
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'
   ctx.beginPath()
-  ctx.ellipse(10, 10, width, 7, 0, 0, Math.PI * 2)
+  ctx.ellipse(10, 12, width * 0.8, 3, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+  // 硬币主体
+  const coinGrad = ctx.createRadialGradient(10 - width * 0.2, 8, 0, 10, 10, 10)
+  coinGrad.addColorStop(0, '#f8e080')
+  coinGrad.addColorStop(0.4, '#f0d060')
+  coinGrad.addColorStop(0.8, '#c0a030')
+  coinGrad.addColorStop(1, '#a08020')
+  ctx.fillStyle = coinGrad
   ctx.beginPath()
-  ctx.ellipse(10 - width * 0.2, 10 - 2, width * 0.4, 3, 0, 0, Math.PI * 2)
+  ctx.ellipse(10, 10, width, 8, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#806010'
-  ctx.fillRect(9, 4, 2, 12)
+  // 硬币边缘
+  ctx.strokeStyle = '#806010'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.ellipse(10, 10, width, 8, 0, 0, Math.PI * 2)
+  ctx.stroke()
+
+  // 高光
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
+  ctx.beginPath()
+  ctx.ellipse(10 - width * 0.3, 8, width * 0.4, 3, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // 星星标记
+  if (width > 8) {
+    ctx.fillStyle = '#f8f080'
+    ctx.font = '8px Arial'
+    ctx.textAlign = 'center'
+    ctx.fillText('★', 10, 12)
+  }
 
   tileCache.set(key, canvas)
   return canvas
 }
 
 function drawLampPostTile(time) {
-  const key = 'lamp_' + Math.floor(time / 500)
+  const key = 'lamp_detailed_' + Math.floor(time / 500)
   if (tileCache.has(key)) return tileCache.get(key)
 
   const { canvas, ctx } = createTileCanvas(20, 44)
 
-  const poleGradient = ctx.createLinearGradient(9, 10, 11, 44)
-  poleGradient.addColorStop(0, '#6a6a6a')
-  poleGradient.addColorStop(1, '#3a3a3a')
-  ctx.fillStyle = poleGradient
-  ctx.fillRect(9, 10, 3, 34)
+  const flicker = 0.85 + Math.sin(time * 0.006) * 0.15
 
-  ctx.fillStyle = '#5a5a5a'
-  ctx.fillRect(6, 8, 8, 4)
+  // 灯柱
+  const poleGrad = ctx.createLinearGradient(9, 8, 11, 44)
+  poleGrad.addColorStop(0, '#7a7a7a')
+  poleGrad.addColorStop(0.5, '#5a5a5a')
+  poleGrad.addColorStop(1, '#3a3a3a')
+  ctx.fillStyle = poleGrad
+  ctx.fillRect(9, 8, 3, 36)
 
-  const flicker = 0.8 + Math.sin(time * 0.006) * 0.2
+  // 灯座
+  ctx.fillStyle = '#6a6a6a'
+  ctx.fillRect(6, 6, 8, 4)
 
-  const glowGradient = ctx.createRadialGradient(10, 6, 0, 10, 6, 20)
-  glowGradient.addColorStop(0, `rgba(255, 255, 180, ${flicker * 0.6})`)
-  glowGradient.addColorStop(0.5, `rgba(255, 255, 100, ${flicker * 0.2})`)
-  glowGradient.addColorStop(1, 'rgba(255, 200, 50, 0)')
-  ctx.fillStyle = glowGradient
+  // 光晕
+  const glowGrad = ctx.createRadialGradient(10, 4, 0, 10, 4, 25)
+  glowGrad.addColorStop(0, `rgba(255, 255, 200, ${flicker * 0.7})`)
+  glowGrad.addColorStop(0.3, `rgba(255, 255, 150, ${flicker * 0.4})`)
+  glowGrad.addColorStop(0.6, `rgba(255, 220, 100, ${flicker * 0.15})`)
+  glowGrad.addColorStop(1, 'rgba(255, 200, 50, 0)')
+  ctx.fillStyle = glowGrad
   ctx.beginPath()
-  ctx.arc(10, 6, 20, 0, Math.PI * 2)
+  ctx.arc(10, 4, 25, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#fff8c0'
+  // 灯泡
+  ctx.fillStyle = `rgba(255, 255, 220, ${flicker})`
   ctx.beginPath()
-  ctx.arc(10, 6, 5, 0, Math.PI * 2)
+  ctx.arc(10, 4, 6, 0, Math.PI * 2)
   ctx.fill()
 
-  ctx.fillStyle = '#ffffd0'
+  ctx.fillStyle = '#fffff0'
   ctx.beginPath()
-  ctx.arc(10, 6, 3, 0, Math.PI * 2)
+  ctx.arc(10, 4, 4, 0, Math.PI * 2)
+  ctx.fill()
+
+  ctx.fillStyle = '#ffffff'
+  ctx.beginPath()
+  ctx.arc(9, 3, 2, 0, Math.PI * 2)
   ctx.fill()
 
   tileCache.set(key, canvas)
@@ -496,11 +842,11 @@ const particles = []
 function createParticle(x, y, type) {
   particles.push({
     x, y,
-    vx: (Math.random() - 0.5) * 3,
-    vy: -Math.random() * 3 - 1,
+    vx: (Math.random() - 0.5) * 4,
+    vy: -Math.random() * 4 - 1,
     life: 1,
     type,
-    size: 2 + Math.random() * 4
+    size: 2 + Math.random() * 5
   })
 }
 
@@ -509,8 +855,8 @@ function updateParticles() {
     const p = particles[i]
     p.x += p.vx
     p.y += p.vy
-    p.vy += 0.1
-    p.life -= 0.025
+    p.vy += 0.12
+    p.life -= 0.02
     if (p.life <= 0) {
       particles.splice(i, 1)
     }
@@ -521,13 +867,19 @@ function drawParticles(ctx) {
   for (const p of particles) {
     ctx.globalAlpha = p.life
     if (p.type === 'sparkle') {
-      ctx.fillStyle = '#ffff88'
+      const sparkleGrad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2)
+      sparkleGrad.addColorStop(0, '#ffff88')
+      sparkleGrad.addColorStop(0.5, '#ffcc00')
+      sparkleGrad.addColorStop(1, 'rgba(255, 200, 0, 0)')
+      ctx.fillStyle = sparkleGrad
       ctx.beginPath()
-      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+      ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2)
       ctx.fill()
     } else if (p.type === 'dust') {
       ctx.fillStyle = '#a09080'
-      ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size)
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
+      ctx.fill()
     }
   }
   ctx.globalAlpha = 1
@@ -536,7 +888,7 @@ function drawParticles(ctx) {
 let lastCollectTime = 0
 
 export function onCollect(x, y) {
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 25; i++) {
     createParticle(x, y, 'sparkle')
   }
   lastCollectTime = Date.now()
@@ -621,12 +973,35 @@ export function drawNPCs(ctx, time) {
 function drawInteriorFloor(ctx, width, height) {
   const { canvas, ctx: floorCtx } = createTileCanvas(TILE_SIZE, TILE_SIZE)
   
-  drawGradientRect(floorCtx, 0, 0, TILE_SIZE, TILE_SIZE, '#3a3020', '#2a2015')
+  // 木地板渐变
+  const floorGrad = floorCtx.createRadialGradient(16, 16, 0, 16, 16, 24)
+  floorGrad.addColorStop(0, '#4a4035')
+  floorGrad.addColorStop(0.5, '#3a3025')
+  floorGrad.addColorStop(1, '#2a2015')
+  floorCtx.fillStyle = floorGrad
+  floorCtx.fillRect(0, 0, TILE_SIZE, TILE_SIZE)
   
-  floorCtx.fillStyle = 'rgba(0, 0, 0, 0.1)'
-  for (let i = 0; i < 4; i++) {
-    floorCtx.fillRect(0, i * 8, TILE_SIZE, 1)
+  // 木纹
+  floorCtx.strokeStyle = 'rgba(0, 0, 0, 0.15)'
+  floorCtx.lineWidth = 1
+  for (let y = 0; y < TILE_SIZE; y += 8) {
+    floorCtx.beginPath()
+    floorCtx.moveTo(0, y)
+    floorCtx.lineTo(TILE_SIZE, y)
+    floorCtx.stroke()
   }
+  
+  // 高光线条
+  floorCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)'
+  floorCtx.beginPath()
+  floorCtx.moveTo(0, 0)
+  floorCtx.lineTo(TILE_SIZE, 0)
+  floorCtx.stroke()
+  
+  // 木板间接缝
+  floorCtx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  floorCtx.fillRect(0, 0, TILE_SIZE, 1)
+  floorCtx.fillRect(0, 0, 1, TILE_SIZE)
   
   const tile = canvas
   
@@ -649,184 +1024,335 @@ function drawInteriorItem(ctx, item, x, y, time) {
   
   switch (item.type) {
     case 'table':
-      ctx.fillStyle = '#5a4030'
+      // 桌面
+      const tableGrad = ctx.createLinearGradient(-30, -20, 30, 10)
+      tableGrad.addColorStop(0, '#6a5040')
+      tableGrad.addColorStop(0.5, '#5a4030')
+      tableGrad.addColorStop(1, '#4a3020')
+      ctx.fillStyle = tableGrad
       ctx.fillRect(-30, -15, 60, 30)
+      
+      // 桌面高光
+      ctx.fillStyle = '#7a6050'
+      ctx.fillRect(-30, -15, 60, 4)
+      
+      // 桌腿
       ctx.fillStyle = '#4a3020'
-      ctx.fillRect(-30, -15, 60, 5)
-      ctx.fillStyle = '#6a5040'
-      ctx.fillRect(-28, -10, 56, 3)
+      ctx.fillRect(-28, 10, 6, 20)
+      ctx.fillRect(22, 10, 6, 20)
+      
+      // 桌面纹理
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)'
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.moveTo(-25, -10)
+      ctx.lineTo(25, -10)
+      ctx.moveTo(-25, 0)
+      ctx.lineTo(25, 0)
+      ctx.stroke()
       break
       
     case 'bed':
-      ctx.fillStyle = '#4a3a30'
-      ctx.fillRect(-25, -20, 50, 40)
+      // 床架
+      ctx.fillStyle = '#5a4030'
+      ctx.fillRect(-28, -22, 56, 44)
+      
+      // 床垫
       ctx.fillStyle = '#6a5a50'
-      ctx.fillRect(-23, -18, 46, 20)
-      ctx.fillStyle = '#7a6a60'
-      ctx.fillRect(-20, -15, 40, 15)
+      ctx.fillRect(-26, -20, 52, 24)
+      
+      // 枕头
+      ctx.fillStyle = '#8a7a70'
+      ctx.fillRect(-22, -18, 20, 12)
+      ctx.fillStyle = '#9a8a80'
+      ctx.fillRect(-20, -16, 16, 8)
+      
+      // 被子
+      ctx.fillStyle = '#5a6a7a'
+      ctx.fillRect(-24, -4, 48, 18)
+      ctx.fillStyle = '#6a7a8a'
+      ctx.fillRect(-22, -2, 44, 14)
+      
+      // 床腿
+      ctx.fillStyle = '#4a3020'
+      ctx.fillRect(-26, 18, 6, 6)
+      ctx.fillRect(20, 18, 6, 6)
       break
       
     case 'lamp':
-      ctx.fillStyle = '#4a4a40'
-      ctx.fillRect(-3, -25, 6, 25)
-      ctx.fillStyle = '#ffff88'
+      // 灯柱
+      ctx.fillStyle = '#5a5a50'
+      ctx.fillRect(-3, -28, 6, 28)
+      
+      // 灯罩
+      ctx.fillStyle = '#6a6a60'
       ctx.beginPath()
-      ctx.arc(0, -30, 10, 0, Math.PI * 2)
+      ctx.moveTo(-10, -30)
+      ctx.lineTo(10, -30)
+      ctx.lineTo(8, -20)
+      ctx.lineTo(-8, -20)
+      ctx.closePath()
       ctx.fill()
-      const glowGrad = ctx.createRadialGradient(0, -30, 0, 0, -30, 40)
-      glowGrad.addColorStop(0, 'rgba(255, 255, 150, 0.3)')
-      glowGrad.addColorStop(1, 'rgba(255, 255, 100, 0)')
-      ctx.fillStyle = glowGrad
+      
+      // 灯泡发光
+      const lampGlow = ctx.createRadialGradient(0, -25, 0, 0, -25, 50)
+      lampGlow.addColorStop(0, 'rgba(255, 255, 200, 0.6)')
+      lampGlow.addColorStop(0.3, 'rgba(255, 255, 180, 0.3)')
+      lampGlow.addColorStop(1, 'rgba(255, 255, 150, 0)')
+      ctx.fillStyle = lampGlow
       ctx.beginPath()
-      ctx.arc(0, -30, 40, 0, Math.PI * 2)
+      ctx.arc(0, -25, 50, 0, Math.PI * 2)
+      ctx.fill()
+      
+      ctx.fillStyle = '#ffffc0'
+      ctx.beginPath()
+      ctx.arc(0, -25, 6, 0, Math.PI * 2)
       ctx.fill()
       break
       
     case 'counter':
-      ctx.fillStyle = '#5a4a3a'
+      // 柜台
+      const counterGrad = ctx.createLinearGradient(-40, -20, 40, 15)
+      counterGrad.addColorStop(0, '#6a5a4a')
+      counterGrad.addColorStop(0.5, '#5a4a3a')
+      counterGrad.addColorStop(1, '#4a3a2a')
+      ctx.fillStyle = counterGrad
       ctx.fillRect(-40, -15, 80, 30)
+      
+      // 高光
+      ctx.fillStyle = '#7a6a5a'
+      ctx.fillRect(-40, -15, 80, 4)
+      
+      // 柜面
+      ctx.fillStyle = '#8a7a6a'
+      ctx.fillRect(-38, -11, 76, 4)
+      
+      // 柜门
       ctx.fillStyle = '#4a3a2a'
-      ctx.fillRect(-40, -15, 80, 8)
-      ctx.fillStyle = '#6a5a4a'
-      ctx.fillRect(-38, -7, 76, 4)
+      ctx.fillRect(-38, -5, 35, 18)
+      ctx.fillRect(3, -5, 35, 18)
       break
       
     case 'shelf':
+      // 货架
       ctx.fillStyle = '#5a4535'
-      ctx.fillRect(-30, -40, 60, 80)
-      ctx.fillStyle = '#4a3525'
-      ctx.fillRect(-30, -40, 60, 5)
-      ctx.fillRect(-30, 0, 60, 5)
-      ctx.fillRect(-30, 35, 60, 5)
+      ctx.fillRect(-32, -45, 64, 90)
+      
+      // 层板
+      ctx.fillStyle = '#6a5545'
+      ctx.fillRect(-30, -43, 60, 4)
+      ctx.fillRect(-30, -15, 60, 4)
+      ctx.fillRect(-30, 13, 60, 4)
+      ctx.fillRect(-30, 38, 60, 4)
+      
+      // 商品
       ctx.fillStyle = '#8a7a6a'
       for (let i = 0; i < 3; i++) {
-        ctx.fillRect(-25, -35 + i * 35, 50, 8)
+        ctx.fillRect(-25, -38 + i * 28, 50, 8)
+        ctx.fillStyle = '#7a6a5a'
+        ctx.fillRect(-20, -30 + i * 28, 10, 12)
+        ctx.fillRect(-5, -30 + i * 28, 15, 12)
+        ctx.fillRect(15, -30 + i * 28, 10, 12)
+        ctx.fillStyle = '#8a7a6a'
       }
       break
       
     case 'crate':
-      ctx.fillStyle = '#6a5a40'
+      // 木箱
+      const crateGrad = ctx.createLinearGradient(-22, -22, 22, 22)
+      crateGrad.addColorStop(0, '#7a6a50')
+      crateGrad.addColorStop(0.5, '#6a5a40')
+      crateGrad.addColorStop(1, '#5a4a30')
+      ctx.fillStyle = crateGrad
       ctx.fillRect(-20, -20, 40, 40)
-      ctx.fillStyle = '#5a4a30'
-      ctx.fillRect(-20, -20, 40, 5)
-      ctx.fillRect(-20, 15, 40, 5)
-      ctx.fillRect(-2, -20, 4, 40)
-      ctx.fillRect(-20, -2, 40, 4)
+      
+      // 高光边
+      ctx.fillStyle = '#8a7a60'
+      ctx.fillRect(-20, -20, 40, 3)
+      ctx.fillRect(-20, -20, 3, 40)
+      
+      // 阴影边
+      ctx.fillStyle = '#4a3a20'
+      ctx.fillRect(-20, 17, 40, 3)
+      ctx.fillRect(17, -20, 3, 40)
+      
+      // 木板纹
+      ctx.strokeStyle = '#5a4a30'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.moveTo(-20, 0)
+      ctx.lineTo(20, 0)
+      ctx.moveTo(0, -20)
+      ctx.lineTo(0, 20)
+      ctx.stroke()
       break
       
     case 'workbench':
-      ctx.fillStyle = '#4a4a4a'
-      ctx.fillRect(-35, -12, 70, 24)
-      ctx.fillStyle = '#3a3a3a'
-      ctx.fillRect(-35, -12, 70, 6)
+      // 工作台
       ctx.fillStyle = '#5a5a5a'
-      ctx.fillRect(-33, -6, 66, 3)
+      ctx.fillRect(-38, -15, 76, 30)
+      
+      // 台面
+      ctx.fillStyle = '#6a6a6a'
+      ctx.fillRect(-36, -13, 72, 6)
+      
+      // 支架
+      ctx.fillStyle = '#4a4a4a'
+      ctx.fillRect(-34, 12, 8, 18)
+      ctx.fillRect(26, 12, 8, 18)
+      
+      // 工具
+      ctx.fillStyle = '#8a8a8a'
+      ctx.fillRect(-30, -8, 20, 4)
+      ctx.fillRect(10, -8, 15, 4)
       break
       
     case 'oil_barrel':
-      ctx.fillStyle = '#3a5a3a'
+      // 油桶
+      const barrelGrad = ctx.createLinearGradient(-16, -20, 16, 20)
+      barrelGrad.addColorStop(0, '#5a7a5a')
+      barrelGrad.addColorStop(0.5, '#4a6a4a')
+      barrelGrad.addColorStop(1, '#3a5a3a')
+      ctx.fillStyle = barrelGrad
       ctx.beginPath()
-      ctx.ellipse(0, -15, 15, 8, 0, 0, Math.PI * 2)
+      ctx.ellipse(0, -12, 14, 6, 0, 0, Math.PI * 2)
       ctx.fill()
-      ctx.fillRect(-15, -15, 30, 30)
-      ctx.fillStyle = '#4a6a4a'
-      ctx.fillRect(-15, -15, 30, 5)
-      ctx.fillStyle = '#2a4a2a'
-      ctx.fillRect(-15, 10, 30, 5)
-      break
+      ctx.fillRect(-14, -12, 28, 28)
+      ctx.beginPath()
+      ctx.ellipse(0, 16, 14, 6, 0, 0, Math.PI * 2)
+      ctx.fill()
       
-    case 'parts':
-      ctx.fillStyle = '#5a5a5a'
-      for (let i = 0; i < 5; i++) {
-        ctx.beginPath()
-        ctx.arc(-20 + i * 10, Math.sin(i) * 5, 5, 0, Math.PI * 2)
-        ctx.fill()
-      }
+      // 桶环
+      ctx.strokeStyle = '#3a4a3a'
+      ctx.lineWidth = 2
+      ctx.beginPath()
+      ctx.ellipse(0, -8, 13, 4, 0, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.ellipse(0, 12, 13, 4, 0, 0, Math.PI * 2)
+      ctx.stroke()
       break
       
     case 'weapon_rack':
+      // 武器架
       ctx.fillStyle = '#4a3a2a'
-      ctx.fillRect(-35, -50, 70, 100)
+      ctx.fillRect(-38, -55, 76, 110)
+      
+      // 层板
       ctx.fillStyle = '#5a4a3a'
-      ctx.fillRect(-33, -48, 66, 96)
-      ctx.fillStyle = '#6a6a6a'
       for (let i = 0; i < 4; i++) {
-        ctx.fillRect(-30, -45 + i * 24, 60, 6)
+        ctx.fillRect(-36, -50 + i * 28, 72, 4)
       }
-      ctx.fillStyle = '#8a8a8a'
-      ctx.fillRect(-25, -40, 50, 4)
-      break
       
-    case 'ammo_crate':
-      ctx.fillStyle = '#5a6a4a'
-      ctx.fillRect(-25, -20, 50, 40)
-      ctx.fillStyle = '#4a5a3a'
-      ctx.fillRect(-25, -20, 50, 6)
-      ctx.fillStyle = '#6a7a5a'
-      ctx.fillRect(-23, -14, 46, 34)
-      break
-      
-    case 'display_case':
-      ctx.fillStyle = '#3a3a4a'
-      ctx.fillRect(-30, -35, 60, 70)
-      ctx.fillStyle = 'rgba(100, 150, 200, 0.2)'
-      ctx.fillRect(-28, -33, 56, 66)
-      ctx.fillStyle = '#8a8a9a'
-      ctx.fillRect(-28, -33, 56, 3)
+      // 武器
+      ctx.fillStyle = '#7a7a7a'
+      for (let i = 0; i < 4; i++) {
+        ctx.fillRect(-30, -45 + i * 28, 60, 6)
+        // 枪管
+        ctx.fillStyle = '#6a6a6a'
+        ctx.fillRect(-25, -42 + i * 28, 50, 3)
+        ctx.fillStyle = '#8a8a8a'
+      }
       break
       
     case 'radar':
-      ctx.fillStyle = '#2a3a4a'
-      ctx.beginPath()
-      ctx.ellipse(0, 0, 40, 30, 0, 0, Math.PI * 2)
-      ctx.fill()
+      // 雷达底座
       ctx.fillStyle = '#3a4a5a'
+      ctx.fillRect(-45, 10, 90, 25)
+      
+      // 雷达天线
+      const radarGrad = ctx.createRadialGradient(0, -20, 0, 0, -20, 45)
+      radarGrad.addColorStop(0, '#5a7a8a')
+      radarGrad.addColorStop(0.7, '#4a6a7a')
+      radarGrad.addColorStop(1, '#3a5a6a')
+      ctx.fillStyle = radarGrad
       ctx.beginPath()
-      ctx.ellipse(0, 0, 35, 25, 0, 0, Math.PI * 2)
+      ctx.ellipse(0, -20, 42, 32, 0, 0, Math.PI * 2)
       ctx.fill()
-      ctx.strokeStyle = '#5a8aaa'
-      ctx.lineWidth = 2
+      
+      // 雷达屏幕
+      ctx.fillStyle = '#2a4a5a'
       ctx.beginPath()
-      ctx.ellipse(0, 0, 30, 20, 0, 0, Math.PI * 2)
-      ctx.stroke()
-      ctx.beginPath()
-      ctx.moveTo(0, -25)
-      ctx.lineTo(0, 25)
-      ctx.moveTo(-35, 0)
-      ctx.lineTo(35, 0)
-      ctx.stroke()
-      const sweepAngle = (time * 0.003) % (Math.PI * 2)
+      ctx.ellipse(0, -20, 36, 26, 0, 0, Math.PI * 2)
+      ctx.fill()
+      
+      // 扫描线
       ctx.strokeStyle = 'rgba(100, 200, 100, 0.6)'
+      ctx.lineWidth = 2
+      const sweepAngle = (time * 0.004) % (Math.PI * 2)
       ctx.beginPath()
-      ctx.moveTo(0, 0)
-      ctx.lineTo(Math.cos(sweepAngle) * 30, Math.sin(sweepAngle) * 20)
+      ctx.moveTo(0, -20)
+      ctx.lineTo(Math.cos(sweepAngle) * 34, -20 + Math.sin(sweepAngle) * 24)
       ctx.stroke()
+      
+      // 雷达圈
+      ctx.strokeStyle = 'rgba(100, 180, 100, 0.4)'
+      ctx.beginPath()
+      ctx.ellipse(0, -20, 25, 18, 0, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.ellipse(0, -20, 12, 9, 0, 0, Math.PI * 2)
+      ctx.stroke()
+      
+      // 中心点
+      ctx.fillStyle = '#80ff80'
+      ctx.beginPath()
+      ctx.arc(0, -20, 3, 0, Math.PI * 2)
+      ctx.fill()
       break
       
     case 'console':
-      ctx.fillStyle = '#3a4a5a'
-      ctx.fillRect(-30, -20, 60, 40)
+      // 控制台
+      ctx.fillStyle = '#4a5a6a'
+      ctx.fillRect(-35, -25, 70, 45)
+      
+      // 屏幕
       ctx.fillStyle = '#2a3a4a'
-      ctx.fillRect(-28, -18, 56, 36)
-      ctx.fillStyle = '#4a6a8a'
-      ctx.fillRect(-25, -15, 20, 10)
-      ctx.fillRect(5, -15, 20, 10)
+      ctx.fillRect(-32, -22, 64, 35)
+      
+      // 屏幕内容
+      ctx.fillStyle = '#3a5a7a'
+      ctx.fillRect(-30, -20, 28, 20)
+      ctx.fillRect(2, -20, 28, 20)
+      
+      // 指示灯
+      const blinkOn = Math.sin(time * 0.008) > 0
+      ctx.fillStyle = blinkOn ? '#80ff80' : '#306030'
+      ctx.beginPath()
+      ctx.arc(-25, 10, 3, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = blinkOn ? '#ff8080' : '#603030'
+      ctx.beginPath()
+      ctx.arc(-15, 10, 3, 0, Math.PI * 2)
+      ctx.fill()
       break
       
     case 'map_table':
+      // 地图桌
       ctx.fillStyle = '#5a5040'
-      ctx.fillRect(-40, -25, 80, 50)
-      ctx.fillStyle = '#4a4030'
-      ctx.fillRect(-40, -25, 80, 8)
+      ctx.fillRect(-45, -30, 90, 60)
+      
+      // 桌面
       ctx.fillStyle = '#6a6050'
-      ctx.fillRect(-38, -17, 76, 40)
-      ctx.fillStyle = '#3a5a7a'
+      ctx.fillRect(-43, -28, 86, 56)
+      
+      // 地图
+      ctx.fillStyle = '#d4c4a4'
+      ctx.fillRect(-40, -25, 80, 50)
+      
+      // 地图纹理
+      ctx.fillStyle = '#b4a484'
+      ctx.fillRect(-35, -20, 30, 40)
+      ctx.fillRect(5, -15, 30, 30)
+      
+      // 地图标记
+      ctx.fillStyle = '#c44a4a'
       ctx.beginPath()
-      ctx.ellipse(0, 5, 30, 15, 0, 0, Math.PI * 2)
+      ctx.arc(-20, 0, 4, 0, Math.PI * 2)
       ctx.fill()
-      ctx.fillStyle = '#2a4a6a'
+      ctx.fillStyle = '#4a4ac4'
       ctx.beginPath()
-      ctx.ellipse(0, 5, 25, 10, 0, 0, Math.PI * 2)
+      ctx.arc(20, -5, 4, 0, Math.PI * 2)
       ctx.fill()
       break
   }
@@ -840,27 +1366,44 @@ function drawExitZone(ctx, scene, width, height) {
   const exitX = scene.exitPosition.x * width
   const exitY = scene.exitPosition.y * height
   
-  ctx.fillStyle = 'rgba(100, 200, 100, 0.3)'
+  // 出口光圈
+  const exitGrad = ctx.createRadialGradient(exitX, exitY, 0, exitX, exitY, 45)
+  exitGrad.addColorStop(0, 'rgba(150, 255, 150, 0.4)')
+  exitGrad.addColorStop(0.5, 'rgba(100, 200, 100, 0.2)')
+  exitGrad.addColorStop(1, 'rgba(50, 150, 50, 0)')
+  ctx.fillStyle = exitGrad
   ctx.beginPath()
-  ctx.arc(exitX, exitY, 30, 0, Math.PI * 2)
+  ctx.arc(exitX, exitY, 45, 0, Math.PI * 2)
   ctx.fill()
   
-  ctx.strokeStyle = 'rgba(100, 200, 100, 0.6)'
+  // 虚线边框
+  ctx.strokeStyle = 'rgba(100, 255, 100, 0.7)'
   ctx.lineWidth = 3
-  ctx.setLineDash([5, 5])
+  ctx.setLineDash([8, 6])
   ctx.beginPath()
   ctx.arc(exitX, exitY, 35, 0, Math.PI * 2)
   ctx.stroke()
   ctx.setLineDash([])
   
+  // 出口图标
   ctx.fillStyle = '#ffffff'
-  ctx.font = '14px Courier New'
+  ctx.font = 'bold 16px Courier New'
   ctx.textAlign = 'center'
-  ctx.fillText('出口', exitX, exitY - 45)
+  ctx.fillText('⬆', exitX, exitY - 50)
+  
+  ctx.font = '12px Courier New'
+  ctx.fillText('出口', exitX, exitY - 38)
 }
 
 function drawInteriorScene(ctx, scene, width, height, time) {
   drawInteriorFloor(ctx, width, height)
+  
+  // 室内环境光
+  const ambientGrad = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, width / 2)
+  ambientGrad.addColorStop(0, 'rgba(255, 250, 240, 0.1)')
+  ambientGrad.addColorStop(1, 'rgba(0, 0, 0, 0.2)')
+  ctx.fillStyle = ambientGrad
+  ctx.fillRect(0, 0, width, height)
   
   if (scene.items) {
     for (const item of scene.items) {
@@ -875,11 +1418,11 @@ export function drawScene(ctx, currentScene, width, height, time) {
   if (currentScene.isInterior) {
     drawInteriorScene(ctx, currentScene, width, height, time)
   } else {
-    drawFCMetalslugMap(ctx, width, height, time, currentScene.buildings)
+    drawDetailedTownMap(ctx, width, height, time, currentScene.buildings)
   }
 }
 
-export function drawFCMetalslugMap(ctx, width, height, time, buildings) {
+export function drawDetailedTownMap(ctx, width, height, time, buildings) {
   const gridW = Math.ceil(width / TILE_SIZE) + 2
   const gridH = Math.ceil(height / TILE_SIZE) + 2
 
@@ -888,6 +1431,7 @@ export function drawFCMetalslugMap(ctx, width, height, time, buildings) {
     return Math.sin(seed + x * 123.456 + y * 789.012) * 0.5 + 0.5
   }
 
+  // 绘制地形
   for (let gy = 0; gy < gridH; gy++) {
     for (let gx = 0; gx < gridW; gx++) {
       const x = gx * TILE_SIZE
@@ -909,6 +1453,8 @@ export function drawFCMetalslugMap(ctx, width, height, time, buildings) {
   }
 
   const roadY = Math.floor(height / TILE_SIZE / 2) * TILE_SIZE
+  
+  // 道路
   for (let x = 0; x < width; x += TILE_SIZE) {
     const roadTile = drawRoadTile()
     ctx.drawImage(roadTile, x, roadY - TILE_SIZE)
@@ -916,31 +1462,48 @@ export function drawFCMetalslugMap(ctx, width, height, time, buildings) {
     ctx.drawImage(roadTile, x, roadY + TILE_SIZE)
   }
 
-  if (!buildings) return
-
-  for (const b of buildings) {
-    const bx = width * b.x
-    const by = height * b.y
-    const buildingTile = drawBuildingTile(b.type, time)
-    ctx.drawImage(buildingTile, bx, by)
-    
-    if (b.enterable) {
-      ctx.fillStyle = 'rgba(100, 200, 100, 0.3)'
-      ctx.fillRect(bx + TILE_SIZE * 2 - 10, by + TILE_SIZE * 3 - 15, 20, 15)
-      ctx.fillStyle = '#ffffff'
-      ctx.font = '10px Courier New'
-      ctx.textAlign = 'center'
-      ctx.fillText('入', bx + TILE_SIZE * 2, by + TILE_SIZE * 3 - 5)
+  // 建筑
+  if (buildings) {
+    for (const b of buildings) {
+      const bx = width * b.x
+      const by = height * b.y
+      const buildingTile = drawDetailedBuildingTile(b.type, time)
+      ctx.drawImage(buildingTile, bx, by)
+      
+      if (b.enterable) {
+        // 入口标记背景
+        ctx.fillStyle = 'rgba(100, 255, 100, 0.3)'
+        ctx.beginPath()
+        ctx.arc(bx + TILE_SIZE * 2, by + TILE_SIZE * 3.5, 18, 0, Math.PI * 2)
+        ctx.fill()
+        
+        // 入口文字
+        ctx.fillStyle = '#ffffff'
+        ctx.font = 'bold 14px Courier New'
+        ctx.textAlign = 'center'
+        ctx.fillText('入', bx + TILE_SIZE * 2, by + TILE_SIZE * 3.5 + 5)
+      }
     }
   }
 
+  // 路灯
   for (let i = 0; i < 16; i++) {
     const px = (0.03 + i * 0.062) * width
     const py = roadY - TILE_SIZE * 1.5 + (i % 2) * TILE_SIZE * 3
     const lampTile = drawLampPostTile(time)
     ctx.drawImage(lampTile, px, py)
+    
+    // 路灯光照效果
+    const lampGlow = ctx.createRadialGradient(px + 10, py + 4, 0, px + 10, py + 4, 80)
+    lampGlow.addColorStop(0, 'rgba(255, 255, 200, 0.08)')
+    lampGlow.addColorStop(1, 'rgba(255, 255, 200, 0)')
+    ctx.fillStyle = lampGlow
+    ctx.beginPath()
+    ctx.arc(px + 10, py + 4, 80, 0, Math.PI * 2)
+    ctx.fill()
   }
 
+  // 树木
   const treePositions = []
   for (let i = 0; i < 15; i++) {
     treePositions.push({
@@ -959,12 +1522,14 @@ export function drawFCMetalslugMap(ctx, width, height, time, buildings) {
     }
   }
 
+  // 粒子效果
   updateParticles()
   drawParticles(ctx)
 
+  // 收集闪光
   if (Date.now() - lastCollectTime < 150) {
     const flashAlpha = 1 - (Date.now() - lastCollectTime) / 150
-    ctx.fillStyle = `rgba(255, 255, 220, ${flashAlpha * 0.4})`
+    ctx.fillStyle = `rgba(255, 255, 220, ${flashAlpha * 0.3})`
     ctx.fillRect(0, 0, width, height)
   }
 }
@@ -974,13 +1539,13 @@ export function drawTankSprite(ctx, x, y, isInTank) {
   if (isInTank) {
     ctx.drawImage(tankTile, x - 32, y - 24)
   } else {
-    ctx.globalAlpha = 0.7
+    ctx.globalAlpha = 0.6
     ctx.drawImage(tankTile, x - 32, y - 24)
     ctx.globalAlpha = 1
   }
 
-  if (isInTank && Math.random() > 0.92) {
-    createParticle(x + (Math.random() - 0.5) * 20, y - 16, 'dust')
+  if (isInTank && Math.random() > 0.9) {
+    createParticle(x + (Math.random() - 0.5) * 25, y - 12, 'dust')
   }
 }
 
@@ -988,13 +1553,15 @@ export function drawCoinSprite(ctx, x, y, time) {
   const coinTile = drawCoinTile(time)
   ctx.drawImage(coinTile, x - 10, y - 10)
 
+  // 金币光环
   ctx.globalAlpha = 0.15 + Math.sin(time * 0.005) * 0.1
-  const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 16)
-  glowGradient.addColorStop(0, 'rgba(255, 255, 100, 0.6)')
+  const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 20)
+  glowGradient.addColorStop(0, 'rgba(255, 255, 100, 0.8)')
+  glowGradient.addColorStop(0.5, 'rgba(255, 255, 50, 0.4)')
   glowGradient.addColorStop(1, 'rgba(255, 255, 50, 0)')
   ctx.fillStyle = glowGradient
   ctx.beginPath()
-  ctx.arc(x, y, 16, 0, Math.PI * 2)
+  ctx.arc(x, y, 20, 0, Math.PI * 2)
   ctx.fill()
   ctx.globalAlpha = 1
 }
