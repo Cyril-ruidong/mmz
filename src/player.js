@@ -61,15 +61,10 @@ export class Player {
   }
 
   draw(ctx, scale, offsetX, offsetY) {
-    const screenX = this.x * scale + offsetX;
-    const screenY = this.y * scale + offsetY;
-    
+    // 坐标已经在 main.js 中被 translate 和 scale 了，所以直接用 tile 坐标
     ctx.save();
-    ctx.translate(screenX, screenY);
     ctx.imageSmoothingEnabled = false;
-    
-    PixelSprites.drawPlayer(ctx, -this.tileSize / 2 * scale, -this.tileSize / 2 * scale, this.lastDirection, this.animFrame, scale);
-    
+    PixelSprites.drawPlayer(ctx, this.x - this.tileSize / 2, this.y - this.tileSize / 2, this.lastDirection, this.animFrame, 1);
     ctx.restore();
   }
 

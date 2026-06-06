@@ -4,6 +4,7 @@ class GameController {
       up: false,
       down: false,
       left: false,
+      right: false,
       a: false,
       b: false,
       select: false,
