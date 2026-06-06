@@ -4,7 +4,6 @@ class GameController {
       up: false,
       down: false,
       left: false,
-      right: false,
       a: false,
       b: false,
       select: false,
@@ -18,40 +17,40 @@ class GameController {
   createControllerUI() {
     const container = document.createElement('div');
     container.id = 'fc-controller';
-    container.innerHTML = `
-      <div class="controller-body">
-        <div class="dpad-section">
-          <div class="dpad">
-            <button class="dpad-btn up" data-key="up"></button>
-            <button class="dpad-btn left" data-key="left"></button>
-            <button class="dpad-btn center"></button>
-            <button class="dpad-btn right" data-key="right"></button>
-            <button class="dpad-btn down" data-key="down"></button>
-          </div>
-        </div>
-        
-        <div class="center-section">
-          <div class="select-start-row">
-            <div class="btn-group">
-              <button class="mini-btn" data-key="select">SELECT</button>
-              <span class="btn-label">SELECT</span>
-            </div>
-            <div class="btn-group">
-              <button class="mini-btn" data-key="start">START</button>
-              <span class="btn-label">START</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="ab-section">
-          <div class="ab-btns">
-            <button class="ab-btn b-btn" data-key="b">B</button>
-            <div class="ab-spacer"></div>
-            <button class="ab-btn a-btn" data-key="a">A</button>
-          </div>
-        </div>
-      </div>
-    `;
+    container.innerHTML = '\n\
+      <div class=\"controller-body\">\n\
+        <div class=\"dpad-section\">\n\
+          <div class=\"dpad\">\n\
+            <button class=\"dpad-btn up\" data-key=\"up\"></button>\n\
+            <button class=\"dpad-btn left\" data-key=\"left\"></button>\n\
+            <button class=\"dpad-btn center\"></button>\n\
+            <button class=\"dpad-btn right\" data-key=\"right\"></button>\n\
+            <button class=\"dpad-btn down\" data-key=\"down\"></button>\n\
+          </div>\n\
+        </div>\n\
+        \n\
+        <div class=\"center-section\">\n\
+          <div class=\"select-start-row\">\n\
+            <div class=\"btn-group\">\n\
+              <button class=\"mini-btn\" data-key=\"select\">SELECT</button>\n\
+              <span class=\"btn-label\">SELECT</span>\n\
+            </div>\n\
+            <div class=\"btn-group\">\n\
+              <button class=\"mini-btn\" data-key=\"start\">START</button>\n\
+              <span class=\"btn-label\">START</span>\n\
+            </div>\n\
+          </div>\n\
+        </div>\n\
+        \n\
+        <div class=\"ab-section\">\n\
+          <div class=\"ab-btns\">\n\
+            <button class=\"ab-btn b-btn\" data-key=\"b\">B</button>\n\
+            <div class=\"ab-spacer\"></div>\n\
+            <button class=\"ab-btn a-btn\" data-key=\"a\">A</button>\n\
+          </div>\n\
+        </div>\n\
+      </div>\n\
+    ';
     document.body.appendChild(container);
     this.setupControllerEvents(container);
   }
@@ -61,58 +60,54 @@ class GameController {
     buttons.forEach(btn => {
       const key = btn.dataset.key;
       
+      const setKeyState = (isPressed) => {
+        this.keys[key] = isPressed;
+        btn.classList.toggle('pressed', isPressed);
+        this.triggerCallback();
+      };
+      
       const handleStart = (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        this.keys[key] = true;
-        btn.classList.add('pressed');
-        this.triggerCallback();
+        setKeyState(true);
       };
       
       const handleEnd = (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        this.keys[key] = false;
-        btn.classList.remove('pressed');
-        this.triggerCallback();
+        setKeyState(false);
       };
       
-      btn.addEventListener('mousedown', handleStart, { passive: false });
-      btn.addEventListener('mouseup', handleEnd, { passive: false });
-      btn.addEventListener('mouseleave', handleEnd, { passive: false });
-      btn.addEventListener('touchstart', handleStart, { passive: false });
-      btn.addEventListener('touchend', handleEnd, { passive: false });
-      btn.addEventListener('touchcancel', handleEnd, { passive: false });
-      btn.addEventListener('blur', handleEnd, { passive: false });
+      btn.addEventListener('mousedown', handleStart);
+      btn.addEventListener('mouseup', handleEnd);
+      btn.addEventListener('mouseleave', handleEnd);
+      btn.addEventListener('touchstart', handleStart);
+      btn.addEventListener('touchend', handleEnd);
+      btn.addEventListener('touchcancel', handleEnd);
     });
-    
-    document.addEventListener('contextmenu', (e) => e.preventDefault(), { passive: false });
   }
 
   setupKeyboardEvents() {
     const keyMap = {
       'w': 'up',
-      'arrowup': 'up',
+      'ArrowUp': 'up',
       's': 'down',
-      'arrowdown': 'down',
+      'ArrowDown': 'down',
       'a': 'left',
-      'arrowleft': 'left',
+      'ArrowLeft': 'left',
       'd': 'right',
-      'arrowright': 'right',
+      'ArrowRight': 'right',
       'z': 'a',
       'j': 'a',
       'x': 'b',
       'k': 'b',
-      'shift': 'select',
+      'Shift': 'select',
       'c': 'select',
-      'enter': 'start',
+      'Enter': 'start',
       ' ': 'start',
       'v': 'start'
     };
 
     const handleKey = (e, isPressed) => {
-      const key = e.key.toLowerCase();
-      const mappedKey = keyMap[key];
+      const mappedKey = keyMap[e.key];
       if (mappedKey) {
         e.preventDefault();
         this.keys[mappedKey] = isPressed;
@@ -120,8 +115,9 @@ class GameController {
       }
     };
 
-    document.addEventListener('keydown', (e) => handleKey(e, true), { passive: false });
-    document.addEventListener('keyup', (e) => handleKey(e, false), { passive: false });
+    document.addEventListener('keydown', (e) => handleKey(e, true));
+    document.addEventListener('keyup', (e) => handleKey(e, false));
+    
     window.addEventListener('blur', () => {
       Object.keys(this.keys).forEach(key => {
         this.keys[key] = false;
