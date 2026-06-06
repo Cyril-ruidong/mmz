@@ -13,7 +13,7 @@ html, body {
 
 #game-container {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 220px);
   position: fixed;
   top: 0;
   left: 0;
@@ -30,7 +30,7 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 220px);
   pointer-events: none;
   z-index: 10;
 }
@@ -70,7 +70,7 @@ html, body {
 
 #toggle-vehicle-btn {
   position: absolute;
-  bottom: 30px;
+  bottom: 20px;
   right: 30px;
   background: linear-gradient(180deg, #c42c2c, #7a0f0f);
   color: #fff;
@@ -106,7 +106,7 @@ html, body {
 
 #game-tip {
   position: absolute;
-  bottom: 30px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 16px;
@@ -119,6 +119,186 @@ html, body {
   padding: 10px 25px;
   border-radius: 6px;
   border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+#fc-controller {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 220px;
+  background: linear-gradient(180deg, #3a3a4a 0%, #2a2a3a 100%);
+  border-top: 4px solid #4a4a5a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.controller-body {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}
+
+.dpad-section,
+.center-section,
+.ab-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dpad {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(180deg, #5a5a6a 0%, #3a3a4a 100%);
+  border: 3px solid #2a2a3a;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 20px;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  transition: all 0.1s;
+  box-shadow: 0 4px 0 #1a1a2a;
+}
+
+.dpad-btn:active,
+.dpad-btn.pressed {
+  background: linear-gradient(180deg, #3a3a4a 0%, #2a2a3a 100%);
+  box-shadow: 0 1px 0 #1a1a2a;
+  transform: translateY(3px);
+}
+
+.dpad-btn.up {
+  top: 0;
+  left: 40px;
+}
+
+.dpad-btn.down {
+  bottom: 0;
+  left: 40px;
+}
+
+.dpad-btn.left {
+  left: 0;
+  top: 40px;
+}
+
+.dpad-btn.right {
+  right: 0;
+  top: 40px;
+}
+
+.dpad-btn.center {
+  top: 40px;
+  left: 40px;
+  background: #3a3a4a;
+  cursor: default;
+  box-shadow: none;
+}
+
+.select-start-row {
+  display: flex;
+  gap: 20px;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.mini-btn {
+  width: 60px;
+  height: 24px;
+  background: linear-gradient(180deg, #4a4a5a 0%, #3a3a4a 100%);
+  border: 2px solid #2a2a3a;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 10px;
+  color: #aaa;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  transition: all 0.1s;
+  box-shadow: 0 3px 0 #1a1a2a;
+}
+
+.mini-btn:active,
+.mini-btn.pressed {
+  background: linear-gradient(180deg, #3a3a4a 0%, #2a2a3a 100%);
+  box-shadow: 0 1px 0 #1a1a2a;
+  transform: translateY(2px);
+}
+
+.ab-btns {
+  display: flex;
+  gap: 20px;
+}
+
+.ab-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 4px solid #1a1a1a;
+  cursor: pointer;
+  font-size: 24px;
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  transition: all 0.1s;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.a-btn {
+  background: linear-gradient(180deg, #ff4444 0%, #cc0000 100%);
+  box-shadow: 0 5px 0 #880000;
+}
+
+.b-btn {
+  background: linear-gradient(180deg, #4444ff 0%, #0000cc 100%);
+  box-shadow: 0 5px 0 #000088;
+}
+
+.ab-btn:active,
+.ab-btn.pressed {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0;
+}
+
+.a-btn:active,
+.a-btn.pressed {
+  box-shadow: 0 2px 0 #880000;
+}
+
+.b-btn:active,
+.b-btn.pressed {
+  box-shadow: 0 2px 0 #000088;
 }
 
 @media (max-width: 768px) {
@@ -147,5 +327,53 @@ html, body {
     right: 20px;
     padding: 12px 24px;
     font-size: 16px;
+  }
+
+  .dpad {
+    width: 100px;
+    height: 100px;
+  }
+
+  .dpad-btn {
+    width: 33px;
+    height: 33px;
+    font-size: 16px;
+  }
+
+  .dpad-btn.up {
+    left: 33px;
+  }
+
+  .dpad-btn.down {
+    left: 33px;
+  }
+
+  .dpad-btn.left {
+    top: 33px;
+  }
+
+  .dpad-btn.right {
+    top: 33px;
+  }
+
+  .dpad-btn.center {
+    top: 33px;
+    left: 33px;
+  }
+
+  .ab-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .mini-btn {
+    width: 50px;
+    height: 20px;
+    font-size: 8px;
+  }
+
+  .controller-body {
+    padding: 10px;
   }
 }

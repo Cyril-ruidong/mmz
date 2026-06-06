@@ -3,6 +3,8 @@ import { createGameCanvas, drawScene } from './scene.js';
 import { createPlayer } from './player.js';
 import { sceneManager } from './scenes.js';
 import { getTileSize } from './tilemap.js';
+import gameController from './game_controller.js';
+import PixelSprites from './pixel_sprites.js';
 
 const container = document.getElementById('game-container');
 const { canvas, ctx } = createGameCanvas(container);
@@ -19,55 +21,15 @@ const keys = {
 };
 
 let interactCooldown = 0;
+let animFrame = 0;
+let animTimer = 0;
 
-document.addEventListener('keydown', (e) => {
-  switch (e.key.toLowerCase()) {
-    case 'w':
-    case 'arrowup':
-      keys.up = true;
-      break;
-    case 's':
-    case 'arrowdown':
-      keys.down = true;
-      break;
-    case 'a':
-    case 'arrowleft':
-      keys.left = true;
-      break;
-    case 'd':
-    case 'arrowright':
-      keys.right = true;
-      break;
-    case ' ':
-    case 'enter':
-      keys.interact = true;
-      break;
-  }
-});
-
-document.addEventListener('keyup', (e) => {
-  switch (e.key.toLowerCase()) {
-    case 'w':
-    case 'arrowup':
-      keys.up = false;
-      break;
-    case 's':
-    case 'arrowdown':
-      keys.down = false;
-      break;
-    case 'a':
-    case 'arrowleft':
-      keys.left = false;
-      break;
-    case 'd':
-    case 'arrowright':
-      keys.right = false;
-      break;
-    case ' ':
-    case 'enter':
-      keys.interact = false;
-      break;
-  }
+gameController.onInput((controllerKeys) => {
+  keys.up = controllerKeys.up;
+  keys.down = controllerKeys.down;
+  keys.left = controllerKeys.left;
+  keys.right = controllerKeys.right;
+  keys.interact = controllerKeys.start || controllerKeys.a;
 });
 
 function handleInteraction() {
@@ -93,6 +55,12 @@ function handleInteraction() {
 
 function animate(time) {
   requestAnimationFrame(animate);
+  
+  animTimer++;
+  if (animTimer > 10) {
+    animTimer = 0;
+    animFrame = (animFrame + 1) % 2;
+  }
   
   player.update(keys);
   
@@ -147,28 +115,30 @@ function drawEntranceHints(ctx, map, tileSize) {
     ctx.fillRect(x - 30, y - 15, 60, 18);
     
     ctx.fillStyle = '#ffff00';
-    ctx.fillText('按 [空格] 进入', x, y);
+    ctx.fillText('按 [A/空格] 进入', x, y);
   }
 }
 
 function drawControlsHint(ctx, width, height) {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(10, height - 110, 220, 100);
+  ctx.fillRect(10, 10, 240, 120);
   
   ctx.fillStyle = '#ffffff';
   ctx.font = '12px monospace';
   ctx.textAlign = 'left';
   
   const lines = [
-    '操作说明:',
-    'WASD / 方向键 - 移动',
-    '空格 / 回车 - 交互',
+    'FC重装机兵风格',
+    '-----------------',
+    '方向键/WASD - 移动',
+    'A/空格/回车 - 交互',
+    'SELECT/B - 返回',
     '',
-    '提示: 走到建筑门口按空格进入'
+    '提示: 走到建筑门口按A进入'
   ];
   
   lines.forEach((line, i) => {
-    ctx.fillText(line, 20, height - 90 + i * 18);
+    ctx.fillText(line, 20, 30 + i * 16);
   });
 }
 
