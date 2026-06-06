@@ -750,3 +750,7 @@ export function drawFCMetalslugMap(ctx, width, height, time) {
     ctx.fillRect(0, 0, width, height)
   }
 }
+
+export function getNPCs() {
+  return npcs
+}

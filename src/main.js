@@ -1,9 +1,11 @@
 import './style.css'
-import { createGameCanvas, drawFCMetalslugMap, createNPCs, updateNPCs, drawNPCs, drawTankSprite } from './scene.js'
+import { createGameCanvas, drawFCMetalslugMap, createNPCs, updateNPCs, drawNPCs, drawTankSprite, getNPCs } from './scene.js'
 import { createPlayer, updatePlayer, drawPlayer, getPlayerBounds, toggleVehicle, isNearTank } from './player.js'
 import { spawnCrystal, updateCrystals, drawCrystals, getCrystalBounds, collectCrystal, getActiveCrystals } from './crystals.js'
 import { checkPlayerCrystalCollision } from './collision.js'
 import { updateScore, hideGameTip, updateToggleBtn } from './ui.js'
+import { startIntro, talkToNPC, collectCrystal as collectCrystalStory, getMissionProgress } from './story.js'
+import { initUI, updateDialog, updateMissionUI, showStartScreen } from './storyUI.js'
 
 const INITIAL_CRYSTALS = 6
 const NPC_COUNT = 6
@@ -16,6 +18,7 @@ const player = createPlayer(ctx)
 createNPCs(NPC_COUNT)
 
 const mouse = { x: 0.5, y: 0.5 }
+let lastClickTime = 0
 
 function onMouseMove(event) {
   if (event.touches) {
@@ -31,6 +34,30 @@ function onTouchStart(event) {
   onMouseMove(event)
 }
 
+function onCanvasClick(event) {
+  const now = Date.now()
+  if (now - lastClickTime < 300) return
+  lastClickTime = now
+  
+  const clickX = event.clientX || event.touches?.[0]?.clientX
+  const clickY = event.clientY || event.touches?.[0]?.clientY
+  
+  const npcs = getNPCs()
+  for (let i = 0; i < npcs.length; i++) {
+    const npc = npcs[i]
+    const dist = Math.sqrt(
+      (clickX - npc.x) ** 2 +
+      (clickY - npc.y) ** 2
+    )
+    if (dist < 50) {
+      talkToNPC(npc.type, `npc_${i}`)
+      break
+    }
+  }
+}
+
+canvas.addEventListener('click', onCanvasClick)
+canvas.addEventListener('touchstart', onCanvasClick, { passive: true })
 document.addEventListener('mousemove', onMouseMove)
 document.addEventListener('touchstart', onTouchStart, { passive: true })
 document.addEventListener('touchmove', onMouseMove, { passive: true })
@@ -57,6 +84,7 @@ function checkCollisions() {
 
     if (checkPlayerCrystalCollision(playerBox, crystalBox)) {
       collectCrystal(crystal)
+      collectCrystalStory()
       updateScore(parseInt(document.getElementById('score-value').textContent) + 1)
 
       setTimeout(() => {
@@ -98,10 +126,25 @@ function animate(currentTime) {
   
   // 更新按钮状态
   updateToggleBtn(player)
+  
+  // 更新剧情UI
+  updateDialog()
+  updateMissionUI()
 }
 
-setTimeout(() => {
-  hideGameTip()
-}, 5000)
+// 初始化剧情UI
+initUI()
 
-animate(0)
+// 显示开始界面
+showStartScreen().then(() => {
+  // 开始游戏，播放开场剧情
+  setTimeout(() => {
+    startIntro()
+  }, 500)
+  
+  setTimeout(() => {
+    hideGameTip()
+  }, 5000)
+  
+  animate(0)
+})
