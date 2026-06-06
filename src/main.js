@@ -1,10 +1,9 @@
 import './style.css';
-import { createGameCanvas, drawScene } from './scene.js';
+import { createGameCanvas, drawScene, drawEntranceHints, drawControlsHint } from './scene.js';
 import { createPlayer } from './player.js';
 import { sceneManager } from './scenes.js';
 import { getTileSize } from './tilemap.js';
 import gameController from './game_controller.js';
-import PixelSprites from './pixel_sprites.js';
 
 const container = document.getElementById('game-container');
 const { canvas, ctx } = createGameCanvas(container);
@@ -21,8 +20,6 @@ const keys = {
 };
 
 let interactCooldown = 0;
-let animFrame = 0;
-let animTimer = 0;
 
 gameController.onInput((controllerKeys) => {
   keys.up = controllerKeys.up;
@@ -53,14 +50,12 @@ function handleInteraction() {
   }
 }
 
-function animate(time) {
+let time = 0;
+
+function animate() {
   requestAnimationFrame(animate);
   
-  animTimer++;
-  if (animTimer > 10) {
-    animTimer = 0;
-    animFrame = (animFrame + 1) % 2;
-  }
+  time++;
   
   player.update(keys);
   
@@ -78,10 +73,7 @@ function animate(time) {
   const mapPixelWidth = map.width * tileSize;
   const mapPixelHeight = map.height * tileSize;
   
-  const scaleX = width / mapPixelWidth;
-  const scaleY = height / mapPixelHeight;
-  const scale = Math.min(scaleX, scaleY, 2);
-  
+  const scale = 2;
   const offsetX = (width - mapPixelWidth * scale) / 2;
   const offsetY = (height - mapPixelHeight * scale) / 2;
   
@@ -91,55 +83,13 @@ function animate(time) {
   ctx.translate(offsetX, offsetY);
   ctx.scale(scale, scale);
   
-  drawEntranceHints(ctx, map, tileSize);
+  drawEntranceHints(ctx, map, tileSize, scale, 0, 0);
   
-  player.draw(ctx, 1, 0, 0);
+  player.draw(ctx, scale, 0, 0);
   
   ctx.restore();
   
   drawControlsHint(ctx, width, height);
 }
 
-function drawEntranceHints(ctx, map, tileSize) {
-  if (!map.entrances) return;
-  
-  ctx.fillStyle = '#ffff00';
-  ctx.font = '10px monospace';
-  ctx.textAlign = 'center';
-  
-  for (const entrance of map.entrances) {
-    const x = entrance.x * tileSize + tileSize / 2;
-    const y = entrance.y * tileSize - 5;
-    
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(x - 30, y - 15, 60, 18);
-    
-    ctx.fillStyle = '#ffff00';
-    ctx.fillText('按 [A/空格] 进入', x, y);
-  }
-}
-
-function drawControlsHint(ctx, width, height) {
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-  ctx.fillRect(10, 10, 240, 120);
-  
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '12px monospace';
-  ctx.textAlign = 'left';
-  
-  const lines = [
-    'FC重装机兵风格',
-    '-----------------',
-    '方向键/WASD - 移动',
-    'A/空格/回车 - 交互',
-    'SELECT/B - 返回',
-    '',
-    '提示: 走到建筑门口按A进入'
-  ];
-  
-  lines.forEach((line, i) => {
-    ctx.fillText(line, 20, 30 + i * 16);
-  });
-}
-
-requestAnimationFrame(animate);
+animate();

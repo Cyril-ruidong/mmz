@@ -100,16 +100,20 @@ class GameController {
           this.keys.right = true;
           break;
         case 'z':
+        case 'j':
           this.keys.a = true;
           break;
         case 'x':
+        case 'k':
           this.keys.b = true;
           break;
         case 'shift':
+        case 'c':
           this.keys.select = true;
           break;
         case 'enter':
         case ' ':
+        case 'v':
           this.keys.start = true;
           break;
       }
@@ -135,16 +139,20 @@ class GameController {
           this.keys.right = false;
           break;
         case 'z':
+        case 'j':
           this.keys.a = false;
           break;
         case 'x':
+        case 'k':
           this.keys.b = false;
           break;
         case 'shift':
+        case 'c':
           this.keys.select = false;
           break;
         case 'enter':
         case ' ':
+        case 'v':
           this.keys.start = false;
           break;
       }

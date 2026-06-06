@@ -1,6 +1,7 @@
 import { collisionSystem } from './collision_system.js';
 import { getTileSize } from './tilemap.js';
 import { sceneManager } from './scenes.js';
+import PixelSprites from './pixel_sprites.js';
 
 export class Player {
   constructor(startTileX, startTileY) {
@@ -12,6 +13,8 @@ export class Player {
     this.tileSize = tileSize;
     this.isMoving = false;
     this.lastDirection = 'down';
+    this.animFrame = 0;
+    this.animTimer = 0;
   }
 
   update(keys) {
@@ -37,6 +40,16 @@ export class Player {
 
     this.isMoving = dx !== 0 || dy !== 0;
 
+    if (this.isMoving) {
+      this.animTimer++;
+      if (this.animTimer > 8) {
+        this.animTimer = 0;
+        this.animFrame = (this.animFrame + 1) % 2;
+      }
+    } else {
+      this.animFrame = 0;
+    }
+
     if (dx !== 0 && dy !== 0) {
       dx *= 0.707;
       dy *= 0.707;
@@ -53,20 +66,9 @@ export class Player {
     
     ctx.save();
     ctx.translate(screenX, screenY);
-    ctx.scale(scale, scale);
+    ctx.imageSmoothingEnabled = false;
     
-    const size = this.tileSize * 0.8;
-    const halfSize = size / 2;
-    
-    ctx.fillStyle = '#ffccaa';
-    ctx.fillRect(-halfSize * 0.4, -halfSize, halfSize * 0.8, halfSize);
-    
-    const shirtColors = ['#3366cc', '#cc3333', '#33cc33', '#cc9933'];
-    ctx.fillStyle = shirtColors[this.variant % shirtColors.length];
-    ctx.fillRect(-halfSize * 0.5, 0, halfSize, halfSize * 0.8);
-    
-    ctx.fillStyle = '#333366';
-    ctx.fillRect(-halfSize * 0.4, halfSize * 0.6, halfSize * 0.8, halfSize * 0.4);
+    PixelSprites.drawPlayer(ctx, -this.tileSize / 2 * scale, -this.tileSize / 2 * scale, this.lastDirection, this.animFrame, scale);
     
     ctx.restore();
   }

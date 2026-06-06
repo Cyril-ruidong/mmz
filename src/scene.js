@@ -1,28 +1,35 @@
-import { renderTilemap, getTileSize } from './tilemap.js';
+import { renderTilemap, getTileSize, FC_COLORS } from './tilemap.js';
 import { sceneManager } from './scenes.js';
+import PixelSprites from './pixel_sprites.js';
 
 export function createGameCanvas(container) {
   const canvas = document.createElement('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = 512;
+  canvas.height = 384;
+  canvas.style.imageRendering = 'pixelated';
+  canvas.style.imageRendering = 'crisp-edges';
   container.appendChild(canvas);
 
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = false;
 
   function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const containerWidth = window.innerWidth;
+    const containerHeight = window.innerHeight;
+    const scale = Math.min(containerWidth / 512, containerHeight / 384);
+    canvas.style.width = `${512 * scale}px`;
+    canvas.style.height = `${384 * scale}px`;
     ctx.imageSmoothingEnabled = false;
   }
 
   window.addEventListener('resize', resize);
+  resize();
 
   return { canvas, ctx, resize };
 }
 
 export function drawScene(ctx, width, height, time) {
-  ctx.fillStyle = '#1a1a2e';
+  ctx.fillStyle = FC_COLORS.BG;
   ctx.fillRect(0, 0, width, height);
   
   const map = sceneManager.getCurrentMap();
@@ -31,46 +38,54 @@ export function drawScene(ctx, width, height, time) {
   const mapPixelWidth = map.width * tileSize;
   const mapPixelHeight = map.height * tileSize;
   
-  const offsetX = Math.max(0, Math.min(width - mapPixelWidth, 0));
-  const offsetY = Math.max(0, Math.min(height - mapPixelHeight, 0));
+  const offsetX = (width - mapPixelWidth * 2) / 2;
+  const offsetY = (height - mapPixelHeight * 2) / 2;
+  const scale = 2;
   
-  const scaleX = width / mapPixelWidth;
-  const scaleY = height / mapPixelHeight;
-  const scale = Math.min(scaleX, scaleY, 2);
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
+  ctx.imageSmoothingEnabled = false;
+  
+  renderTilemap(ctx, map, time, 0, 0);
+  
+  ctx.restore();
+}
+
+export function drawEntranceHints(ctx, map, tileSize, scale, offsetX, offsetY) {
+  if (!map.entrances) return;
   
   ctx.save();
   ctx.translate(offsetX, offsetY);
   ctx.scale(scale, scale);
   
-  renderTilemap(ctx, map, time, 0, 0);
+  for (const entrance of map.entrances) {
+    const x = entrance.x * tileSize + tileSize / 2;
+    const y = entrance.y * tileSize - 4;
+    
+    ctx.fillStyle = FC_COLORS.WHITE;
+    ctx.font = '8px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('▶', x, y);
+  }
   
   ctx.restore();
-  
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 16px monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText(`当前位置: ${sceneManager.getSceneName()}`, 10, 30);
 }
 
-export function drawNPCHumanTile(variant) {
-  return {
-    width: 24,
-    height: 32,
-    draw: (ctx, x, y) => {
-      ctx.save();
-      ctx.translate(x - 12, y - 16);
-      
-      ctx.fillStyle = '#ffccaa';
-      ctx.fillRect(6, 0, 12, 12);
-      
-      const colors = ['#3366cc', '#cc3333', '#33cc33', '#cc9933'];
-      ctx.fillStyle = colors[variant % colors.length];
-      ctx.fillRect(4, 12, 16, 12);
-      
-      ctx.fillStyle = '#333366';
-      ctx.fillRect(6, 24, 12, 8);
-      
-      ctx.restore();
-    }
-  };
+export function drawControlsHint(ctx, width, height) {
+  ctx.fillStyle = FC_COLORS.WHITE;
+  ctx.font = '12px monospace';
+  ctx.textAlign = 'left';
+  
+  const lines = [
+    'FC METAL MAX STYLE',
+    '-----------------',
+    'Arrow Keys: Move',
+    'Space/Z: Confirm',
+    'ESC/X: Cancel'
+  ];
+  
+  lines.forEach((line, i) => {
+    ctx.fillText(line, 10, 20 + i * 14);
+  });
 }
