@@ -20,7 +20,10 @@ export function updatePlayer(player, mouseX, mouseY, canvasWidth, canvasHeight) 
   player.targetX = mouseX * canvasWidth
   player.targetY = mouseY * canvasHeight
 
-  const speed = player.isInTank ? 0.18 : 0.10
+  // FC 重装机兵原版风格的移动速度
+  // 人物步行速度较慢，约 2-3 像素/帧
+  // 坦克速度较快，约 5-6 像素/帧
+  const speed = player.isInTank ? 0.06 : 0.025
   const dx = player.targetX - player.x
   const dy = player.targetY - player.y
 
