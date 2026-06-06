@@ -7,6 +7,8 @@ import { updateScore, hideGameTip, updateToggleBtn } from './ui.js'
 import { startIntro, talkToNPC, collectCrystal as collectCrystalStory, getMissionProgress } from './story.js'
 import { initUI, updateDialog, updateMissionUI, showStartScreen } from './storyUI.js'
 import { currentScene, switchScene, exitBuilding, checkEnterBuilding, checkExitBuilding, SCENES } from './scenes.js'
+import { InventoryManager, Tank, Human } from './inventory.js'
+import { initEquipmentUI, initEquipmentUIButton, equipmentUI } from './equipmentUI.js'
 
 const INITIAL_CRYSTALS = 6
 const NPC_COUNT = 6
@@ -17,6 +19,17 @@ const { canvas, ctx } = createGameCanvas(container)
 
 const player = createPlayer(ctx)
 createNPCs(NPC_COUNT, canvas.width, canvas.height, currentScene.buildings)
+
+// 初始化装备系统
+const inventoryManager = new InventoryManager()
+inventoryManager.addTank('红狼战车', 'red_wolf')
+inventoryManager.addHuman('主角')
+
+// 添加初始金币
+inventoryManager.gold = 1000
+
+// 初始化装备 UI
+initEquipmentUI(inventoryManager)
 
 const mouse = { x: 0.5, y: 0.5 }
 let lastClickTime = 0
@@ -79,6 +92,13 @@ canvas.addEventListener('touchstart', onCanvasClick, { passive: true })
 document.addEventListener('mousemove', onMouseMove)
 document.addEventListener('touchstart', onTouchStart, { passive: true })
 document.addEventListener('touchmove', onMouseMove, { passive: true })
+
+// E键打开装备界面
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'e' || e.key === 'E') {
+    equipmentUI.toggle()
+  }
+})
 
 const toggleBtn = document.getElementById('toggle-vehicle-btn')
 toggleBtn.addEventListener('click', () => {
@@ -151,6 +171,7 @@ function animate(currentTime) {
 }
 
 initUI()
+initEquipmentUIButton()
 
 showStartScreen().then(() => {
   setTimeout(() => {
