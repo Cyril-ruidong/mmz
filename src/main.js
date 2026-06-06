@@ -1,186 +1,175 @@
-import './style.css'
-import { createGameCanvas, drawScene, createNPCs, updateNPCs, drawNPCs, drawTankSprite, getNPCs } from './scene.js'
-import { createPlayer, updatePlayer, drawPlayer, getPlayerBounds, toggleVehicle } from './player.js'
-import { spawnCrystal, updateCrystals, drawCrystals, getCrystalBounds, collectCrystal, getActiveCrystals } from './crystals.js'
-import { checkPlayerCrystalCollision } from './collision.js'
-import { updateScore, hideGameTip, updateToggleBtn } from './ui.js'
-import { startIntro, talkToNPC, collectCrystal as collectCrystalStory, getMissionProgress } from './story.js'
-import { initUI, updateDialog, updateMissionUI, showStartScreen } from './storyUI.js'
-import { currentScene, switchScene, exitBuilding, checkEnterBuilding, checkExitBuilding, SCENES } from './scenes.js'
-import { InventoryManager, Tank, Human } from './inventory.js'
-import { initEquipmentUI, initEquipmentUIButton, equipmentUI } from './equipmentUI.js'
+import './style.css';
+import { createGameCanvas, drawScene } from './scene.js';
+import { createPlayer } from './player.js';
+import { sceneManager } from './scenes.js';
+import { getTileSize } from './tilemap.js';
 
-const INITIAL_CRYSTALS = 6
-const NPC_COUNT = 6
-const CRYSTAL_RESPAWN_DELAY = 600
+const container = document.getElementById('game-container');
+const { canvas, ctx } = createGameCanvas(container);
 
-const container = document.getElementById('game-container')
-const { canvas, ctx } = createGameCanvas(container)
+const startPos = sceneManager.townMap.startPosition;
+const player = createPlayer(startPos.x, startPos.y);
 
-const player = createPlayer(ctx)
-createNPCs(NPC_COUNT, canvas.width, canvas.height, currentScene.buildings)
+const keys = {
+  up: false,
+  down: false,
+  left: false,
+  right: false,
+  interact: false
+};
 
-// 初始化装备系统
-const inventoryManager = new InventoryManager()
-inventoryManager.addTank('红狼战车', 'red_wolf')
-inventoryManager.addHuman('主角')
+let interactCooldown = 0;
 
-// 添加初始金币
-inventoryManager.gold = 1000
-
-// 初始化装备 UI
-initEquipmentUI(inventoryManager)
-
-const mouse = { x: 0.5, y: 0.5 }
-let lastClickTime = 0
-
-function onMouseMove(event) {
-  if (event.touches) {
-    mouse.x = event.touches[0].clientX / window.innerWidth
-    mouse.y = event.touches[0].clientY / window.innerHeight
-  } else {
-    mouse.x = event.clientX / window.innerWidth
-    mouse.y = event.clientY / window.innerHeight
-  }
-}
-
-function onTouchStart(event) {
-  onMouseMove(event)
-}
-
-function onCanvasClick(event) {
-  const now = Date.now()
-  if (now - lastClickTime < 300) return
-  lastClickTime = now
-  
-  const clickX = event.clientX || event.touches?.[0]?.clientX
-  const clickY = event.clientY || event.touches?.[0]?.clientY
-  
-  if (currentScene.isInterior) {
-    if (checkExitBuilding(clickX, clickY, canvas.width, canvas.height)) {
-      const pos = exitBuilding(clickX, clickY, canvas.width, canvas.height)
-      player.x = pos.x
-      player.y = pos.y
-      player.tankX = pos.x
-      player.tankY = pos.y
-    }
-    return
-  }
-  
-  const building = checkEnterBuilding(clickX, clickY, canvas.width, canvas.height)
-  if (building && building.enterable) {
-    switchScene(building.interior)
-    return
-  }
-  
-  const npcs = getNPCs()
-  for (let i = 0; i < npcs.length; i++) {
-    const npc = npcs[i]
-    const dist = Math.sqrt(
-      (clickX - npc.x) ** 2 +
-      (clickY - npc.y) ** 2
-    )
-    if (dist < 50) {
-      talkToNPC(npc.type, `npc_${i}`)
-      break
-    }
-  }
-}
-
-canvas.addEventListener('click', onCanvasClick)
-canvas.addEventListener('touchstart', onCanvasClick, { passive: true })
-document.addEventListener('mousemove', onMouseMove)
-document.addEventListener('touchstart', onTouchStart, { passive: true })
-document.addEventListener('touchmove', onMouseMove, { passive: true })
-
-// E键打开装备界面
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'e' || e.key === 'E') {
-    equipmentUI.toggle()
+  switch (e.key.toLowerCase()) {
+    case 'w':
+    case 'arrowup':
+      keys.up = true;
+      break;
+    case 's':
+    case 'arrowdown':
+      keys.down = true;
+      break;
+    case 'a':
+    case 'arrowleft':
+      keys.left = true;
+      break;
+    case 'd':
+    case 'arrowright':
+      keys.right = true;
+      break;
+    case ' ':
+    case 'enter':
+      keys.interact = true;
+      break;
   }
-})
+});
 
-const toggleBtn = document.getElementById('toggle-vehicle-btn')
-toggleBtn.addEventListener('click', () => {
-  toggleVehicle(player)
-  updateToggleBtn(player)
-})
+document.addEventListener('keyup', (e) => {
+  switch (e.key.toLowerCase()) {
+    case 'w':
+    case 'arrowup':
+      keys.up = false;
+      break;
+    case 's':
+    case 'arrowdown':
+      keys.down = false;
+      break;
+    case 'a':
+    case 'arrowleft':
+      keys.left = false;
+      break;
+    case 'd':
+    case 'arrowright':
+      keys.right = false;
+      break;
+    case ' ':
+    case 'enter':
+      keys.interact = false;
+      break;
+  }
+});
 
-for (let i = 0; i < INITIAL_CRYSTALS; i++) {
-  spawnCrystal(canvas.width, canvas.height, [])
-}
-
-function checkCollisions() {
-  if (currentScene.isInterior) return
+function handleInteraction() {
+  if (interactCooldown > 0) {
+    interactCooldown--;
+    return;
+  }
   
-  const playerBox = getPlayerBounds(player)
-  const activeCrystals = getActiveCrystals()
-
-  for (const crystal of activeCrystals) {
-    if (crystal.collected) continue
-
-    const crystalBox = getCrystalBounds(crystal)
-
-    if (checkPlayerCrystalCollision(playerBox, crystalBox)) {
-      collectCrystal(crystal)
-      collectCrystalStory()
-      updateScore(parseInt(document.getElementById('score-value').textContent) + 1)
-
-      setTimeout(() => {
-        const activePositions = getActiveCrystals().map(c => ({
-          x: c.x,
-          y: c.y
-        }))
-        spawnCrystal(canvas.width, canvas.height, activePositions)
-      }, CRYSTAL_RESPAWN_DELAY)
+  const entrance = sceneManager.checkEntrance(player.x, player.y);
+  
+  if (entrance === 'exit') {
+    const exitPos = sceneManager.exitToTown();
+    player.teleportToTile(exitPos.x, exitPos.y);
+    interactCooldown = 30;
+  } else if (entrance && entrance.target) {
+    const interiorStart = sceneManager.enterInterior(entrance.target);
+    if (interiorStart) {
+      player.teleportToTile(interiorStart.x, interiorStart.y);
+      interactCooldown = 30;
     }
   }
 }
 
-function animate(currentTime) {
-  requestAnimationFrame(animate)
-
-  drawScene(ctx, currentScene, canvas.width, canvas.height, currentTime)
-
-  if (!currentScene.isInterior) {
-    updateNPCs(canvas.width, canvas.height, currentTime, currentScene.buildings)
-    drawNPCs(ctx, currentTime)
-
-    if (!player.isInTank) {
-      drawTankSprite(ctx, player.tankX, player.tankY, false, player.direction || 0)
-    }
-  }
-
-  updatePlayer(player, mouse.x, mouse.y, canvas.width, canvas.height)
-  updateCrystals(getActiveCrystals(), currentTime, canvas.height)
-
-  checkCollisions()
-
-  drawCrystals(ctx, getActiveCrystals(), currentTime)
+function animate(time) {
+  requestAnimationFrame(animate);
   
-  if (player.isInTank) {
-    drawTankSprite(ctx, player.x, player.y, true, player.direction || 0)
+  player.update(keys);
+  
+  if (keys.interact) {
+    handleInteraction();
+  } else if (interactCooldown > 15) {
+    interactCooldown = 15;
   }
   
-  drawPlayer(ctx, player)
+  const width = canvas.width;
+  const height = canvas.height;
+  const map = sceneManager.getCurrentMap();
+  const tileSize = getTileSize();
   
-  updateToggleBtn(player)
+  const mapPixelWidth = map.width * tileSize;
+  const mapPixelHeight = map.height * tileSize;
   
-  updateDialog()
-  updateMissionUI()
+  const scaleX = width / mapPixelWidth;
+  const scaleY = height / mapPixelHeight;
+  const scale = Math.min(scaleX, scaleY, 2);
+  
+  const offsetX = (width - mapPixelWidth * scale) / 2;
+  const offsetY = (height - mapPixelHeight * scale) / 2;
+  
+  drawScene(ctx, width, height, time);
+  
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
+  
+  drawEntranceHints(ctx, map, tileSize);
+  
+  player.draw(ctx, 1, 0, 0);
+  
+  ctx.restore();
+  
+  drawControlsHint(ctx, width, height);
 }
 
-initUI()
-initEquipmentUIButton()
+function drawEntranceHints(ctx, map, tileSize) {
+  if (!map.entrances) return;
+  
+  ctx.fillStyle = '#ffff00';
+  ctx.font = '10px monospace';
+  ctx.textAlign = 'center';
+  
+  for (const entrance of map.entrances) {
+    const x = entrance.x * tileSize + tileSize / 2;
+    const y = entrance.y * tileSize - 5;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(x - 30, y - 15, 60, 18);
+    
+    ctx.fillStyle = '#ffff00';
+    ctx.fillText('按 [空格] 进入', x, y);
+  }
+}
 
-showStartScreen().then(() => {
-  setTimeout(() => {
-    startIntro()
-  }, 500)
+function drawControlsHint(ctx, width, height) {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+  ctx.fillRect(10, height - 110, 220, 100);
   
-  setTimeout(() => {
-    hideGameTip()
-  }, 5000)
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '12px monospace';
+  ctx.textAlign = 'left';
   
-  animate(0)
-})
+  const lines = [
+    '操作说明:',
+    'WASD / 方向键 - 移动',
+    '空格 / 回车 - 交互',
+    '',
+    '提示: 走到建筑门口按空格进入'
+  ];
+  
+  lines.forEach((line, i) => {
+    ctx.fillText(line, 20, height - 90 + i * 18);
+  });
+}
+
+requestAnimationFrame(animate);

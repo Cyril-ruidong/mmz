@@ -1,107 +1,89 @@
-import { drawNPCHumanTile } from './scene.js'
+import { collisionSystem } from './collision_system.js';
+import { getTileSize } from './tilemap.js';
+import { sceneManager } from './scenes.js';
 
-export function createPlayer(ctx) {
-  return {
-    x: ctx.canvas.width / 2,
-    y: ctx.canvas.height / 2,
-    tankX: ctx.canvas.width / 2,
-    tankY: ctx.canvas.height / 2,
-    size: 20,
-    targetX: ctx.canvas.width / 2,
-    targetY: ctx.canvas.height / 2,
-    speed: 0.12,
-    isInTank: true,
-    variant: 5,
-    walkFrame: 0
-  }
-}
-
-export function updatePlayer(player, mouseX, mouseY, canvasWidth, canvasHeight) {
-  player.targetX = mouseX * canvasWidth
-  player.targetY = mouseY * canvasHeight
-
-  // FC 重装机兵原版风格的移动速度
-  // 人物步行速度较慢，约 2-3 像素/帧
-  // 坦克速度较快，约 5-6 像素/帧
-  const speed = player.isInTank ? 0.06 : 0.025
-  const dx = player.targetX - player.x
-  const dy = player.targetY - player.y
-
-  player.x += dx * speed
-  player.y += dy * speed
-
-  // 更新坦克位置（如果在坦克中）
-  if (player.isInTank) {
-    player.tankX = player.x
-    player.tankY = player.y
+export class Player {
+  constructor(startTileX, startTileY) {
+    const tileSize = getTileSize();
+    this.x = startTileX * tileSize + tileSize / 2;
+    this.y = startTileY * tileSize + tileSize / 2;
+    this.speed = 2;
+    this.variant = 0;
+    this.tileSize = tileSize;
+    this.isMoving = false;
+    this.lastDirection = 'down';
   }
 
-  // 行走动画帧
-  if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
-    player.walkFrame++
-  }
-}
+  update(keys) {
+    let dx = 0;
+    let dy = 0;
 
-export function drawPlayer(ctx, player) {
-  if (player.isInTank) {
-    // 坦克绘制在主循环中
-  } else {
-    // 绘制人类玩家
-    const humanTile = drawNPCHumanTile(player.variant)
-    ctx.save()
-    ctx.translate(player.x, player.y)
+    if (keys.up) {
+      dy -= this.speed;
+      this.lastDirection = 'up';
+    }
+    if (keys.down) {
+      dy += this.speed;
+      this.lastDirection = 'down';
+    }
+    if (keys.left) {
+      dx -= this.speed;
+      this.lastDirection = 'left';
+    }
+    if (keys.right) {
+      dx += this.speed;
+      this.lastDirection = 'right';
+    }
+
+    this.isMoving = dx !== 0 || dy !== 0;
+
+    if (dx !== 0 && dy !== 0) {
+      dx *= 0.707;
+      dy *= 0.707;
+    }
+
+    const newPos = collisionSystem.tryMove(this.x, this.y, this.x + dx, this.y + dy, 1);
+    this.x = newPos.x;
+    this.y = newPos.y;
+  }
+
+  draw(ctx, scale, offsetX, offsetY) {
+    const screenX = this.x * scale + offsetX;
+    const screenY = this.y * scale + offsetY;
     
-    // 简单的行走动画
-    const bounce = Math.sin(player.walkFrame * 0.3) * 2
-    ctx.translate(0, bounce)
+    ctx.save();
+    ctx.translate(screenX, screenY);
+    ctx.scale(scale, scale);
     
-    ctx.drawImage(humanTile, -12, -16)
-    ctx.restore()
+    const size = this.tileSize * 0.8;
+    const halfSize = size / 2;
+    
+    ctx.fillStyle = '#ffccaa';
+    ctx.fillRect(-halfSize * 0.4, -halfSize, halfSize * 0.8, halfSize);
+    
+    const shirtColors = ['#3366cc', '#cc3333', '#33cc33', '#cc9933'];
+    ctx.fillStyle = shirtColors[this.variant % shirtColors.length];
+    ctx.fillRect(-halfSize * 0.5, 0, halfSize, halfSize * 0.8);
+    
+    ctx.fillStyle = '#333366';
+    ctx.fillRect(-halfSize * 0.4, halfSize * 0.6, halfSize * 0.8, halfSize * 0.4);
+    
+    ctx.restore();
   }
-}
 
-export function getPlayerBounds(player) {
-  if (player.isInTank) {
+  teleportToTile(tileX, tileY) {
+    this.x = tileX * this.tileSize + this.tileSize / 2;
+    this.y = tileY * this.tileSize + this.tileSize / 2;
+  }
+
+  getTilePosition() {
     return {
-      x: player.x - 32,
-      y: player.y - 24,
-      width: 64,
-      height: 48
-    }
-  } else {
-    return {
-      x: player.x - 12,
-      y: player.y - 16,
-      width: 24,
-      height: 32
-    }
+      x: Math.floor(this.x / this.tileSize),
+      y: Math.floor(this.y / this.tileSize)
+    };
   }
 }
 
-export function toggleVehicle(player) {
-  if (player.isInTank) {
-    // 下车
-    player.isInTank = false
-    player.x = player.tankX + 40
-    player.y = player.tankY
-  } else {
-    // 上车（检查是否靠近坦克）
-    const dist = Math.sqrt(
-      (player.x - player.tankX) ** 2 +
-      (player.y - player.tankY) ** 2
-    )
-    if (dist < 60) {
-      player.isInTank = true
-      player.x = player.tankX
-      player.y = player.tankY
-    }
-  }
-}
-
-export function isNearTank(player) {
-  const dist = Math.sqrt(
-    (player.x - player.tankX) ** 2 +
-    (player.y - player.tankY) ** 2
-  )
-  return dist < 60
+export function createPlayer(startTileX, startTileY) {
+  return new Player(startTileX, startTileY);
 }
