@@ -63,6 +63,7 @@ class GameController {
       
       const handleStart = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         this.keys[key] = true;
         btn.classList.add('pressed');
         this.triggerCallback();
@@ -70,18 +71,22 @@ class GameController {
       
       const handleEnd = (e) => {
         e.preventDefault();
+        e.stopPropagation();
         this.keys[key] = false;
         btn.classList.remove('pressed');
         this.triggerCallback();
       };
       
-      btn.addEventListener('mousedown', handleStart);
-      btn.addEventListener('mouseup', handleEnd);
-      btn.addEventListener('mouseleave', handleEnd);
+      btn.addEventListener('mousedown', handleStart, { passive: false });
+      btn.addEventListener('mouseup', handleEnd, { passive: false });
+      btn.addEventListener('mouseleave', handleEnd, { passive: false });
       btn.addEventListener('touchstart', handleStart, { passive: false });
       btn.addEventListener('touchend', handleEnd, { passive: false });
       btn.addEventListener('touchcancel', handleEnd, { passive: false });
+      btn.addEventListener('blur', handleEnd, { passive: false });
     });
+    
+    document.addEventListener('contextmenu', (e) => e.preventDefault(), { passive: false });
   }
 
   setupKeyboardEvents() {
@@ -115,8 +120,14 @@ class GameController {
       }
     };
 
-    document.addEventListener('keydown', (e) => handleKey(e, true));
-    document.addEventListener('keyup', (e) => handleKey(e, false));
+    document.addEventListener('keydown', (e) => handleKey(e, true), { passive: false });
+    document.addEventListener('keyup', (e) => handleKey(e, false), { passive: false });
+    window.addEventListener('blur', () => {
+      Object.keys(this.keys).forEach(key => {
+        this.keys[key] = false;
+      });
+      this.triggerCallback();
+    });
   }
 
   onInput(callback) {
