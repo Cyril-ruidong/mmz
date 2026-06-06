@@ -16,7 +16,7 @@ const container = document.getElementById('game-container')
 const { canvas, ctx } = createGameCanvas(container)
 
 const player = createPlayer(ctx)
-createNPCs(NPC_COUNT)
+createNPCs(NPC_COUNT, canvas.width, canvas.height, currentScene.buildings)
 
 const mouse = { x: 0.5, y: 0.5 }
 let lastClickTime = 0

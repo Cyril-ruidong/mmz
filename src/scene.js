@@ -1,3 +1,5 @@
+import { initGrid, updateObstacles, NPCPathfinder } from './pathfinding.js'
+
 export function createGameCanvas(container) {
   const canvas = document.createElement('canvas')
   canvas.width = window.innerWidth
@@ -896,16 +898,22 @@ export function onCollect(x, y) {
 
 const npcs = []
 
-export function createNPCs(count) {
+export function createNPCs(count, canvasWidth, canvasHeight, buildings) {
   npcs.length = 0
+  
+  initGrid(canvasWidth, canvasHeight)
+  updateObstacles(buildings)
+  
   const types = ['tank_green', 'tank_red', 'tank_blue', 'human']
   const colors = ['#4a7a4a', '#9a4a4a', '#4a6a9a', 'human']
 
   for (let i = 0; i < count; i++) {
     const typeIndex = i % types.length
+    const x = Math.random() * (canvasWidth - 200) + 100
+    const y = Math.random() * (canvasHeight - 200) + 100
     npcs.push({
-      x: Math.random() * 800 + 100,
-      y: Math.random() * 400 + 100,
+      x: x,
+      y: y,
       vx: (Math.random() - 0.5) * 2,
       vy: (Math.random() - 0.5) * 2,
       type: types[typeIndex],
@@ -913,37 +921,19 @@ export function createNPCs(count) {
       direction: Math.random() * Math.PI * 2,
       speed: 0.5 + Math.random() * 1,
       changeTimer: 0,
-      variant: i
+      variant: i,
+      pathfinder: new NPCPathfinder(x, y)
     })
   }
 }
 
 export function updateNPCs(width, height, time) {
-  const margin = 50
-
   for (const npc of npcs) {
-    npc.changeTimer--
-    if (npc.changeTimer <= 0) {
-      npc.vx = (Math.random() - 0.5) * 2
-      npc.vy = (Math.random() - 0.5) * 2
-      npc.changeTimer = 100 + Math.random() * 200
-    }
-
-    if (npc.type === 'human') {
-      npc.x += npc.vx * 0.5
-      npc.y += npc.vy * 0.5
-    } else {
-      npc.x += npc.vx
-      npc.y += npc.vy
-    }
-
-    if (npc.x < margin) { npc.x = margin; npc.vx *= -1 }
-    if (npc.x > width - margin) { npc.x = width - margin; npc.vx *= -1 }
-    if (npc.y < margin) { npc.y = margin; npc.vy *= -1 }
-    if (npc.y > height - margin) { npc.y = height - margin; npc.vy *= -1 }
-
-    if (Math.abs(npc.vx) > 0.1 || Math.abs(npc.vy) > 0.1) {
-      npc.direction = Math.atan2(npc.vy, npc.vx)
+    if (npc.pathfinder) {
+      npc.pathfinder.update()
+      npc.x = npc.pathfinder.x
+      npc.y = npc.pathfinder.y
+      npc.direction = npc.pathfinder.getDirection()
     }
   }
 }
