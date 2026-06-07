@@ -1,0 +1,660 @@
+// 像素图程序化生成工具 - 模拟 FC 8 位机精灵
+
+// 定义调色板 (NES/FC 风格)
+export const PALETTE = {
+  black: '#000000',
+  white: '#FCFCFC',
+  gray: '#7C7C7C',
+  grayD: '#3C3C3C',
+  red: '#B8232C',
+  redD: '#7C1818',
+  green: '#5CAA48',
+  greenD: '#387030',
+  blue: '#3858B8',
+  blueD: '#1C3878',
+  yellow: '#F8C834',
+  gold: '#E8C170',
+  brown: '#7C4818',
+  brownD: '#4C2810',
+  sand: '#C8A668',
+  sandL: '#E8C898',
+  skin: '#FCB890',
+  skinD: '#C87858',
+  metal: '#9090A8',
+  metalL: '#C8C8D8',
+  metalD: '#3C3C50',
+  rust: '#A85C30',
+}
+
+// 16x16 像素精灵 (从位图字符串)
+// 用字符表示颜色缩写
+type PixelChar =
+  | '.' // 透明
+  | 'B' // 黑
+  | 'W' // 白
+  | 'G' // 灰
+  | 'D' // 深灰
+  | 'R' // 红
+  | 'X' // 深红
+  | 'V' // 绿
+  | 'E' // 深绿
+  | 'U' // 蓝
+  | 'N' // 深蓝
+  | 'Y' // 黄
+  | 'O' // 金
+  | 'M' // 棕
+  | 'L' // 深棕
+  | 'S' // 沙
+  | 'T' // 浅沙
+  | 'K' // 肤
+  | 'I' // 深肤
+  | 'A' // 金属
+  | 'a' // 浅金属
+  | 'Z' // 深金属
+  | 'C' // 锈
+
+const CHAR_MAP: Record<PixelChar, string> = {
+  '.': 'transparent',
+  'B': PALETTE.black,
+  'W': PALETTE.white,
+  'G': PALETTE.gray,
+  'D': PALETTE.grayD,
+  'R': PALETTE.red,
+  'X': PALETTE.redD,
+  'V': PALETTE.green,
+  'E': PALETTE.greenD,
+  'U': PALETTE.blue,
+  'N': PALETTE.blueD,
+  'Y': PALETTE.yellow,
+  'O': PALETTE.gold,
+  'M': PALETTE.brown,
+  'L': PALETTE.brownD,
+  'S': PALETTE.sand,
+  'T': PALETTE.sandL,
+  'K': PALETTE.skin,
+  'I': PALETTE.skinD,
+  'A': PALETTE.metal,
+  'a': PALETTE.metalL,
+  'Z': PALETTE.metalD,
+  'C': PALETTE.rust,
+}
+
+function parseSprite(s: string): string[][] {
+  const rows = s.trim().split('\n').map((r) => r.trim())
+  return rows.map((r) => r.split('').map((c) => CHAR_MAP[c as PixelChar] || 'transparent'))
+}
+
+// ===== 主角（红衣） - 战士 =====
+const HERO_F = parseSprite(`
+....BBBBBBBB....
+...BKKKKKKKKB...
+...BKWWBWWWKB...
+...BKBBBWWWKB...
+...BKWWWWWWKB...
+....BKKKKKKB....
+....BRRRRRRB....
+...BRRRRRRRRB...
+...BRBBBBBBRB...
+...BRB....BRB...
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+`)
+
+const HERO_B = parseSprite(`
+....BBBBBBBB....
+...BKKKKKKKKB...
+...BKKKKKKKKB...
+....BKKKKKKB....
+....BRRRRRRB....
+...BRRRRRRRRB...
+...BRRRRRRRRB...
+...BRBBBBBBRB...
+...BRB....BRB...
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+`)
+
+const HERO_L = parseSprite(`
+....BBBBBBBB....
+...BKKKKKKKKB...
+...BKWWBWWWKB...
+...BKBBBWWWKB...
+...BKWWWWWWKB...
+....BKKKKKKB....
+....BRRRRRRB....
+...BRRRRRRRRB...
+...BRBBBBBBRB...
+...BBRB....BB...
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+`)
+
+const HERO_R = parseSprite(`
+....BBBBBBBB....
+...BKKKKKKKKB...
+...BKWWBWWWKB...
+...BKBBBWWWKB...
+...BKWWWWWWKB...
+....BKKKKKKB....
+....BRRRRRRB....
+...BRRRRRRRRB...
+...BRBBBBBBRB...
+...BB....BRBB...
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+`)
+
+// ===== 红狼号战车 =====
+const REDWOLF_F = parseSprite(`
+..............BB
+.............BRR
+....BBBB....BRRR
+...BRRRRBB.BRRRR
+..BRRRRRRRBBBRRR
+..BRXRRRRRRRRRRB
+..BRXRXRRRRRRRRB
+..BRXRRXRRBRRBRB
+..BRRRRBBBRRBRBB
+..BRRRRRBBBRBBB.
+..BRRRRRRRBB....
+..BBBBBBBB.....
+...BBBBBB......
+..BB....BB.....
+..BB....BB.....
+.BB......BB....
+`)
+
+const REDWOLF_B = parseSprite(`
+.BB...........BB
+.RRB..........BB
+.RRRB....BBBB...
+.RRRRB..BRRRRB..
+.RRRRRBBRRRRRBB.
+.BRRRRRRRRRRRRXB
+.BRRRRRRRRRRRRXB
+.BRRBRRRRRXRXRRB
+.BBRRBRRBBRRRRRB
+..BBRBRBBRRRRRB.
+....BBRRRRRRRRB.
+.....BBBRRRRRRB.
+......BBBBBBBB..
+..... BB....BB..
+.... BB......BB.
+....BB.......BB.
+`)
+
+// ===== 普通敌人 (沙蝎) =====
+const SCORPION = parseSprite(`
+........BB......
+.......BYYB.....
+......BYYYYB....
+.....BYYYYYYB...
+.....BYBBBYB....
+.....BBYYBB.....
+......BBBB......
+..B....BB....B..
+.BBB..BBBB..BBB.
+BBBBBBBBBBBBBBBB
+BBBBB....BBBBBB.
+..BB......BB....
+..BB......BB....
+.BB........BB...
+BB..........BB..
+`)
+
+// ===== 废土狗 =====
+const DOG = parseSprite(`
+................
+......MMMM......
+.....MBBBBM.....
+.....MKKKKM.....
+.....KBWWBK.....
+.....KBBBBK.....
+....MBBBBBBM....
+...MMMMMMMMMM...
+..M MMMMMMMM M..
+.M   MMMMMM   M.
+     M    M
+     BB....BB
+     BB....BB
+    BBB....BBB
+    BBB....BBB
+    BB......BB
+`)
+
+// ===== 机械兵 =====
+const MECH = parseSprite(`
+....BBBBBBBB....
+...BaAaAaAaB....
+...BaWWBBWWaB...
+...BAAAAAAAB....
+...BZZAaAAZZB...
+....BAAAAAAAB...
+..BBBAaaaaaBBB..
+.BAAaAAAAAAAaAB.
+.BZaAAaAAaAAaZB.
+.BAZaAZZZZAZaAB.
+.BAAAaAAAAaAAAB.
+.BBAAAAAAAAAAB..
+..B.ZZAAAAZZ.B..
+...BBBBBBBBBB...
+..BB........BB..
+.BB..........BB.
+`)
+
+// ===== 土匪 =====
+const BANDIT = parseSprite(`
+.....BBBBBB.....
+....BYYYYYYB....
+....BYYYYYYB....
+....BWWBWBWB....
+....BWWBBWWB....
+....BBBBBBBB....
+....BRRRRRRB....
+...BRRRRRRRRB...
+...BRRBRBBRB....
+...BRRBRBBRB....
+...BBBBBBBBBB...
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+....BB....BB....
+`)
+
+// ===== 导弹塔 =====
+const TOWER = parseSprite(`
+.....BBBBBB.....
+....BAAAAAAAB....
+....BAAAAAAAB....
+....BAAAAAABB....
+....BAAAAAABB....
+....BAAAAAAAB....
+....BAAAAAAAB....
+....BAAAAAAAB....
+..BBBBAAAAAA BBBB
+..B..BAAAAAA B..B
+..BBBBAAAAAA BBBB
+....BAAAAAAAB....
+....BAAAAAABB....
+....BAAAAAABB....
+....BAAAAAABB....
+....BBBBBBBBBB...
+....B.B.B.B.B....
+`)
+
+// ===== 赏金首 sprite（按索引） =====
+const BOSSES = [
+  // 马歇尔 - 肌肉男
+  parseSprite(`
+.....BBBBB......
+....BKKKKKB.....
+....BKKKKKB.....
+....BKKKKKB.....
+...BBKKKKKBB....
+...BWWWBBWWWB...
+...BWBBBBBBWB...
+...BBWWBBWWBB...
+...BBBKKKKBBB...
+..BBKKKKKKKKBB..
+..BKKKKKKKKKKB..
+..BKKMMMMMMKKB..
+..BBMMMMMMMMB...
+..BBMM....MMB...
+..BBMM....MMB...
+..BBBB....BBBB..
+`),
+  // 戈麦斯 - 装甲兵
+  parseSprite(`
+....BBBBBBBB....
+...BAAAAAAAB....
+...BAAAAAAAB...
+...BAAWWAAAB...
+...BABBAAAB...
+...BAAAAAAAB...
+..BBAAAAAABBB..
+.BAAAAA AAAAA B.
+.BA AAAAAAAAA B
+.BA AA ZZAAZ A B
+.BAAAAAAAAAAAAAAAA
+.BAAA ZZZZZ AAA B
+.BAAAA ZZZZ AAAA B
+.BAAAAAAAAAAAAAAAA
+..BBAA AAAA AAB..
+...BB BBBB BBBB
+....BB BB BB BB
+`),
+  // 帕鲁 - 大型坦克 boss
+  parseSprite(`
+....BBBBBBBBBBBB....
+...BRRRRRRRRRRRRB...
+..BRRXRRRRRRRRRRRB..
+..BRXRXRRRRRRRRXRRB.
+..BRXXRRRRRRRRRRRXB.
+..BRRRBBBBBBBBBRRB..
+..BRRBWWBBBBWWBBRB..
+..BRBBBWWBBBBWWBBRB.
+..BBBBBBBBBBBBBBBBB.
+.BBB...BB....BB...BB.
+.BB.....BB..BB.....BB
+.BB......BBBB......BB
+.BB.......BB.......BB
+.BB......BBBB......BB
+BB.......BBBB.......B
+BB......BBBBBB......B
+`),
+  // 水怪
+  parseSprite(`
+....BBBBBBBB....
+...BUUUUUUUB...
+...BUVUVUVUB...
+...BVVVVVVVB...
+...BVVV.VVB...
+..BBVVV.VVBB..
+.BUUUUUUUUUB.
+.BUVUVUVUVUB.
+.BUVVVVVVVUB.
+.BVVV.V.VVB.
+BBVV.VVV.VVBB
+BB..VV..VV..BB
+B............B
+B............B
+B............B
+BB..........BB
+`),
+  // 迪亚波 - 大型 boss
+  parseSprite(`
+....BBBBBBBBBBBB....
+...BRRRRRRRRRRRRB...
+..BRRXRRRRRRRRRRRB..
+..BRXRXRRRRRRRRXRRB.
+..BRXXRRRRRRRRRRRXB.
+..BRRRBBBBBBBBBRRB..
+..BRRBWWBBBBWWBBRB..
+..BRBBBWWBBBBWWBBRB.
+..BBBBBBBBBBBBBBBBB.
+.BBB...BB....BB...BB.
+.BB.....BB..BB.....BB
+.BB......BBBB......BB
+.BB.......BB.......BB
+.BB......BBBB......BB
+BB.......BBBB.......B
+BB......BBBBBB......B
+`),
+  // 诺亚祖鲁 - 终极 boss
+  parseSprite(`
+.BBBBBBBBBBBBBBBBBBB
+BRRRRRRRRRRRRRRRRRRB
+BRXRRXXRRRRRRXRRRRRB
+BRXRXRXXRRRRRXRXXRRB
+BRXXRXXXRRRRRXXRXXRB
+BRRRRRRRBBBBBBRRRRRB
+BRRBWWBBBBBBBBWWBBRB
+BRBBWWBBBBBBBBWWBBRB
+BBBBBBBBBBBBBBBBBBBB
+BB...BB......BB...BB
+B.....BB....BB.....B
+B......BBBBBB......B
+B.......BBBB.......B
+B......BBBBBB......B
+B.....BBBBBBBB.....B
+BB...BBBBBBBBBB...BB
+`),
+]
+
+// 摇钱树 - 赏金事务所标识
+const COIN = parseSprite(`
+....YYYY....
+...YOOOY...
+...YOOOY...
+....YOY....
+....YYY....
+...YOOOY...
+..YOOOOOY..
+..YOOOOOY..
+..YOOOOOY..
+...YYYYY...
+....YYY....
+....YYY....
+`)
+
+export const SPRITES = {
+  hero: { f: HERO_F, b: HERO_B, l: HERO_L, r: HERO_R },
+  redwolf: { f: REDWOLF_F, b: REDWOLF_B },
+  enemies: [SCORPION, DOG, MECH, BANDIT, TOWER],
+  bosses: BOSSES,
+  coin: COIN,
+}
+
+// 绘制精灵到 canvas
+export function drawSprite(
+  ctx: CanvasRenderingContext2D,
+  sprite: string[][],
+  x: number,
+  y: number,
+  scale = 1,
+  flip: 'h' | 'v' | null = null,
+) {
+  const h = sprite.length
+  const w = sprite[0]?.length || 0
+  for (let py = 0; py < h; py++) {
+    for (let px = 0; px < w; px++) {
+      const c = sprite[py][px]
+      if (c === 'transparent') continue
+      const tx = flip === 'h' ? w - 1 - px : px
+      ctx.fillStyle = c
+      ctx.fillRect(x + tx * scale, y + py * scale, scale, scale)
+    }
+  }
+}
+
+// 程序化绘制文字（使用预生成的小型像素字体）
+const FONT_3x5: Record<string, string[]> = {
+  ' ': ['...', '...', '...', '...', '...'],
+  '0': ['XXX', 'X.X', 'X.X', 'X.X', 'XXX'],
+  '1': ['.X.', 'XX.', '.X.', '.X.', 'XXX'],
+  '2': ['XX.', '..X', '.X.', 'X..', 'XXX'],
+  '3': ['XX.', '..X', '.X.', '..X', 'XX.'],
+  '4': ['X.X', 'X.X', 'XXX', '..X', '..X'],
+  '5': ['XXX', 'X..', 'XX.', '..X', 'XX.'],
+  '6': ['XX.', 'X..', 'XXX', 'X.X', 'XXX'],
+  '7': ['XXX', '..X', '.X.', 'X..', 'X..'],
+  '8': ['XXX', 'X.X', 'XXX', 'X.X', 'XXX'],
+  '9': ['XXX', 'X.X', 'XXX', '..X', 'XX.'],
+  'A': ['.X.', 'X.X', 'XXX', 'X.X', 'X.X'],
+  'B': ['XX.', 'X.X', 'XX.', 'X.X', 'XX.'],
+  'C': ['XXX', 'X..', 'X..', 'X..', 'XXX'],
+  'D': ['XX.', 'X.X', 'X.X', 'X.X', 'XX.'],
+  'E': ['XXX', 'X..', 'XX.', 'X..', 'XXX'],
+  'F': ['XXX', 'X..', 'XX.', 'X..', 'X..'],
+  'G': ['XXX', 'X..', 'X.X', 'X.X', 'XXX'],
+  'H': ['X.X', 'X.X', 'XXX', 'X.X', 'X.X'],
+  'I': ['XXX', '.X.', '.X.', '.X.', 'XXX'],
+  'J': ['XXX', '..X', '..X', 'X.X', 'XXX'],
+  'K': ['X.X', 'X.X', 'XX.', 'X.X', 'X.X'],
+  'L': ['X..', 'X..', 'X..', 'X..', 'XXX'],
+  'M': ['X.X', 'XXX', 'XXX', 'X.X', 'X.X'],
+  'N': ['X.X', 'XXX', 'XXX', 'XXX', 'X.X'],
+  'O': ['XXX', 'X.X', 'X.X', 'X.X', 'XXX'],
+  'P': ['XXX', 'X.X', 'XXX', 'X..', 'X..'],
+  'Q': ['XXX', 'X.X', 'X.X', 'XXX', '..X'],
+  'R': ['XX.', 'X.X', 'XX.', 'X.X', 'X.X'],
+  'S': ['XXX', 'X..', 'XXX', '..X', 'XXX'],
+  'T': ['XXX', '.X.', '.X.', '.X.', '.X.'],
+  'U': ['X.X', 'X.X', 'X.X', 'X.X', 'XXX'],
+  'V': ['X.X', 'X.X', 'X.X', 'X.X', '.X.'],
+  'W': ['X.X', 'X.X', 'XXX', 'XXX', 'X.X'],
+  'X': ['X.X', 'X.X', '.X.', 'X.X', 'X.X'],
+  'Y': ['X.X', 'X.X', '.X.', '.X.', '.X.'],
+  'Z': ['XXX', '..X', '.X.', 'X..', 'XXX'],
+  '!': ['X', 'X', 'X', '.', 'X'],
+  '?': ['XX.', '..X', '.X.', '...', '.X.'],
+  '.': ['...', '...', '...', '...', '.X.'],
+  ',': ['...', '...', '...', '.X.', 'X..'],
+  ':': ['...', '.X.', '...', '.X.', '...'],
+  '-': ['...', '...', 'XXX', '...', '...'],
+  '/': ['..X', '..X', '.X.', 'X..', 'X..'],
+  '+': ['...', '.X.', 'XXX', '.X.', '...'],
+  "'": ['.X.', '.X.', '...', '...', '...'],
+  '·': ['...', '...', '.X.', '...', '...'],
+}
+
+const CJK_MAP: Record<string, string> = {
+  // 简化版中文 (4x4 字符块 = 12x12 像素)
+  '主': '1111.1111.1111.1111', '菜': '1111.0001.1111.1000', '单': '1100.1111.1100.1111',
+  '新': '1100.1111.1100.1111', '继': '1100.1111.1100.1111', '续': '1100.1111.1100.1111',
+  '始': '1111.1100.1100.1100', '结': '1100.1111.1100.1100', '束': '1100.1111.1100.1111',
+  '否': '1100.1001.1111.1111', '确': '1100.1111.1111.1111',
+  '设': '1111.1100.1100.1111', '退': '1100.1100.1100.1111', '出': '1100.1100.1111.1111',
+  '战': '1100.1111.1100.1100', '斗': '1100.1100.1111.1100', '胜': '1100.1100.1111.1111',
+  '败': '1100.1100.1100.1100',
+  '经': '1100.1111.1100.1100', '验': '1100.1100.1111.1100', '等': '1100.1111.1100.1111',
+  '级': '1100.1100.1111.1100', '伤': '1100.1100.1111.1100', '害': '1100.1100.1111.1100',
+  '回': '1100.1111.1100.1100', '复': '1100.1100.1111.1111', '剂': '1100.1100.1100.1111',
+  '血': '1100.1100.1111.1100', '弹': '1100.1100.1111.1100',
+  '明': '1100.1100.1100.1111', '奇': '1100.1111.1111.1100',
+  '攻': '1100.1100.1111.1100', '击': '1100.1100.1100.1111', '防': '1100.1100.1111.1100',
+  '御': '1100.1100.1111.1111', '物': '1100.1100.1111.1111', '品': '1100.1100.1100.1111',
+  '逃': '1100.1100.1100.1100', '跑': '1100.1100.1111.1100',
+  '城': '1111.1001.1001.1111', '镇': '1111.1100.1100.1100',
+  '拉': '1111.1100.1111.1100', '多': '1001.1111.1001.1111',
+  '北': '1100.1111.1100.1100', '南': '1100.1111.1100.1111', '东': '1100.1111.1111.1100', '西': '1100.1100.1100.1100',
+  '改': '1100.1100.1111.1111', '装': '1100.1100.1100.1111',
+  '引': '1100.1100.1111.1100', '擎': '1100.1100.1100.1100',
+  '武': '1100.1100.1111.1111', '器': '1100.1100.1100.1111',
+  '底': '1100.1100.1100.1111', '盘': '1100.1100.1100.1111',
+  '首': '1100.1111.1100.1100', '事': '1100.1100.1100.1111',
+  '务': '1100.1100.1100.1111', '所': '1100.1111.1111.1100',
+  '马': '1100.1100.1100.1111', '歇': '1100.1100.1100.1111', '尔': '1100.1100.1100.1111',
+  '戈': '1100.1100.1111.1111', '麦': '1100.1100.1100.1111', '斯': '1100.1100.1100.1111',
+  '帕': '1100.1100.1100.1111', '鲁': '1100.1100.1100.1111',
+  '水': '1100.1100.1111.1100', '怪': '1100.1100.1100.1111',
+  '对': '1100.1100.1111.1111', '话': '1100.1100.1100.1111',
+  '在': '1100.1100.1111.1100', '沙': '1100.1100.1100.1111', '漠': '1100.1100.1100.1111',
+  '寻': '1100.1100.1100.1111', '找': '1100.1100.1100.1111',
+  '冒': '1100.1100.1111.1100', '险': '1100.1100.1100.1111',
+  '穿': '1100.1100.1100.1111', '墙': '1100.1100.1100.1111',
+  '秘': '1100.1100.1100.1111', '籍': '1100.1100.1100.1111',
+  '显': '1100.1100.1100.1111', '示': '1100.1100.1100.1111',
+  '已': '1100.1100.1100.1111', '完': '1100.1100.1100.1111',
+  '成': '1100.1100.1100.1111', '当': '1100.1100.1100.1111',
+  '前': '1100.1100.1100.1111', '入': '1100.1100.1100.1111',
+  '遇': '1100.1100.1100.1111', '敌': '1100.1100.1100.1111', '人': '1100.1100.1100.1111',
+  '方': '1100.1100.1100.1111', '向': '1100.1100.1100.1111', '下': '1100.1100.1100.1111',
+  '上': '1100.1100.1100.1111', '左': '1100.1100.1100.1111', '右': '1100.1100.1100.1111',
+  '按': '1100.1100.1100.1111', '键': '1100.1100.1100.1111', '操': '1100.1100.1100.1111',
+  '作': '1100.1100.1100.1111', '获': '1100.1100.1100.1111', '得': '1100.1100.1100.1111',
+  '转': '1100.1100.1100.1111', '换': '1100.1100.1100.1111',
+  '队': '1100.1100.1100.1111', '伍': '1100.1100.1100.1111',
+  '兵': '1100.1100.1100.1111',
+  '步': '1100.1100.1100.1111', '行': '1100.1100.1100.1111',
+  '页': '1100.1100.1100.1111',
+  '父': '1100.1100.1100.1111', '亲': '1100.1100.1100.1111',
+  '你': '1100.1100.1100.1111', '好': '1100.1100.1100.1111', '我': '1100.1100.1100.1111',
+  '红': '1100.1100.1100.1111', '狼': '1100.1100.1100.1111',
+  '号': '1100.1100.1100.1111', '送': '1100.1100.1100.1111',
+  '给': '1100.1100.1100.1111',
+  // 赏金事务所
+  '赏': '1100.1111.1100.1100',
+  // 金币
+  '币': '1100.1100.1111.1100',
+  // 是非
+  '是': '1100.1001.1101.1111',
+}
+
+function get3x5(c: string): string[] {
+  return FONT_3x5[c.toUpperCase()] || FONT_3x5[' ']
+}
+
+// 绘制字符串到 canvas（仅支持 ASCII + 上述 CJK）
+export function drawText(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  scale = 1,
+  color = '#FCFCFC',
+  shadow: string | null = null,
+) {
+  let cx = x
+  for (const ch of text) {
+    if (CJK_MAP[ch]) {
+      // 4x4 块字符 - 中等大小
+      const bits = CJK_MAP[ch]
+      const cell = 3 * scale
+      for (let i = 0; i < 16; i++) {
+        if (bits[i] === '1') {
+          const r = Math.floor(i / 4)
+          const c2 = i % 4
+          if (shadow) {
+            ctx.fillStyle = shadow
+            ctx.fillRect(cx + c2 * cell + scale, y + r * cell + scale, cell, cell)
+          }
+          ctx.fillStyle = color
+          ctx.fillRect(cx + c2 * cell, y + r * cell, cell, cell)
+        }
+      }
+      cx += 4 * cell
+    } else {
+      const glyph = get3x5(ch)
+      for (let r = 0; r < 5; r++) {
+        for (let c = 0; c < 3; c++) {
+          if (glyph[r][c] === 'X') {
+            if (shadow) {
+              ctx.fillStyle = shadow
+              ctx.fillRect(cx + c * scale + scale, y + r * scale + scale, scale, scale)
+            }
+            ctx.fillStyle = color
+            ctx.fillRect(cx + c * scale, y + r * scale, scale, scale)
+          }
+        }
+      }
+      cx += 4 * scale // 字间距
+    }
+  }
+}
+
+export function textWidth(text: string, scale = 1): number {
+  let w = 0
+  for (const ch of text) {
+    if (CJK_MAP[ch]) w += 4 * 3 * scale
+    else w += 4 * scale
+  }
+  return w
+}
+
+// 绘制像素矩形边框（FC 风）
+export function drawBox(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  fill = '#1C3878',
+  border = '#FCFCFC',
+) {
+  ctx.fillStyle = fill
+  ctx.fillRect(x, y, w, h)
+  ctx.fillStyle = border
+  ctx.fillRect(x, y, w, 1)
+  ctx.fillRect(x, y + h - 1, w, 1)
+  ctx.fillRect(x, y, 1, h)
+  ctx.fillRect(x + w - 1, y, 1, h)
+}
