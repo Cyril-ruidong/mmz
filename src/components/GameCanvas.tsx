@@ -30,7 +30,6 @@ export function GameCanvas() {
   const [scale, setScale] = useState(3)
   const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024)
   const [vh, setVh] = useState(typeof window !== 'undefined' ? window.innerHeight : 768)
-  const [isTouch, setIsTouch] = useState(false)
   const stateRef = useRef<RenderState>({
     scene: 'title',
     party: [],
@@ -303,7 +302,7 @@ export function GameCanvas() {
     }
   }, [input.state])
 
-  const [isTouchLocal, setIsTouch] = useState(false)
+  const [isTouchLocal, setIsTouchLocal] = useState(false)
   useEffect(() => {
     const check = () => {
       const w = window.innerWidth
@@ -311,7 +310,6 @@ export function GameCanvas() {
       const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
       setVw(w)
       setVh(h)
-      setIsTouch(touch)
       setIsTouchLocal(touch)
       setScale(fitScale(w, h, touch))
     }
