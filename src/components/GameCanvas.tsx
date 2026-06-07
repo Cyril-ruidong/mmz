@@ -36,6 +36,7 @@ export function GameCanvas() {
     tank: useGameStore.getState().tank,
     worldX: 0, worldY: 0, worldDir: 'down',
     townX: 0, townY: 0, townDir: 'down',
+    houseX: 8, houseY: 13, houseDir: 'down',
     battle: null,
     menuIndex: 0,
     flash: null,
@@ -43,6 +44,8 @@ export function GameCanvas() {
     message: '',
     messageTime: 0,
     hud: { gold: 0, bullets: 0 },
+    story: { wokeUp: false, talkedToFather: false, receivedRedWolf: false, leftHouseFirstTime: false },
+    fatherDir: 'right',
   })
   const input = useInput()
   const stepRef = useRef({ lastStep: 0, encounter: 0 })
@@ -51,12 +54,16 @@ export function GameCanvas() {
   const setScene = useGameStore((s) => s.setScene)
   const moveWorld = useGameStore((s) => s.moveWorld)
   const moveTown = useGameStore((s) => s.moveTown)
+  const moveHouse = useGameStore((s) => s.moveHouse)
   const startBattle = useGameStore((s) => s.startBattle)
   const setDialog = useGameStore((s) => s.setDialog)
+  const setDialogQueue = useGameStore((s) => s.setDialogQueue)
+  const nextDialog = useGameStore((s) => s.nextDialog)
   const battleAction = useGameStore((s) => s.battleAction)
   const saveGame = useGameStore((s) => s.saveGame)
   const loadGame = useGameStore((s) => s.loadGame)
   const reset = useGameStore((s) => s.reset)
+  const setStory = useGameStore((s) => s.setStory)
   const scanlines = useGameStore((s) => s.settings.scanlines)
 
   // 同步 store -> ref
@@ -71,6 +78,9 @@ export function GameCanvas() {
       stateRef.current.townX = s.townX
       stateRef.current.townY = s.townY
       stateRef.current.townDir = s.townDir
+      stateRef.current.houseX = s.houseX
+      stateRef.current.houseY = s.houseY
+      stateRef.current.houseDir = s.houseDir
       stateRef.current.battle = s.battle
         ? {
             enemies: s.battle.enemies,
@@ -84,6 +94,12 @@ export function GameCanvas() {
         : null
       stateRef.current.hud.gold = s.inventory.gold
       stateRef.current.hud.bullets = s.inventory.bullets
+      stateRef.current.story = s.story
+      // 父亲朝向玩家
+      const player = s.houseX
+      if (player < 4) stateRef.current.fatherDir = 'left'
+      else if (player > 4) stateRef.current.fatherDir = 'right'
+      else stateRef.current.fatherDir = 'down'
     })
     return unsub
   }, [])
@@ -136,17 +152,30 @@ export function GameCanvas() {
     prevPulse.current = { ...input.state.pulse }
 
     if (s.dialog) {
-      if (isNewConfirm) setDialog(null)
+      if (isNewConfirm) {
+        if (useGameStore.getState().dialogQueue.length > 0) {
+          nextDialog()
+        } else {
+          setDialog(null)
+        }
+      }
       return
     }
 
     if (scene === 'title') {
       if (isNewConfirm) {
         if (stateRef.current.menuIndex === 0) {
+          // 新游戏：进入主角家
           reset()
           setTimeout(() => {
-            useGameStore.getState().setScene('house')
-            useGameStore.getState().setDialog({ text: '父亲：明奇，红狼号已经修好了，去吧！' })
+            const st = useGameStore.getState()
+            st.setStory({ wokeUp: true, talkedToFather: false, receivedRedWolf: false })
+            st.setScene('house')
+            st.setDialogQueue([
+              { speaker: '明奇', text: '……嗯？' },
+              { speaker: '明奇', text: '今天……外头天气真好。' },
+              { speaker: '明奇', text: '出去走走，看能不能找到爸爸。' },
+            ])
           }, 50)
         } else if (stateRef.current.menuIndex === 1) {
           loadGame()
@@ -156,6 +185,58 @@ export function GameCanvas() {
       }
       if (input.state.up) stateRef.current.menuIndex = (stateRef.current.menuIndex + 3) % 4
       if (input.state.down) stateRef.current.menuIndex = (stateRef.current.menuIndex + 1) % 4
+      return
+    }
+
+    if (scene === 'house') {
+      // 移动
+      if (input.state.left) moveHouse(-1, 0)
+      else if (input.state.right) moveHouse(1, 0)
+      else if (input.state.up) moveHouse(0, -1)
+      else if (input.state.down) moveHouse(0, 1)
+
+      // 与父亲互动
+      if (isNewConfirm) {
+        const cur = useGameStore.getState()
+        const dx = cur.houseX - 4
+        const dy = cur.houseY - 8
+        const dist = Math.abs(dx) + Math.abs(dy)
+        if (dist === 1) {
+          if (!cur.story.talkedToFather) {
+            setStory({ talkedToFather: true })
+            if (!cur.story.receivedRedWolf) {
+              setDialogQueue([
+                { speaker: '父亲', text: '明奇，你醒了。' },
+                { speaker: '父亲', text: '红狼号已经修好了，就在车库里。' },
+                { speaker: '父亲', text: '今天去镇上看看吧，听说赏金事务所发了新任务。' },
+                { speaker: '父亲', text: '出门按 Z 键与门互动就能离开家。' },
+              ])
+            } else {
+              setDialog({ speaker: '父亲', text: '路上小心，照顾好自己。' })
+            }
+          } else {
+            setDialog({ speaker: '父亲', text: '路上小心，照顾好自己。' })
+          }
+        }
+      }
+
+      // 门 - 离开家
+      if (isNewConfirm) {
+        const cur = useGameStore.getState()
+        if ((cur.houseX === 7 || cur.houseX === 8) && cur.houseY === 14) {
+          // 离开家 → 拉多镇 (28, 30) 城镇入口处
+          useGameStore.setState((st) => ({ townX: 7, townY: 14, scene: 'town' }))
+          if (!cur.story.leftHouseFirstTime) {
+            setStory({ leftHouseFirstTime: true })
+            setTimeout(() => {
+              setDialogQueue([
+                { speaker: '明奇', text: '终于出来了……' },
+                { speaker: '明奇', text: '先去赏金事务所看看任务吧。' },
+              ])
+            }, 200)
+          }
+        }
+      }
       return
     }
 
@@ -191,13 +272,6 @@ export function GameCanvas() {
         }
       }
       if (isNewCancel) battleAction('escape')
-      return
-    }
-
-    if (scene === 'house') {
-      if (isNewConfirm) {
-        setScene('town')
-      }
       return
     }
 

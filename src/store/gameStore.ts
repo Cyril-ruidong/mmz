@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { makeInitialParty, makeRedWolf, BOUNTIES } from '@/game/data'
-import type { Bounty, BattleState, Character, DialogLine, Enemy, Inventory, SceneKind, Tank } from '@/types/game'
+import type { Bounty, BattleState, Character, DialogLine, Direction, Enemy, Inventory, SceneKind, Tank } from '@/types/game'
 
 interface Settings {
   bgm: boolean
@@ -8,37 +8,55 @@ interface Settings {
   scanlines: boolean
 }
 
-interface GameStore {
+// 故事 / 剧情标志
+export interface StoryFlags {
+  wokeUp: boolean // 已醒来
+  talkedToFather: boolean // 已与父亲对话
+  receivedRedWolf: boolean // 已获得红狼号
+  leftHouseFirstTime: boolean // 第一次离开家
+}
+
+type GameStore = {
   scene: SceneKind
   prevScene: SceneKind | null
   party: Character[]
   tank: Tank
   inventory: Inventory
   bounties: Bounty[]
-  // 玩家世界地图坐标
+  // 世界地图
   worldX: number
   worldY: number
-  worldDir: 'up' | 'down' | 'left' | 'right'
-  // 拉多镇坐标
+  worldDir: Direction
+  // 拉多镇
   townX: number
   townY: number
-  townDir: 'up' | 'down' | 'left' | 'right'
+  townDir: Direction
+  // 主角家
+  houseX: number
+  houseY: number
+  houseDir: Direction
   // 战斗
   battle: BattleState | null
-  // 对话
+  // 对话队列（多轮对话）
   dialog: DialogLine | null
+  dialogQueue: DialogLine[]
   // 设置
   settings: Settings
-  // 战斗胜利次数
   bountyTotal: number
+  // 剧情
+  story: StoryFlags
   setScene: (s: SceneKind) => void
-  moveWorld: (dx: number, dy: number) => void
-  moveTown: (dx: number, dy: number) => void
+  moveWorld: (dx: number, dy: number) => boolean
+  moveTown: (dx: number, dy: number) => boolean
+  moveHouse: (dx: number, dy: number) => boolean
   startBattle: (enemies: Enemy[]) => void
   endBattle: (win: boolean) => void
   setDialog: (d: DialogLine | null) => void
+  setDialogQueue: (qs: DialogLine[]) => void
+  nextDialog: () => void
   toggleSetting: (k: keyof Settings) => void
   reset: () => void
+  setStory: (patch: Partial<StoryFlags>) => void
   tickBattle: () => void
   battleAction: (action: 'attack' | 'defend' | 'item' | 'escape' | 'skill' | 'se' | 'main' | 'sub') => void
   loadGame: () => void
@@ -49,40 +67,48 @@ const initial = () => {
   const party = makeInitialParty()
   const tank = makeRedWolf()
   const inv: Inventory = { gold: 500, items: [{ id: 'potion', name: '回复剂', count: 3 }], bullets: 50 }
-  return { party, tank, inventory: inv, bounties: [...BOUNTIES], worldX: 30, worldY: 30, worldDir: 'down' as const, townX: 8, townY: 8, townDir: 'down' as const, bountyTotal: 0 }
+  return {
+    party,
+    tank,
+    inventory: inv,
+    bounties: [...BOUNTIES],
+    worldX: 30,
+    worldY: 30,
+    worldDir: 'down' as Direction,
+    townX: 8,
+    townY: 8,
+    townDir: 'down' as Direction,
+    houseX: 8,
+    houseY: 13,
+    houseDir: 'down' as Direction,
+    bountyTotal: 0,
+    story: { wokeUp: false, talkedToFather: false, receivedRedWolf: false, leftHouseFirstTime: false },
+  }
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
   scene: 'title',
   prevScene: null,
-  party: makeInitialParty(),
-  tank: makeRedWolf(),
-  inventory: { gold: 500, items: [{ id: 'potion', name: '回复剂', count: 3 }], bullets: 50 },
-  bounties: [...BOUNTIES],
-  worldX: 30,
-  worldY: 30,
-  worldDir: 'down',
-  townX: 8,
-  townY: 8,
-  townDir: 'down',
+  ...initial(),
   battle: null,
   dialog: null,
+  dialogQueue: [],
   settings: { bgm: true, sfx: true, scanlines: true },
-  bountyTotal: 0,
   setScene: (s) => set({ scene: s }),
   moveWorld: (dx, dy) => {
     const { worldX, worldY, worldDir } = get()
     let nx = worldX + dx
     let ny = worldY + dy
-    // 世界地图边界 0-63
     nx = Math.max(0, Math.min(63, nx))
     ny = Math.max(0, Math.min(63, ny))
+    if (nx === worldX && ny === worldY) return false
     let ndir = worldDir
     if (dx > 0) ndir = 'right'
     if (dx < 0) ndir = 'left'
     if (dy > 0) ndir = 'down'
     if (dy < 0) ndir = 'up'
     set({ worldX: nx, worldY: ny, worldDir: ndir })
+    return true
   },
   moveTown: (dx, dy) => {
     const { townX, townY, townDir } = get()
@@ -90,12 +116,32 @@ export const useGameStore = create<GameStore>((set, get) => ({
     let ny = townY + dy
     nx = Math.max(0, Math.min(15, nx))
     ny = Math.max(0, Math.min(15, ny))
+    if (nx === townX && ny === townY) return false
     let ndir = townDir
     if (dx > 0) ndir = 'right'
     if (dx < 0) ndir = 'left'
     if (dy > 0) ndir = 'down'
     if (dy < 0) ndir = 'up'
     set({ townX: nx, townY: ny, townDir: ndir })
+    return true
+  },
+  moveHouse: (dx, dy) => {
+    const { houseX, houseY, houseDir } = get()
+    let nx = houseX + dx
+    let ny = houseY + dy
+    if (nx < 1 || nx > 14 || ny < 2 || ny > 14) {
+      // 在家内 - 仅在指定范围内
+      nx = Math.max(1, Math.min(14, nx))
+      ny = Math.max(2, Math.min(14, ny))
+    }
+    if (nx === houseX && ny === houseY) return false
+    let ndir = houseDir
+    if (dx > 0) ndir = 'right'
+    if (dx < 0) ndir = 'left'
+    if (dy > 0) ndir = 'down'
+    if (dy < 0) ndir = 'up'
+    set({ houseX: nx, houseY: ny, houseDir: ndir })
+    return true
   },
   startBattle: (enemies) => {
     set({
@@ -117,10 +163,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const b = get().battle
     if (!b) return
     if (win) {
-      // 计算奖励
       const gold = b.enemies.reduce((s, e) => s + e.hp, 0)
       const exp = b.enemies.length * 5
-      // 检查赏金首
       const newBounties = get().bounties.map((bb) => {
         if (!bb.completed && b.enemies.some((e) => e.id === bb.id)) {
           return { ...bb, completed: true }
@@ -143,11 +187,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }
   },
   setDialog: (d) => set({ dialog: d }),
+  setDialogQueue: (qs) => {
+    if (qs.length === 0) {
+      set({ dialog: null, dialogQueue: [] })
+      return
+    }
+    set({ dialog: qs[0], dialogQueue: qs.slice(1) })
+  },
+  nextDialog: () => {
+    const { dialogQueue } = get()
+    if (dialogQueue.length === 0) {
+      set({ dialog: null, dialogQueue: [] })
+      return
+    }
+    set({ dialog: dialogQueue[0], dialogQueue: dialogQueue.slice(1) })
+  },
   toggleSetting: (k) => set((s) => ({ settings: { ...s.settings, [k]: !s.settings[k] } })),
   reset: () => {
     const fresh = initial()
-    set({ scene: 'title', battle: null, dialog: null, ...fresh })
+    set({ scene: 'title', battle: null, dialog: null, dialogQueue: [], ...fresh })
   },
+  setStory: (patch) => set((s) => ({ story: { ...s.story, ...patch } })),
   tickBattle: () => {
     const b = get().battle
     if (!b) return
@@ -165,13 +225,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const attacker = party.find((p) => p.hp > 0) || party[0]
 
     if (action === 'attack') {
-      // 步行攻击
       const atk = attacker.attack + Math.floor(Math.random() * 6)
       const dmg = Math.max(1, atk - target.defense / 2)
       target.hp = Math.max(0, target.hp - dmg)
-      // 暴攻 BUG：连续攻击两次（如果 hp=0 后又被打中）
       if (target.hp === 0 && Math.random() < 0.2) {
-        target.hp = 0 // 仍 0
+        target.hp = 0
       }
       set({ battle: { ...b, enemies, message: `${attacker.name} 攻击！ -${dmg}`, phase: 'anim' } })
       setTimeout(() => {
@@ -179,7 +237,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
           st.endBattle(true)
         } else {
           set({ battle: { ...st.battle!, enemies, turn: 1, message: '敌方回合', phase: 'select' } })
-          // 敌方攻击
           setTimeout(() => {
             const live = enemies.filter((e) => e.hp > 0)
             const eAtk = live[Math.floor(Math.random() * live.length)]
@@ -189,9 +246,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
               return
             }
             const dmg2 = Math.max(1, eAtk.attack - party[tIdx].defense / 2)
-            // 暴血 BUG: 扣 HP 到负
             party[tIdx].hp = Math.max(-99, party[tIdx].hp - dmg2)
-            // 暴装甲 BUG: C 装置也扣
             if (party[tIdx].isTank) {
               tank.cHp = Math.max(-99, tank.cHp - Math.max(1, eAtk.attack - 5))
             }
@@ -243,8 +298,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
       townX: s.townX,
       townY: s.townY,
       townDir: s.townDir,
+      houseX: s.houseX,
+      houseY: s.houseY,
+      houseDir: s.houseDir,
       bountyTotal: s.bountyTotal,
       settings: s.settings,
+      story: s.story,
     }
     try {
       localStorage.setItem('mmz-save', JSON.stringify(data))

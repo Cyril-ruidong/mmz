@@ -1,7 +1,8 @@
 // 主游戏 Canvas 渲染器
-// 渲染：世界地图、拉多镇、战斗、标题等所有游戏画面
+// 渲染：世界地图、拉多镇、战斗、标题、家中等所有游戏画面
 import { drawSprite, drawText, drawBox, SPRITES, textWidth, PALETTE } from './sprites'
 import { generateWorld, generateTown, getTownBuildingAt, isTown, isWalkable, WORLD_SIZE, TOWN_BUILDINGS } from './world'
+import { buildHouseInterior, HOUSE_W, HOUSE_H, isHouseWalkable, getNpcAt, FATHER_POS, PLAYER_START, DOOR_POS, type HouseTile } from './house'
 import type { Character, Direction, Enemy, Tank, Weapon } from '@/types/game'
 import { calculateLoad } from './mod'
 
@@ -19,6 +20,9 @@ export interface RenderState {
   townX: number
   townY: number
   townDir: Direction
+  houseX: number
+  houseY: number
+  houseDir: Direction
   // 战斗
   battle: {
     enemies: Enemy[]
@@ -42,6 +46,15 @@ export interface RenderState {
     gold: number
     bullets: number
   }
+  // 剧情
+  story: {
+    wokeUp: boolean
+    talkedToFather: boolean
+    receivedRedWolf: boolean
+    leftHouseFirstTime: boolean
+  }
+  // 屋主父亲方向
+  fatherDir?: Direction
 }
 
 const worldMap = generateWorld()
@@ -62,16 +75,19 @@ export function renderGame(ctx: CanvasRenderingContext2D, s: RenderState) {
   } else if (s.scene === 'town') {
     renderTown(ctx, s)
     renderHUD(ctx, s)
+  } else if (s.scene === 'house') {
+    renderHouse(ctx, s)
+    renderHUD(ctx, s)
   } else if (s.scene === 'battle') {
     renderBattle(ctx, s)
-  } else if (s.scene === 'house') {
-    renderInterior(ctx, s, '家')
   } else if (s.scene === 'bounty') {
     renderInterior(ctx, s, '赏金事务所')
   } else if (s.scene === 'shop') {
     renderInterior(ctx, s, '商店')
   } else if (s.scene === 'mod') {
     renderInterior(ctx, s, '改装车间')
+  } else if (s.scene === 'inn') {
+    renderInterior(ctx, s, '旅馆')
   } else if (s.scene === 'gameover') {
     renderGameOver(ctx, s)
   }
@@ -295,6 +311,115 @@ function renderTown(ctx: CanvasRenderingContext2D, s: RenderState) {
     drawSprite(ctx, (SPRITES.hero as any)[dirMap[s.townDir]], px, py, 1)
   }
 }
+
+// 主角家内部 - 第一幕场景
+function renderHouse(ctx: CanvasRenderingContext2D, s: RenderState) {
+  const w = ctx.canvas.width
+  const h = ctx.canvas.height
+  const houseMap = buildHouseInterior()
+  const camX = s.houseX * TILE - w / 2 + TILE / 2
+  const camY = s.houseY * TILE - h / 2 + TILE / 2
+
+  for (let y = 0; y < VIEW_H + 1; y++) {
+    for (let x = 0; x < VIEW_W + 1; x++) {
+      const tx = Math.floor((camX + x * TILE) / TILE)
+      const ty = Math.floor((camY + y * TILE) / TILE)
+      if (tx < 0 || ty < 0 || tx >= HOUSE_W || ty >= HOUSE_H) continue
+      const tile = houseMap[ty][tx] as HouseTile
+      drawHouseTile(ctx, tile, x * TILE - (camX % TILE), y * TILE - (camY % TILE))
+    }
+  }
+
+  // 父亲 NPC (在 y=8 附近)
+  if (FATHER_POS) {
+    const fx = FATHER_POS.x * TILE - camX
+    const fy = FATHER_POS.y * TILE - camY
+    const fatherDir: Direction = s.fatherDir || FATHER_POS.dir
+    const fdirMap: Record<Direction, string> = { down: 'f', up: 'b', left: 'l', right: 'r' }
+    if (fx > -TILE && fy > -TILE && fx < w && fy < h) {
+      drawSprite(ctx, (SPRITES.father as any)[fdirMap[fatherDir]], fx, fy, 1)
+    }
+  }
+
+  // 玩家
+  const px = w / 2 - TILE / 2
+  const py = h / 2 - TILE / 2
+  const dirMap: Record<Direction, string> = { down: 'f', up: 'b', left: 'l', right: 'r' }
+  const hero = s.party[0]
+  if (hero) {
+    drawSprite(ctx, (SPRITES.hero as any)[dirMap[s.houseDir]], px, py, 1)
+  }
+}
+
+function drawHouseTile(ctx: CanvasRenderingContext2D, t: HouseTile, x: number, y: number) {
+  const s = TILE
+  switch (t) {
+    case 0: // 地板 - 木地板
+      ctx.fillStyle = '#7C4818'
+      ctx.fillRect(x, y, s, s)
+      // 木纹
+      ctx.fillStyle = '#5C2810'
+      ctx.fillRect(x, y, s, 1)
+      ctx.fillRect(x, y + 7, s, 1)
+      ctx.fillStyle = '#4C2010'
+      ctx.fillRect(x + 4, y + 2, 1, 5)
+      ctx.fillRect(x + 12, y + 9, 1, 5)
+      break
+    case 1: // 墙 - 米黄色墙
+      ctx.fillStyle = '#A87838'
+      ctx.fillRect(x, y, s, s)
+      // 墙纸纹理
+      ctx.fillStyle = '#8C5C28'
+      ctx.fillRect(x, y, s, 1)
+      ctx.fillRect(x, y + 8, s, 1)
+      ctx.fillRect(x + 4, y + 3, 1, 4)
+      ctx.fillRect(x + 11, y + 3, 1, 4)
+      break
+    case 2: // 床 - 2x2 tile 大件
+      // 此处只画床的一部分
+      drawSprite(ctx, SPRITES.furniture.bed, x, y, 1)
+      break
+    case 3: // 桌子
+      drawSprite(ctx, SPRITES.furniture.table, x, y, 1)
+      break
+    case 4: // 门
+      drawSprite(ctx, SPRITES.furniture.door, x, y, 1)
+      break
+    case 5: // 地毯
+      ctx.fillStyle = '#8C2818'
+      ctx.fillRect(x, y, s, s)
+      ctx.fillStyle = '#A82818'
+      // 菱形花纹
+      ctx.fillRect(x + 4, y + 4, 8, 1)
+      ctx.fillRect(x + 3, y + 5, 10, 1)
+      ctx.fillRect(x + 4, y + 6, 8, 1)
+      ctx.fillStyle = '#FCFCFC'
+      ctx.fillRect(x + 7, y + 7, 2, 2)
+      break
+    case 6: // 窗
+      drawSprite(ctx, SPRITES.furniture.window, x, y, 1)
+      break
+    case 7: // 椅子
+      drawSprite(ctx, SPRITES.furniture.chair, x, y, 1)
+      break
+    case 8: // 灯
+      drawSprite(ctx, SPRITES.furniture.lamp, x, y, 1)
+      // 灯光效果
+      if (Math.floor((Date.now() / 200) % 2) === 0) {
+        ctx.fillStyle = 'rgba(255, 220, 100, 0.15)'
+        ctx.fillRect(x - 8, y - 4, s + 16, s + 8)
+      }
+      break
+  }
+  // 房间底部阴影
+  if (t !== 4 && t !== 1) {
+    ctx.fillStyle = 'rgba(0,0,0,0.1)'
+    ctx.fillRect(x, y + s - 2, s, 2)
+  }
+}
+
+// 标记 house 模块函数供 GameCanvas 调用
+export { buildHouseInterior, HOUSE_W, HOUSE_H, isHouseWalkable, getNpcAt, FATHER_POS, PLAYER_START, DOOR_POS } from './house'
 
 function renderInterior(ctx: CanvasRenderingContext2D, s: RenderState, name: string) {
   const w = ctx.canvas.width
