@@ -31,6 +31,216 @@ html, body {
   border: 4px solid #ac7c5c;
 }
 
+/* 像素完美渲染 - 屏幕闪烁效果 */
+@keyframes screen-flash {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.screen-flash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  animation: screen-flash 0.2s ease-out;
+}
+
+/* 屏幕震动 */
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-2px, -1px); }
+  20% { transform: translate(2px, 1px); }
+  30% { transform: translate(-1px, 2px); }
+  40% { transform: translate(1px, -2px); }
+  50% { transform: translate(-2px, 1px); }
+  60% { transform: translate(2px, -1px); }
+  70% { transform: translate(-1px, 2px); }
+  80% { transform: translate(1px, -2px); }
+  90% { transform: translate(-2px, 1px); }
+}
+
+.screen-shake {
+  animation: screen-shake 0.3s ease-in-out;
+}
+
+/* 受伤闪烁 - 红色 */
+@keyframes damage-flash {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(255, 0, 0, 0.3); }
+}
+
+.damage-flash {
+  animation: damage-flash 0.3s ease-out;
+}
+
+/* 暴击 - 更强红色 */
+@keyframes critical-flash {
+  0% { background: rgba(255, 0, 0, 0.6); }
+  50% { background: rgba(255, 100, 0, 0.4); }
+  100% { background: transparent; }
+}
+
+.critical-flash {
+  animation: critical-flash 0.5s ease-out;
+}
+
+/* 治疗 - 绿色 */
+@keyframes heal-flash {
+  0% { background: rgba(0, 255, 0, 0.4); }
+  100% { background: transparent; }
+}
+
+.heal-flash {
+  animation: heal-flash 0.5s ease-out;
+}
+
+/* 战斗模式 - 黄色 */
+@keyframes battle-flash {
+  0%, 100% { background: transparent; }
+  50% { background: rgba(255, 200, 0, 0.3); }
+}
+
+.battle-flash {
+  animation: battle-flash 1s ease-in-out;
+}
+
+/* 进入城镇 - 蓝色 */
+@keyframes town-flash {
+  0% { background: rgba(100, 200, 255, 0.3); }
+  100% { background: transparent; }
+}
+
+.town-flash {
+  animation: town-flash 0.5s ease-out;
+}
+
+/* 全局色调变化 - 战斗 */
+.battle-tone {
+  filter: sepia(0.3) contrast(1.2) brightness(0.9);
+}
+
+/* 暗色调 - 夜晚 */
+.night-tone {
+  filter: brightness(0.5) hue-rotate(180deg);
+}
+
+/* 危险色调 - 红色警告 */
+.danger-tone {
+  filter: hue-rotate(-30deg) saturate(1.5);
+}
+
+/* 怀旧色调 - 后末日 */
+.wasteland-tone {
+  filter: sepia(0.4) saturate(1.2) contrast(1.1);
+}
+
+/* 角色状态动画 - 待机呼吸 */
+@keyframes character-idle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+
+.character-idle {
+  animation: character-idle 2s ease-in-out infinite;
+}
+
+/* 角色受伤闪烁 */
+@keyframes character-damage {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.character-damage {
+  animation: character-damage 0.2s ease-in-out 3;
+}
+
+/* 角色防御姿势 */
+@keyframes character-guard {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.95); }
+}
+
+.character-guard {
+  animation: character-guard 0.5s ease-in-out infinite;
+}
+
+/* 死亡淡出 */
+@keyframes character-die {
+  0% { opacity: 1; transform: rotate(0deg); }
+  100% { opacity: 0; transform: rotate(90deg); }
+}
+
+.character-die {
+  animation: character-die 1s ease-out forwards;
+}
+
+/* 攻击挥动 */
+@keyframes character-attack {
+  0% { transform: translateX(0) rotate(0deg); }
+  50% { transform: translateX(4px) rotate(15deg); }
+  100% { transform: translateX(0) rotate(0deg); }
+}
+
+.character-attack {
+  animation: character-attack 0.3s ease-in-out;
+}
+
+/* 像素艺术文本 - 抖动效果 */
+@keyframes text-shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px); }
+  75% { transform: translateX(1px); }
+}
+
+.text-shake {
+  animation: text-shake 0.1s ease-in-out infinite;
+}
+
+/* UI 弹出动画 */
+@keyframes ui-popup {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.ui-popup {
+  animation: ui-popup 0.3s ease-out;
+}
+
+/* 对话框淡入 */
+@keyframes dialog-fade-in {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.dialog-fade-in {
+  animation: dialog-fade-in 0.5s ease-out;
+}
+
+/* 菜单滑入 */
+@keyframes menu-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+.menu-slide {
+  animation: menu-slide 0.4s ease-out;
+}
+
+/* 战斗指令选择 */
+@keyframes command-cursor {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+}
+
+.command-cursor {
+  animation: command-cursor 0.5s ease-in-out infinite;
+}
+
 #fc-controller {
   position: fixed;
   bottom: 20px;
