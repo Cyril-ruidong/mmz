@@ -2,14 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'PressStart';
-  src: local('Press Start 2P'), local('VT323');
+@viewport {
+  width: device-width;
+  initial-scale: 1.0;
+  maximum-scale: 1.0;
+  user-scalable: no;
 }
 
 html, body, #root {
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
   margin: 0;
   padding: 0;
   background: #000;
@@ -20,6 +25,11 @@ html, body, #root {
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
+  touch-action: none;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 canvas {

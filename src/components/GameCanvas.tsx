@@ -9,10 +9,28 @@ import { TouchControls } from './TouchControls'
 
 const LOGICAL_W = 256
 const LOGICAL_H = 224
-const SCALE = 3
+const ASPECT = LOGICAL_W / LOGICAL_H // 8:7
+
+function fitScale(vw: number, vh: number, isTouch: boolean) {
+  // 触屏设备需要为方向键留出空间
+  const reservedY = isTouch ? 180 : 0
+  const reservedX = 0
+  const availW = vw - reservedX
+  const availH = vh - reservedY
+  // 优先取整数倍缩放（2x / 3x / 4x），保持像素锐利
+  const maxByW = Math.floor(availW / LOGICAL_W)
+  const maxByH = Math.floor(availH / LOGICAL_H)
+  const maxScale = Math.max(1, Math.min(maxByW, maxByH))
+  return Math.min(maxScale, 4)
+}
 
 export function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(3)
+  const [vw, setVw] = useState(typeof window !== 'undefined' ? window.innerWidth : 1024)
+  const [vh, setVh] = useState(typeof window !== 'undefined' ? window.innerHeight : 768)
+  const [isTouch, setIsTouch] = useState(false)
   const stateRef = useRef<RenderState>({
     scene: 'title',
     party: [],
@@ -285,28 +303,50 @@ export function GameCanvas() {
     }
   }, [input.state])
 
-  const [isTouch, setIsTouch] = useState(false)
+  const [isTouchLocal, setIsTouch] = useState(false)
   useEffect(() => {
-    setIsTouch(typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0))
+    const check = () => {
+      const w = window.innerWidth
+      const h = window.innerHeight
+      const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      setVw(w)
+      setVh(h)
+      setIsTouch(touch)
+      setIsTouchLocal(touch)
+      setScale(fitScale(w, h, touch))
+    }
+    check()
+    window.addEventListener('resize', check)
+    window.addEventListener('orientationchange', check)
+    return () => {
+      window.removeEventListener('resize', check)
+      window.removeEventListener('orientationchange', check)
+    }
   }, [])
 
+  const displayW = LOGICAL_W * scale
+  const displayH = LOGICAL_H * scale
+
   return (
-    <div className="w-full h-full bg-black flex flex-col items-center justify-center overflow-hidden">
+    <div
+      ref={containerRef}
+      className="w-full h-full bg-black flex flex-col items-center justify-center overflow-hidden relative"
+    >
       <div
-        className="relative"
+        className="relative flex-shrink-0"
         style={{
-          width: LOGICAL_W * SCALE,
-          height: LOGICAL_H * SCALE,
+          width: displayW,
+          height: displayH,
           maxWidth: '100vw',
-          maxHeight: isTouch ? 'calc(100vh - 200px)' : '100vh',
+          maxHeight: isTouchLocal ? 'calc(100vh - 180px)' : '100vh',
         }}
       >
         <canvas
           ref={canvasRef}
           className="block"
           style={{
-            width: LOGICAL_W * SCALE,
-            height: LOGICAL_H * SCALE,
+            width: displayW,
+            height: displayH,
             imageRendering: 'pixelated',
             boxShadow: '0 0 0 4px #1C3878, 0 0 0 8px #000000',
           }}
@@ -314,19 +354,21 @@ export function GameCanvas() {
         {useGameStore((s) => s.dialog) && (
           <div
             className="absolute left-1/2 -translate-x-1/2 bg-blue-900 border-2 border-white p-2 font-pixel text-white"
-            style={{ bottom: 8, width: LOGICAL_W * SCALE - 16, fontSize: 10, textShadow: '1px 1px 0 #000' }}
+            style={{ bottom: 8, width: displayW - 16, fontSize: 10, textShadow: '1px 1px 0 #000' }}
           >
             {useGameStore.getState().dialog?.text}
           </div>
         )}
       </div>
-      {isTouch && (
-        <TouchControls
-          onDir={input.setDir}
-          onConfirm={() => input.press('confirm')}
-          onCancel={() => input.press('cancel')}
-          onMenu={() => input.press('menu')}
-        />
+      {isTouchLocal && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+          <TouchControls
+            onDir={input.setDir}
+            onConfirm={() => input.press('confirm')}
+            onCancel={() => input.press('cancel')}
+            onMenu={() => input.press('menu')}
+          />
+        </div>
       )}
     </div>
   )
