@@ -1,0 +1,1411 @@
+{
+  "ok": true,
+  "identity": "user",
+  "data": {
+    "has_more": true,
+    "messages": [
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "一周编译失败 buffer ",
+        "create_time": "2026-06-23 02:32",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1209",
+        "message_id": "om_x100b6cab4d21e8bcb1c81c762850b7f",
+        "message_position": "1209",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@陈锐东 五方计划7月份后没有什么内容了，目前我们要敲定的事你这里面的计划目前的完成程度，以及后续的计划",
+        "create_time": "2026-06-23 02:37",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+            "key": "@_user_1",
+            "name": "陈锐东"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=81",
+        "message_id": "om_x100b6cab5b77f4acc4fe5d956952736",
+        "message_position": "81",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cb9372084b0c2c26af7fea52bb",
+        "sender": {
+          "id": "ou_389cfb97557cd46e0bed7c21174b15df",
+          "id_type": "open_id",
+          "name": "史晓丹",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:37",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@史晓丹 五方计划先对一下",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_389cfb97557cd46e0bed7c21174b15df",
+            "key": "@_user_1",
+            "name": "史晓丹"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=77",
+        "message_id": "om_x100b6cab4668448cb36fa962f70f571",
+        "message_position": "77",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:33",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@陈锐东 8538 是5月底底软全功能，8838是6月底底软全功能",
+        "create_time": "2026-06-23 02:36",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+            "key": "@_user_1",
+            "name": "陈锐东"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=79",
+        "message_id": "om_x100b6cab5ad1e8a0b21f561a1cccd63",
+        "message_position": "79",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab44b2c4b0b04561eedfd0f68",
+        "sender": {
+          "id": "ou_6df87b19d790cb4ae72b267eae0addbf",
+          "id_type": "open_id",
+          "name": "许子华",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:36",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_8374dc8162714745c6a85b2385ef1d73",
+        "chat_name": "【A02GH/X66】全国产项目开发测试沟通群",
+        "chat_type": "group",
+        "content": "\u003ccard title=\"【A02GH\u0026X66缺陷分析】\"\u003e\n@everyone\n**洞察与建议**\n- 遗留严重缺陷5条、遗留客户问题16条、遗留缺陷42条，需排查原因、分类梳理，制定整改和解决计划。\n- “滞留超3个工作日”35条、“滞留超10个工作日”中智驾出行和底软系统业务线多，排查滞留原因，优化流程。\n- 本周提交和客户反馈仅1条、本周关闭0条，分析业务量或流程阻碍，排查提交渠道和问题处理流程。\n- 缺陷趋势周新增缺陷有异常值，加强新增缺陷管控。\n- 滞留超3个工作日处理人广研_罗科记录多，评估负荷优化流程，推广广研唐涛等高效方法。\n🖼️ Image(img_key:img_v3_0212u_8a35b598-363c-47a9-8529-11ec5a6fab7g)\n[打开仪表盘](https://gee824sa6t.feishu.cn/base/DjgDbNjp6aD9N1sMxKVc7vhcnLg?table=blk0Gnv0RacHs15U\u0026ccm_open_type=im_card_automation_button)\n---\n来自 [测试部缺陷分析工具](https://gee824sa6t.feishu.cn/base/DjgDbNjp6aD9N1sMxKVc7vhcnLg?ccm_open_type=im_card_automation_link)\n\u003c/card\u003e",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_8374dc8162714745c6a85b2385ef1d73\u0026position=6900",
+        "message_id": "om_x100b6cab485b58b8b30bc3148a10ac5",
+        "message_position": "6900",
+        "msg_type": "interactive",
+        "sender": {
+          "id": "cli_a136ebe23478900b",
+          "id_type": "app_id",
+          "sender_type": "app",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "那不是计划又延期了",
+        "create_time": "2026-06-23 02:37",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=972",
+        "message_id": "om_x100b6cab59bd90a8c108276987c185b",
+        "message_position": "972",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+          "id_type": "open_id",
+          "name": "吴鹏大",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "版本释放时间定一个",
+        "create_time": "2026-06-23 02:31",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1204",
+        "message_id": "om_x100b6cab4e079cb0c2dae438dae20af",
+        "message_position": "1204",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@陈锦文 usb升级验证了哪些是通过的，还有那些没提测",
+        "create_time": "2026-06-23 02:36",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_8bc51e37e0cc1eb52a46f59605e4ae2d",
+            "key": "@_user_1",
+            "name": "陈锦文"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=969",
+        "message_id": "om_x100b6cab5c0ab034c22c7feaf02fbc7",
+        "message_position": "969",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+          "id_type": "open_id",
+          "name": "吴鹏大",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:36",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "平台 8.26 拉 release 分支",
+        "create_time": "2026-06-23 02:37",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1216",
+        "message_id": "om_x100b6cab58f334e4c3a9d560c834281",
+        "message_position": "1216",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:37",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "往前排就好",
+        "create_time": "2026-06-23 02:31",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1205",
+        "message_id": "om_x100b6cab4fd3f090c49772f3185c39b",
+        "message_position": "1205",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "\u003cfile key=\"file_v3_0012u_bf3f3b7a-46c6-497a-84e6-d951ec48bf8g\" name=\"init.zip\"/\u003e",
+        "create_time": "2026-06-23 02:48",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=982",
+        "message_id": "om_x100b6cab707ca0b8c342fedf2e49069",
+        "message_position": "982",
+        "msg_type": "file",
+        "sender": {
+          "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+          "id_type": "open_id",
+          "name": "罗能强",
+          "sender_type": "user",
+          "tenant_key": "17c7f2f922dcd75f"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "这是最顺利的版本情况",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1211",
+        "message_id": "om_x100b6cab49535880c2b517e3f32bedd",
+        "message_position": "1211",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@Zephyr Chen 陈泽明",
+        "create_time": "2026-06-23 02:49",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_08d5efc8ea720461436d0b8065c5d1a4",
+            "key": "@_user_1",
+            "name": "Zephyr Chen 陈泽明"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=983",
+        "message_id": "om_x100b6cab0d1b8cb4c4af231e54165cb",
+        "message_position": "983",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+          "id_type": "open_id",
+          "name": "罗能强",
+          "sender_type": "user",
+          "tenant_key": "17c7f2f922dcd75f"
+        },
+        "update_time": "2026-06-23 02:49",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "830都装车了。。",
+        "create_time": "2026-06-23 02:31",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1202",
+        "message_id": "om_x100b6caab074e8a4b1b825cb5fca4a1",
+        "message_position": "1202",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_c579ceacaf7559e3098230c55faab131",
+          "id_type": "open_id",
+          "name": "曹秋兵",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@吴鹏大 @陈锦文 这个是星河的模块，帮忙指导一下",
+        "create_time": "2026-06-23 02:34",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+            "key": "@_user_1",
+            "name": "吴鹏大"
+          },
+          {
+            "id": "ou_8bc51e37e0cc1eb52a46f59605e4ae2d",
+            "key": "@_user_2",
+            "name": "陈锦文"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=966",
+        "message_id": "om_x100b6cab455040a0c0514f9ce83ae0b",
+        "message_position": "966",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab47ff2480c3f680e95d2b685",
+        "sender": {
+          "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+          "id_type": "open_id",
+          "name": "罗能强",
+          "sender_type": "user",
+          "tenant_key": "17c7f2f922dcd75f"
+        },
+        "update_time": "2026-06-23 02:34",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_057952bbbc5d6b48fc5397a4b71a9024",
+        "chat_name": "T75研发测试沟通群",
+        "chat_type": "group",
+        "content": "\u003ccard title=\"T75项目缺陷分析\"\u003e\n**洞察与建议**\n- 遗留缺陷 391 个，需分类梳理，分析成因，优先处理关键缺陷，避免新缺陷产生。\n- 本周新增 411 个缺陷，要分析来源，制定改进措施。\n- 遗留严重缺陷 - A 有 32 个，组织专项团队排查修复。\n- 超 20 天未解决问题 8 个，分析超期原因，建立跟踪机制。\n- 重新打开问题 4 个，排查原因，完善解决方案，防止反复。\n[打开仪表盘](https://gee824sa6t.feishu.cn/base/VfJSbg7P0aI33CsvNtEcZ1vXn9b?table=blkSD0AUyV0QJ2Fq\u0026ccm_open_type=im_card_automation_button)\n---\n来自 [T75项目缺陷分析](https://gee824sa6t.feishu.cn/base/VfJSbg7P0aI33CsvNtEcZ1vXn9b?ccm_open_type=im_card_automation_link)\n\u003c/card\u003e",
+        "create_time": "2026-06-23 02:31",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_057952bbbc5d6b48fc5397a4b71a9024\u0026position=3086",
+        "message_id": "om_x100b6caab10c24d4c4f76e8e2693c8d",
+        "message_position": "3086",
+        "msg_type": "interactive",
+        "sender": {
+          "id": "cli_a87f7271a42b100e",
+          "id_type": "app_id",
+          "sender_type": "app",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "全功能版本要匹配一下 max 平台 3.6.7",
+        "create_time": "2026-06-23 02:36",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1214",
+        "message_id": "om_x100b6cab5c0864b8b48787402e39429",
+        "message_position": "1214",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@Huan Gu 顾焕 Hi 焕哥，帮忙看看这个是不是所需要的？",
+        "create_time": "2026-06-23 02:35",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_a8aee1de4b93c7e10a40bf8d6c42b912",
+            "key": "@_user_1",
+            "name": "Huan Gu 顾焕"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=967",
+        "message_id": "om_x100b6cab4310e888c2622db205d13bd",
+        "message_position": "967",
+        "msg_type": "text",
+        "reply_to": "om_x100b6c17f5cc88b8b4cd64b2cc42153",
+        "sender": {
+          "id": "ou_08d5efc8ea720461436d0b8065c5d1a4",
+          "id_type": "open_id",
+          "name": "Zephyr Chen 陈泽明",
+          "sender_type": "user",
+          "tenant_key": "149d187ced02d75d"
+        },
+        "update_time": "2026-06-23 02:35",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@全筱宇 筱宇看下",
+        "create_time": "2026-06-23 02:37",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_8699798c22aef30665eb6e0175a7b005",
+            "key": "@_user_1",
+            "name": "全筱宇"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=971",
+        "message_id": "om_x100b6cab59e8b0bcb324354fa1639c5",
+        "message_position": "971",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab47ff2480c3f680e95d2b685",
+        "sender": {
+          "id": "ou_c579ceacaf7559e3098230c55faab131",
+          "id_type": "open_id",
+          "name": "曹秋兵",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:37",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "@邱钟杰 715 提测",
+        "create_time": "2026-06-23 02:31",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_77fcac8627200161c746f85ddafecd38",
+            "key": "@_user_1",
+            "name": "邱钟杰"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1206",
+        "message_id": "om_x100b6cab4f6460a8b3205d5b99b54d3",
+        "message_position": "1206",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab4e079cb0c2dae438dae20af",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:31",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@曹秋兵 整包升级的话 后面是.zip结尾的都能识别",
+        "create_time": "2026-06-23 02:39",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_c579ceacaf7559e3098230c55faab131",
+            "key": "@_user_1",
+            "name": "曹秋兵"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=974",
+        "message_id": "om_x100b6cab511cc8acc4f77612567c2d1",
+        "message_position": "974",
+        "msg_type": "text",
+        "reactions": {
+          "counts": [
+            {
+              "count": "1",
+              "reaction_type": "Get"
+            }
+          ],
+          "details": [
+            {
+              "action_time": "1782182479",
+              "emoji_type": "Get",
+              "operator": {
+                "operator_id": "ou_c579ceacaf7559e3098230c55faab131",
+                "operator_type": "user"
+              }
+            }
+          ]
+        },
+        "reply_to": "om_x100b6cab59e8b0bcb324354fa1639c5",
+        "sender": {
+          "id": "ou_8699798c22aef30665eb6e0175a7b005",
+          "id_type": "open_id",
+          "name": "全筱宇",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:39",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "那个是基础，按计划五月底要做完，现在延期到什么时候，下午先搞清楚这个事情@史晓丹 ",
+        "create_time": "2026-06-23 02:34",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_389cfb97557cd46e0bed7c21174b15df",
+            "key": "@_user_1",
+            "name": "史晓丹"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=78",
+        "message_id": "om_x100b6cab44b2c4b0b04561eedfd0f68",
+        "message_position": "78",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:34",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_d431b70cac4228fc89abee5738f62c5a",
+        "chat_name": "【AY系列国产化平台】研发沟通超级群",
+        "chat_type": "group",
+        "content": "\u003ccard title=\"【T51\u0026A5R\u00263588_T51_M1缺陷统计分析】\"\u003e\n@everyone\n**【T51\u0026A5R项目缺陷统计分析】**\n**洞察与建议**\n- 本周关闭问题仅2个，可能是问题少或解决效率低，需检查解决流程，提升团队能力。\n- 滞留超3工作日问题229条、售后62条、遗留严重缺陷34条、无版本验证缺陷5条、本周新增59条、广研名下80条、客户反馈156条、本周客户反馈19条、可验证缺陷57条，需深入排查原因，建立预警、跟踪机制，分类统计，制定修复和整改计划。\n🖼️ Image(img_key:img_v3_0212u_f4880376-c3f5-4b04-af7c-8a7c303b44dg)\n\n**【3588_T51_M1项目缺陷统计分析】**\n**洞察与建议**\n- 滞留超3个工作日问题达114条，可能因流程繁琐、人员衔接不畅，需排查原因并制定优化方案。\n- 本周新增问题33个，应深入排查是流程、人员操作或外部环境因素导致，分类优先处理紧急问题。\n- 遗留严重缺陷30个、客户反馈问题59个等，需深入分析分类，明确原因并制定整改计划。\n- 对比本周关闭问题7个与上周数量，有变化则分析原因，总结经验或解决阻碍因素。\n🖼️ Image(img_key:img_v3_0212u_67882396-88d2-4e4d-831a-d93a91b0a02g)\n\n\n[T51\u0026A5R缺陷统计分析](https://gee824sa6t.feishu.cn/base/DjgDbNjp6aD9N1sMxKVc7vhcnLg?table=blkkmN1xfr5Lnjad\u0026ccm_open_type=im_card_automation_button) [3588_T51_M1缺陷统计分析](https://gee824sa6t.feishu.cn/base/DjgDbNjp6aD9N1sMxKVc7vhcnLg?table=blk64r9V8vsUs1Y1\u0026ccm_open_type=im_card_automation_button)\n---\n来自 [测试部缺陷分析工具](https://gee824sa6t.feishu.cn/base/DjgDbNjp6aD9N1sMxKVc7vhcnLg?ccm_open_type=im_card_automation_link)\n\u003c/card\u003e",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_d431b70cac4228fc89abee5738f62c5a\u0026position=18378",
+        "message_id": "om_x100b6cab49d660b0b14f5f63587ee25",
+        "message_position": "18378",
+        "msg_type": "interactive",
+        "sender": {
+          "id": "cli_a136ebe23478900b",
+          "id_type": "app_id",
+          "sender_type": "app",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@陈锐东 问题是你现在六月底并没有完成底软全功能啊，目前只是VH装车的功能，还没有完全完成，所以要看一下 距离底软全功能还有哪些工作要做",
+        "create_time": "2026-06-23 02:39",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+            "key": "@_user_1",
+            "name": "陈锐东"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=82",
+        "message_id": "om_x100b6cab5397e8f8c18f184ae6bd5a8",
+        "message_position": "82",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab5bd1ccb8b103571f6434914",
+        "sender": {
+          "id": "ou_389cfb97557cd46e0bed7c21174b15df",
+          "id_type": "open_id",
+          "name": "史晓丹",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:39",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "指定得集成到最后一天",
+        "create_time": "2026-06-23 02:31",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1203",
+        "message_id": "om_x100b6caab0298884b2982d1408b1360",
+        "message_position": "1203",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@吴鹏大 现在都没提测。。",
+        "create_time": "2026-06-23 02:37",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+            "key": "@_user_1",
+            "name": "吴鹏大"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=970",
+        "message_id": "om_x100b6cab5a0868a8b2661990807ec39",
+        "message_position": "970",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab5c0ab034c22c7feaf02fbc7",
+        "sender": {
+          "id": "ou_c579ceacaf7559e3098230c55faab131",
+          "id_type": "open_id",
+          "name": "曹秋兵",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:37",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "[Image: img_v3_0212u_047ad5b9-5b9d-4f95-8aea-8a828a7c566g]",
+        "create_time": "2026-06-23 02:48",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=981",
+        "message_id": "om_x100b6cab708904b4c4275b1034e19ce",
+        "message_position": "981",
+        "msg_type": "image",
+        "sender": {
+          "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+          "id_type": "open_id",
+          "name": "罗能强",
+          "sender_type": "user",
+          "tenant_key": "17c7f2f922dcd75f"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "那就是 713 集成， 714 点检，715 提测",
+        "create_time": "2026-06-23 02:32",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1208",
+        "message_id": "om_x100b6cab4d1da0e0c3b7906cbae4c9f",
+        "message_position": "1208",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@许子华 六月底也行",
+        "create_time": "2026-06-23 02:37",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_6df87b19d790cb4ae72b267eae0addbf",
+            "key": "@_user_1",
+            "name": "许子华"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=80",
+        "message_id": "om_x100b6cab5bd1ccb8b103571f6434914",
+        "message_position": "80",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:37",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_168f9a7dfa196d9a32499043783b333f",
+        "chat_name": "IDC功能安全三方群（立昇-星河-镁佳）",
+        "chat_type": "group",
+        "content": "@胡党杰 /log/andriod_log/mcu_log   下面的log文件看下里程有保存（mcu有打印里程的前提下）吗？",
+        "create_time": "2026-06-23 02:45",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_91f9ea887b6a40e3cfff05e83a16bb2d",
+            "key": "@_user_1",
+            "name": "胡党杰"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_168f9a7dfa196d9a32499043783b333f\u0026position=1027",
+        "message_id": "om_x100b6cab7c24f4a8b10b74a98386a11",
+        "message_position": "1027",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_318ec09657de6bb036096a7e702f149c",
+          "id_type": "open_id",
+          "name": "史昌红",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:45",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "[比心]感谢",
+        "create_time": "2026-06-23 02:49",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=984",
+        "message_id": "om_x100b6cab0a05dca4c3108a53e073a99",
+        "message_position": "984",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_08d5efc8ea720461436d0b8065c5d1a4",
+          "id_type": "open_id",
+          "name": "Zephyr Chen 陈泽明",
+          "sender_type": "user",
+          "tenant_key": "149d187ced02d75d"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_9a6e7dd60e3f6647f1e588d14d2588c4",
+        "chat_name": "V20仓库问题",
+        "chat_type": "group",
+        "content": "@许子华    今天晚上要集成vh版本的全需求版本，你mcu需要rn + 自测报告，邮件发出来，配合mcu软件产物",
+        "create_time": "2026-06-23 02:43",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_6df87b19d790cb4ae72b267eae0addbf",
+            "key": "@_user_1",
+            "name": "许子华"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_9a6e7dd60e3f6647f1e588d14d2588c4\u0026position=2871",
+        "message_id": "om_x100b6cab608008b4b21329a09023b09",
+        "message_position": "2871",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_c579ceacaf7559e3098230c55faab131",
+          "id_type": "open_id",
+          "name": "曹秋兵",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:43",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@吴鹏大 看下这个",
+        "create_time": "2026-06-23 02:32",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+            "key": "@_user_1",
+            "name": "吴鹏大"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=964",
+        "message_id": "om_x100b6cab4c33ac8cb29f143d2e8aa71",
+        "message_position": "964",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cbb9029c0a0c44bfae8b77e1d8",
+        "sender": {
+          "id": "ou_c579ceacaf7559e3098230c55faab131",
+          "id_type": "open_id",
+          "name": "曹秋兵",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:32",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "706 底软全功能",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1210",
+        "message_id": "om_x100b6cab4b07eca4c1bf8ba74c08ec4",
+        "message_position": "1210",
+        "msg_type": "text",
+        "reactions": {
+          "counts": [
+            {
+              "count": "1",
+              "reaction_type": "CheckMark"
+            }
+          ],
+          "details": [
+            {
+              "action_time": "1782181986",
+              "emoji_type": "CheckMark",
+              "operator": {
+                "operator_id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+                "operator_type": "user"
+              }
+            }
+          ]
+        },
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@吴鹏大 不是延期  是毫无计划。。",
+        "create_time": "2026-06-23 02:38",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+            "key": "@_user_1",
+            "name": "吴鹏大"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=973",
+        "message_id": "om_x100b6cab5648c48cb4b5de73036f14c",
+        "message_position": "973",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab59bd90a8c108276987c185b",
+        "sender": {
+          "id": "ou_c579ceacaf7559e3098230c55faab131",
+          "id_type": "open_id",
+          "name": "曹秋兵",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:38",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "708 底软集成",
+        "create_time": "2026-06-23 02:32",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1207",
+        "message_id": "om_x100b6cab4d9544b8b321dc42fdd6ef6",
+        "message_position": "1207",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "[捂脸][捂脸][捂脸]",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1212",
+        "message_id": "om_x100b6cab4926fc90c42feb83c749a69",
+        "message_position": "1212",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@史昌红 @许子华 @陈锐东 @曹秋兵 @邱钟杰@王占能  @鲁帅 @冯其高 已约今天下午两点会议讨论，请各位相关人员准时参加\n史晓丹邀请你加入飞书视频会议\n会议主题：底软全功能待办事项讨论\n会议时间：6月23日 (今天) 14:00 - 17:00 (GMT+8)\n会议 ID：472 953 868\n会议链接：https://vc.feishu.cn/j/472953868",
+        "create_time": "2026-06-23 02:46",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_318ec09657de6bb036096a7e702f149c",
+            "key": "@_user_1",
+            "name": "史昌红"
+          },
+          {
+            "id": "ou_6df87b19d790cb4ae72b267eae0addbf",
+            "key": "@_user_2",
+            "name": "许子华"
+          },
+          {
+            "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+            "key": "@_user_3",
+            "name": "陈锐东"
+          },
+          {
+            "id": "ou_c579ceacaf7559e3098230c55faab131",
+            "key": "@_user_4",
+            "name": "曹秋兵"
+          },
+          {
+            "id": "ou_77fcac8627200161c746f85ddafecd38",
+            "key": "@_user_5",
+            "name": "邱钟杰"
+          },
+          {
+            "id": "ou_df448c90db9c88247db9a90eefbe45f8",
+            "key": "@_user_6",
+            "name": "王占能"
+          },
+          {
+            "id": "ou_19354d8aa5f67db4fad5e11c16e5640c",
+            "key": "@_user_7",
+            "name": "鲁帅"
+          },
+          {
+            "id": "ou_bd39c9ee895436e256b28bb98210d1a2",
+            "key": "@_user_8",
+            "name": "冯其高"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=83",
+        "message_id": "om_x100b6cab79002484c29de3852d2575d",
+        "message_position": "83",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab49944c80c24d2181c179721",
+        "sender": {
+          "id": "ou_389cfb97557cd46e0bed7c21174b15df",
+          "id_type": "open_id",
+          "name": "史晓丹",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:48",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@史昌红 @许子华 @陈锐东 @曹秋兵 @邱钟杰@王占能  @鲁帅 @冯其高 那我约个下午两点的会，锐东，如果你那边没时间参加，让底软负责人和架构师参会。",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_318ec09657de6bb036096a7e702f149c",
+            "key": "@_user_1",
+            "name": "史昌红"
+          },
+          {
+            "id": "ou_6df87b19d790cb4ae72b267eae0addbf",
+            "key": "@_user_2",
+            "name": "许子华"
+          },
+          {
+            "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+            "key": "@_user_3",
+            "name": "陈锐东"
+          },
+          {
+            "id": "ou_c579ceacaf7559e3098230c55faab131",
+            "key": "@_user_4",
+            "name": "曹秋兵"
+          },
+          {
+            "id": "ou_77fcac8627200161c746f85ddafecd38",
+            "key": "@_user_5",
+            "name": "邱钟杰"
+          },
+          {
+            "id": "ou_df448c90db9c88247db9a90eefbe45f8",
+            "key": "@_user_6",
+            "name": "王占能"
+          },
+          {
+            "id": "ou_19354d8aa5f67db4fad5e11c16e5640c",
+            "key": "@_user_7",
+            "name": "鲁帅"
+          },
+          {
+            "id": "ou_bd39c9ee895436e256b28bb98210d1a2",
+            "key": "@_user_8",
+            "name": "冯其高"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=76",
+        "message_id": "om_x100b6cab49944c80c24d2181c179721",
+        "message_position": "76",
+        "msg_type": "text",
+        "reactions": {
+          "counts": [
+            {
+              "count": "1",
+              "reaction_type": "Get"
+            }
+          ],
+          "details": [
+            {
+              "action_time": "1782182018",
+              "emoji_type": "Get",
+              "operator": {
+                "operator_id": "ou_c579ceacaf7559e3098230c55faab131",
+                "operator_type": "user"
+              }
+            }
+          ]
+        },
+        "reply_to": "om_x100b6caafc3e94acc28f09d98ba3420",
+        "sender": {
+          "id": "ou_389cfb97557cd46e0bed7c21174b15df",
+          "id_type": "open_id",
+          "name": "史晓丹",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:33",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@吴鹏大 我这边是推到板子里，手动触发的",
+        "create_time": "2026-06-23 02:35",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+            "key": "@_user_1",
+            "name": "吴鹏大"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=968",
+        "message_id": "om_x100b6cab4331a480c36bbb437b18c61",
+        "message_position": "968",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+          "id_type": "open_id",
+          "name": "罗能强",
+          "sender_type": "user",
+          "tenant_key": "17c7f2f922dcd75f"
+        },
+        "update_time": "2026-06-23 02:35",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "全功能节点应该是 8.26",
+        "create_time": "2026-06-23 02:37",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1215",
+        "message_id": "om_x100b6cab5be44cb0c1d11c6c6d0665c",
+        "message_position": "1215",
+        "msg_type": "text",
+        "sender": {
+          "id": "ou_77fcac8627200161c746f85ddafecd38",
+          "id_type": "open_id",
+          "name": "邱钟杰",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "@邱钟杰  所以我们 815 释放版本是 ok ",
+        "create_time": "2026-06-23 02:38",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_77fcac8627200161c746f85ddafecd38",
+            "key": "@_user_1",
+            "name": "邱钟杰"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1217",
+        "message_id": "om_x100b6cab5438fc94b3f3ad968d62102",
+        "message_position": "1217",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab58f334e4c3a9d560c834281",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:38",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_efc7380ec7d213721456db4ab452a0c4",
+        "chat_name": "V20版计划评审",
+        "chat_type": "group",
+        "content": "@曾心玥 安排参加一下这个计划会",
+        "create_time": "2026-06-23 02:48",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_8d4fd472212f8384473918e899b2cd94",
+            "key": "@_user_1",
+            "name": "曾心玥"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_efc7380ec7d213721456db4ab452a0c4\u0026position=85",
+        "message_id": "om_x100b6cab7333bc94b14ea23420f4d59",
+        "message_position": "85",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab79002484c29de3852d2575d",
+        "sender": {
+          "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+          "id_type": "open_id",
+          "name": "陈锐东",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:48",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@罗能强 罗工，这是VENDOR侧的init代码，麻烦提供下QSSI侧的init的代码[比心]",
+        "create_time": "2026-06-23 02:45",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+            "key": "@_user_1",
+            "name": "罗能强"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=979",
+        "message_id": "om_x100b6cab7c0bf8a8c499461e4143cd2",
+        "message_position": "979",
+        "msg_type": "text",
+        "reply_to": "om_x100b6c17f5cc88b8b4cd64b2cc42153",
+        "sender": {
+          "id": "ou_08d5efc8ea720461436d0b8065c5d1a4",
+          "id_type": "open_id",
+          "name": "Zephyr Chen 陈泽明",
+          "sender_type": "user",
+          "tenant_key": "149d187ced02d75d"
+        },
+        "update_time": "2026-06-23 02:45",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "现在这个版本 U盘和 /data/update 都会识别 方便调试 后面没问题了 会把 /data/update 给删掉只保留 U盘路径",
+        "create_time": "2026-06-23 02:44",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=978",
+        "message_id": "om_x100b6cab6167b8a0c295e8416b6a367",
+        "message_position": "978",
+        "msg_type": "text",
+        "reactions": {
+          "counts": [
+            {
+              "count": "1",
+              "reaction_type": "THUMBSUP"
+            }
+          ],
+          "details": [
+            {
+              "action_time": "1782182664",
+              "emoji_type": "THUMBSUP",
+              "operator": {
+                "operator_id": "ou_c579ceacaf7559e3098230c55faab131",
+                "operator_type": "user"
+              }
+            }
+          ]
+        },
+        "sender": {
+          "id": "ou_8699798c22aef30665eb6e0175a7b005",
+          "id_type": "open_id",
+          "name": "全筱宇",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_e9e2e997679a2e1f76a1228394ecc098",
+        "chat_name": "V20-PM\u0026TPM群",
+        "chat_type": "group",
+        "content": "@陈锐东 \n![Image](img_v3_0212u_b2fbf1c2-7c27-4d58-9442-3278d548b3eg)\n版本计划做到830  s.e都没了",
+        "create_time": "2026-06-23 02:35",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_46c22ce23622e2d5a1e83548f20422b5",
+            "key": "@_user_1",
+            "name": "陈锐东"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_e9e2e997679a2e1f76a1228394ecc098\u0026position=1213",
+        "message_id": "om_x100b6cab5e8520e0b48711323df3d55",
+        "message_position": "1213",
+        "msg_type": "post",
+        "reply_to": "om_x100b6caab342aca8b11c09540214570",
+        "sender": {
+          "id": "ou_c579ceacaf7559e3098230c55faab131",
+          "id_type": "open_id",
+          "name": "曹秋兵",
+          "sender_type": "user",
+          "tenant_key": "1145d75aa01e975e"
+        },
+        "update_time": "2026-06-23 02:35",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@罗能强 /data/update/usbupdate/\n你是push 升级文件到这个路径验证升级是成功的是嘛",
+        "create_time": "2026-06-23 02:40",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+            "key": "@_user_1",
+            "name": "罗能强"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=975",
+        "message_id": "om_x100b6cab6fe5b8a8c35446a9d0e943e",
+        "message_position": "975",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab4331a480c36bbb437b18c61",
+        "sender": {
+          "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+          "id_type": "open_id",
+          "name": "吴鹏大",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "update_time": "2026-06-23 02:40",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@吴鹏大 我是用的我自己的升级测试程序，最终会拷贝到/data/update。@全筱宇 你这边如果是推包的话，可以识别哪些目录？你这边可以用的话，我就把我的测试app去掉了",
+        "create_time": "2026-06-23 02:42",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+            "key": "@_user_1",
+            "name": "吴鹏大"
+          },
+          {
+            "id": "ou_8699798c22aef30665eb6e0175a7b005",
+            "key": "@_user_2",
+            "name": "全筱宇"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=977",
+        "message_id": "om_x100b6cab65c14cb0c3caeaf817485ee",
+        "message_position": "977",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cab6fe5b8a8c35446a9d0e943e",
+        "sender": {
+          "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+          "id_type": "open_id",
+          "name": "罗能强",
+          "sender_type": "user",
+          "tenant_key": "17c7f2f922dcd75f"
+        },
+        "update_time": "2026-06-23 02:42",
+        "updated": true
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@罗能强 usb升级路径是读u盘根目录，升级包文件以USB_GAC开头，这个对吧",
+        "create_time": "2026-06-23 02:33",
+        "deleted": false,
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=965",
+        "message_id": "om_x100b6cab47ff2480c3f680e95d2b685",
+        "message_position": "965",
+        "msg_type": "text",
+        "reply_to": "om_x100b6c0e91f4608cb32ea07ccf06f29",
+        "sender": {
+          "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+          "id_type": "open_id",
+          "name": "吴鹏大",
+          "sender_type": "user",
+          "tenant_key": "166ff409f65f5758"
+        },
+        "updated": false
+      },
+      {
+        "chat_id": "oc_96ca8df488a94624023ea81ff2b2ab9e",
+        "chat_name": "V20-OTA四方联调群",
+        "chat_type": "group",
+        "content": "@许子华 @吴鹏大 我这边板子的硬件状态可能和立昇这边的不一致。mcu版本状态，立昇出的版本和镁佳出的可能也不一致。我等会儿确认一下板子是否改好了",
+        "create_time": "2026-06-23 02:41",
+        "deleted": false,
+        "mentions": [
+          {
+            "id": "ou_6df87b19d790cb4ae72b267eae0addbf",
+            "key": "@_user_1",
+            "name": "许子华"
+          },
+          {
+            "id": "ou_3db7c201a9c247cef93f164b894e1a25",
+            "key": "@_user_2",
+            "name": "吴鹏大"
+          }
+        ],
+        "message_app_link": "https://applink.feishu.cn/client/chat/open?openChatId=oc_96ca8df488a94624023ea81ff2b2ab9e\u0026position=976",
+        "message_id": "om_x100b6cab6a788ca8c319ace4b6e0403",
+        "message_position": "976",
+        "msg_type": "text",
+        "reply_to": "om_x100b6cbba79d00acb2aa6dc7726c89a",
+        "sender": {
+          "id": "ou_b62d97c6aedb3eaac214337a46051d9d",
+          "id_type": "open_id",
+          "name": "罗能强",
+          "sender_type": "user",
+          "tenant_key": "17c7f2f922dcd75f"
+        },
+        "update_time": "2026-06-23 02:41",
+        "updated": true
+      }
+    ],
+    "page_token": "9ab4ee91f5667faf",
+    "total": 50
+  }
+}
